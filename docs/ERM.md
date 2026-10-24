@@ -3,7 +3,7 @@
 Modelo entidad-relación de Wayra (Postgres en Neon, Drizzle). Sacado del artefacto de diseño. Leer al **tocar la base de datos**: schema, migraciones, services o queries.
 Reglas de carpetas: [ARCHITECTURE.md](ARCHITECTURE.md). Flujos de reserva y pago: [SYSTEM-DESIGN.md](SYSTEM-DESIGN.md).
 
-Convenciones: ids `uuid`, columnas `snake_case`, dinero en céntimos (`*_cents`, `integer`) con `currency` (`PEN`), fechas `timestamptz`.
+Convenciones: ids `uuid`, columnas `snake_case`, dinero en céntimos (`*_cents`, `integer`) con `currency` (`PEN`), fechas `timestamptz`. Toda columna `*_url` de imagen guarda una URL de Vercel Blob, nunca el archivo.
 
 ## Diagrama
 
@@ -60,7 +60,7 @@ erDiagram
 **organizers** — perfil del operador (panel: "Datos de la empresa").
 `id`, `user_id` (unique, fk), `business_name` (razón social), `ruc`, `whatsapp`, `status` (`organizer_status`, default `pending`; lo activa un admin), `created_at`.
 
-**notification_preferences** — switches de "Notificaciones" del panel.
+**notification_preferences** — switches de "Notificaciones" del panel. Se guardan, pero la v1 no envía correo ni WhatsApp (ver [SYSTEM-DESIGN.md](SYSTEM-DESIGN.md#decisiones-y-pendientes)).
 pk (`user_id`, `key`), `key` (`notification_key`), `enabled`.
 
 ### Catálogo

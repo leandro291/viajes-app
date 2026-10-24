@@ -16,6 +16,6 @@ Documentación base de Wayra a partir del artefacto de diseño: modelo de datos,
 - `CLAUDE.md` — tabla de lectura bajo demanda y roles.
 
 ## Pendiente
-- Stripe y soles: confirmar país de la cuenta y moneda de liquidación.
-- Proveedor de correo y WhatsApp para el voucher.
+- Comprobar en modo prueba si Stripe (cuenta EE. UU.) cobra en `PEN`; si no, `USD` con tipo de cambio fijo.
+- Correo y WhatsApp quedan fuera de v1; imágenes en Vercel Blob con la URL en la base.
 - Yape, Plin y PagoEfectivo quedan fuera de v1.

@@ -12,7 +12,8 @@ Datos: [ERM.md](ERM.md). Carpetas y rutas: [ARCHITECTURE.md](ARCHITECTURE.md).
 | Estado y datos  | TanStack Query/Table, Zustand (solo cliente), Zod                          |
 | Base de datos   | Postgres en **Neon** + **Drizzle** (driver serverless de Neon)             |
 | Autenticación   | **Clerk**                                                                  |
-| Pagos           | **Stripe** (Checkout alojado por Stripe, solo tarjeta en v1)               |
+| Pagos           | **Stripe** (Checkout alojado por Stripe, solo tarjeta en v1). Cuenta de EE. UU. en **modo prueba**: es una simulación, no se cobra dinero real |
+| Imágenes        | **Vercel Blob** guarda el archivo; la base de datos guarda solo la URL     |
 | Despliegue      | **Vercel** (preview por PR, producción desde `main`)                       |
 
 ## Contexto
@@ -52,7 +53,7 @@ sequenceDiagram
   U->>S: Paga con tarjeta
   S-->>A: Webhook checkout.session.completed
   A->>DB: Transacción: payment succeeded, booking confirmed, cupo +pax
-  A-->>U: Voucher por correo, página de confirmación
+  A-->>U: Página de confirmación con el voucher
 ```
 
 Reglas:
@@ -93,6 +94,7 @@ Solo nombres; los valores van en Vercel y en `.env.local` (ignorado por git).
 | `STRIPE_SECRET_KEY`                   | Stripe, servidor                 |
 | `STRIPE_WEBHOOK_SECRET`               | Webhook de Stripe                |
 | `NEXT_PUBLIC_APP_URL`                 | URLs de retorno de Checkout      |
+| `BLOB_READ_WRITE_TOKEN`               | Vercel Blob, subida de imágenes  |
 
 ## Entornos
 
@@ -100,19 +102,23 @@ Solo nombres; los valores van en Vercel y en `.env.local` (ignorado por git).
 | ---------- | ------------------- | -------------------- | ------------------------------ |
 | Local      | `npm run dev`       | rama Neon de desarrollo | Clerk dev, Stripe test      |
 | Preview    | cada PR en Vercel   | rama Neon por preview   | Clerk dev, Stripe test      |
-| Producción | `main`              | rama Neon principal     | Clerk prod, Stripe live     |
+| Producción | `main`              | rama Neon principal     | Clerk prod, Stripe test (simulación) por ahora |
 
 ## Seguridad y operación
 
 - Validar toda entrada con Zod en el borde de cada Server Action y route handler.
 - Documento y datos de viajeros son datos personales: solo los ven el cliente dueño, el operador del paquete y los administradores.
-- Sin secretos en el repo (es público). Claves de Stripe live solo en Vercel producción.
+- Sin secretos en el repo (es público). Las claves van solo en Vercel; si algún día se usan claves de Stripe live, solo en producción.
 - Logs de Vercel para errores; registrar el `id` de evento de Stripe en cada fallo de webhook.
 - Accesibilidad y rendimiento: ver [DESIGN-SYSTEM.md](DESIGN-SYSTEM.md).
 
-## Preguntas abiertas
+## Decisiones y pendientes
 
-1. **Stripe y soles:** confirmar el país de la cuenta de Stripe y si se puede cobrar y liquidar en `PEN`; si no, definir la moneda de cobro.
-2. **Voucher y avisos:** proveedor de correo (propuesta: Resend) y de WhatsApp. El artefacto promete ambos.
-3. **Imágenes:** hoy son fotos de Wikimedia Commons con licencias CC (requieren crédito, ya modelado en `package_images.credit`). Definir hosting propio (Vercel Blob) cuando los operadores suban fotos.
+**Decididas**
+1. **Stripe:** cuenta de EE. UU. en modo prueba (Stripe no opera en Perú; es una simulación). Los precios se muestran en soles. Falta comprobar si Stripe acepta cobrar en `PEN` desde esa cuenta; si no, se cobra en `USD` con un tipo de cambio fijo y `payments.currency` guarda la moneda real del cobro.
+2. **Imágenes:** el archivo se sube a **Vercel Blob** y la base guarda solo la URL (`package_images.url`, `packages.cover_image_url`, `destinations.hero_image_url`, etc.). Nunca el binario en Postgres. Las fotos actuales son de Wikimedia Commons con licencias CC (requieren crédito, ya modelado en `package_images.credit`).
+3. **Correo y WhatsApp:** fuera de v1, sin integración. El voucher se muestra en la página de confirmación. Cuando se decida incorporarlos, se agregan como proveedor nuevo (por ejemplo correo transaccional y la API de WhatsApp Business) sin cambiar el modelo de datos: `notification_preferences` ya guarda las preferencias.
 4. **Invitados:** la v1 exige cuenta para reservar (hay "Mis reservas"). Reservar sin cuenta queda fuera.
+
+**Pendiente**
+- Comprobar en modo prueba la moneda de cobro (`PEN` o `USD`).
