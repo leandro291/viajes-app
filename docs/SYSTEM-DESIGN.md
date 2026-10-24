@@ -57,7 +57,7 @@ sequenceDiagram
 ```
 
 Reglas:
-- **El monto lo calcula el servidor** desde `packages`, `offers` y `pax_count`; nunca se confía en el precio del cliente.
+- **El monto lo calcula el servidor** desde `packages`, `offers` y `pax_count`; nunca se confía en el precio del cliente. El total en soles se convierte a `USD` con `PEN_PER_USD`, redondeado al centavo, y esa cifra es la que se envía a Stripe.
 - **Idempotencia:** cada evento de Stripe se registra en `stripe_events`; si el `id` ya existe, se ignora.
 - **Firma:** el webhook verifica la firma de Stripe con el cuerpo crudo antes de tocar la base.
 - **Cupo:** se descuenta con `update ... where booked_seats + pax <= capacity` dentro de la transacción de confirmación (ver [ERM.md](ERM.md#reglas-de-datos)). Si falla (carrera), se reembolsa y la reserva pasa a `cancelled`.
@@ -95,6 +95,7 @@ Solo nombres; los valores van en Vercel y en `.env.local` (ignorado por git).
 | `STRIPE_WEBHOOK_SECRET`               | Webhook de Stripe                |
 | `NEXT_PUBLIC_APP_URL`                 | URLs de retorno de Checkout      |
 | `BLOB_READ_WRITE_TOKEN`               | Vercel Blob, subida de imágenes  |
+| `PEN_PER_USD`                         | Tipo de cambio fijo soles por dólar para cobrar en Stripe |
 
 ## Entornos
 
@@ -115,10 +116,7 @@ Solo nombres; los valores van en Vercel y en `.env.local` (ignorado por git).
 ## Decisiones y pendientes
 
 **Decididas**
-1. **Stripe:** cuenta de EE. UU. en modo prueba (Stripe no opera en Perú; es una simulación). Los precios se muestran en soles. Falta comprobar si Stripe acepta cobrar en `PEN` desde esa cuenta; si no, se cobra en `USD` con un tipo de cambio fijo y `payments.currency` guarda la moneda real del cobro.
+1. **Stripe:** cuenta de EE. UU. en modo prueba (Stripe no opera en Perú; es una simulación). **Stripe cobra en dólares (`USD`).** El catálogo muestra precios en soles; al pagar, el servidor convierte con un tipo de cambio fijo (`PEN_PER_USD`), muestra el total en dólares antes de redirigir a Stripe y guarda el tipo de cambio usado en la reserva. `payments` queda en `USD`; `bookings` conserva el total en `PEN`.
 2. **Imágenes:** el archivo se sube a **Vercel Blob** y la base guarda solo la URL (`package_images.url`, `packages.cover_image_url`, `destinations.hero_image_url`, etc.). Nunca el binario en Postgres. Las fotos actuales son de Wikimedia Commons con licencias CC (requieren crédito, ya modelado en `package_images.credit`).
 3. **Correo y WhatsApp:** fuera de v1, sin integración. El voucher se muestra en la página de confirmación. Cuando se decida incorporarlos, se agregan como proveedor nuevo (por ejemplo correo transaccional y la API de WhatsApp Business) sin cambiar el modelo de datos: `notification_preferences` ya guarda las preferencias.
 4. **Invitados:** la v1 exige cuenta para reservar (hay "Mis reservas"). Reservar sin cuenta queda fuera.
-
-**Pendiente**
-- Comprobar en modo prueba la moneda de cobro (`PEN` o `USD`).

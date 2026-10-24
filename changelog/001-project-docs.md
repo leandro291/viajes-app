@@ -16,6 +16,6 @@ Documentación base de Wayra a partir del artefacto de diseño: modelo de datos,
 - `CLAUDE.md` — tabla de lectura bajo demanda y roles.
 
 ## Pendiente
-- Comprobar en modo prueba si Stripe (cuenta EE. UU.) cobra en `PEN`; si no, `USD` con tipo de cambio fijo.
+- Stripe cobra en `USD` (cuenta EE. UU., modo prueba) con tipo de cambio fijo `PEN_PER_USD`; falta fijar el valor.
 - Correo y WhatsApp quedan fuera de v1; imágenes en Vercel Blob con la URL en la base.
 - Yape, Plin y PagoEfectivo quedan fuera de v1.

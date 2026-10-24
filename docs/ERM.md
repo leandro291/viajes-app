@@ -91,13 +91,13 @@ pk (`user_id`, `key`), `key` (`notification_key`), `enabled`.
 ### Reservas y pagos
 
 **bookings**
-`id`, `code` (unique, `WY-####` desde una secuencia de Postgres), `customer_id` (fk users), `package_id`, `departure_id`, `offer_id` (nullable), `status` (`booking_status`, default `pending`), `pax_count`, `unit_price_cents` (**snapshot** del precio al reservar), `discount_cents`, `total_cents`, `currency`, `contact_email`, `contact_phone`, `terms_accepted_at`, `cancelled_at`, `created_at`.
+`id`, `code` (unique, `WY-####` desde una secuencia de Postgres), `customer_id` (fk users), `package_id`, `departure_id`, `offer_id` (nullable), `status` (`booking_status`, default `pending`), `pax_count`, `unit_price_cents` (**snapshot** del precio al reservar), `discount_cents`, `total_cents`, `currency` (`PEN`), `exchange_rate` (soles por dólar usado al cobrar; snapshot), `contact_email`, `contact_phone`, `terms_accepted_at`, `cancelled_at`, `created_at`.
 
 **booking_travelers** — "Viajero principal" del pago; el resto se completa después (la entrada a Machu Picchu exige nombre y documento de todos).
 `id`, `booking_id`, `first_name`, `last_name`, `doc_type`, `doc_number`, `is_primary`.
 
 **payments**
-`id`, `booking_id`, `provider` (`stripe`), `method` (`payment_method`), `status` (`payment_status`), `amount_cents`, `currency`, `stripe_checkout_session_id` (unique), `stripe_payment_intent_id`, `refunded_cents` (default 0), `paid_at`, `created_at`.
+`id`, `booking_id`, `provider` (`stripe`), `method` (`payment_method`), `status` (`payment_status`), `amount_cents`, `currency` (`USD`: lo que cobra Stripe, convertido desde `bookings.total_cents` con `bookings.exchange_rate`), `stripe_checkout_session_id` (unique), `stripe_payment_intent_id`, `refunded_cents` (default 0), `paid_at`, `created_at`.
 
 **stripe_events** — idempotencia de webhooks. `id` (pk = id del evento de Stripe), `type`, `processed_at`.
 

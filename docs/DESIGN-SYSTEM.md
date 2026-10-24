@@ -77,7 +77,7 @@ Fuentes por Google Fonts (`next/font/google` al implementar).
 - **Semántica real:** `button`, `a href`, `input` + `label`; nunca `div` clicable. Íconos solo decorativos llevan `aria-hidden`.
 - **Íconos:** `lucide-react`, trazo 2–2.8. Sin emoji.
 - **Imágenes:** siempre con `alt`; fotos con licencia CC muestran su crédito en el pie.
-- **Dinero:** `S/ 1 290` (espacio fino como separador de miles), siempre en soles.
+- **Dinero:** `S/ 1 290` (espacio fino como separador de miles); el catálogo siempre en soles. En el paso de pago se muestra además el total a cobrar en dólares (`US$ 345.00`), antes del botón de pagar.
 - **Gráficos:** barras en `primary`, el mes actual en `accent`; al pasar el cursor, el resto baja a 40 % de opacidad. Toda gráfica tiene vista de tabla equivalente.
 - **Responsive:** en móvil los menús se apilan, las barras de herramientas envuelven y las tablas anchas hacen scroll interno.
 
