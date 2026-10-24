@@ -95,7 +95,7 @@ Solo nombres; los valores van en Vercel y en `.env.local` (ignorado por git).
 | `STRIPE_WEBHOOK_SECRET`               | Webhook de Stripe                |
 | `NEXT_PUBLIC_APP_URL`                 | URLs de retorno de Checkout      |
 | `BLOB_READ_WRITE_TOKEN`               | Vercel Blob, subida de imágenes  |
-| `PEN_PER_USD`                         | Tipo de cambio fijo soles por dólar para cobrar en Stripe |
+| `PEN_PER_USD`                         | Tipo de cambio fijo soles por dólar para cobrar en Stripe (simulación: `3.75`) |
 
 ## Entornos
 
