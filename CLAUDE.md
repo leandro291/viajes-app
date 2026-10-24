@@ -12,7 +12,7 @@ Run `npm install` first (no `node_modules` committed); `AGENTS.md` points to `no
 - `npm run lint` — ESLint 9 flat config (`eslint.config.mjs`: `core-web-vitals` + `typescript`)
 - `npx tsc --noEmit` — typecheck (no script defined)
 - `npx shadcn@latest add <component>` — add UI components
-- No test runner configured yet.
+- `npm test` — Vitest. DB: `npm run db:generate` / `db:migrate` / `db:seed` (need `DATABASE_URL`, `DATABASE_URL_UNPOOLED` in `.env.local`).
 
 ## Workflow
 
