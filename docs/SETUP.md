@@ -1,118 +1,14 @@
 # SETUP
 
-Reglas de estructura y buenas prácticas del proyecto. Aplican a todo el código nuevo.
+Reglas de buenas prácticas del proyecto. Aplican a todo el código nuevo.
 
-Stack: Next.js (App Router), React, TypeScript, Tailwind, shadcn/ui, TanStack Query/Table, Zustand, Zod, Axios.
+Stack: ver [SYSTEM-DESIGN.md](SYSTEM-DESIGN.md#stack). No cargar los demás documentos salvo que la tarea los necesite (ver tabla al final).
 
 ---
 
 ## 1. Estructura de carpetas
 
-### Reglas
-
-1. **Todo se organiza por módulo de dominio**, no por tipo técnico. Un módulo agrupa todo lo que pertenece a un dominio (`users`, `orders`, `billing`).
-2. **Nombres en inglés**, siempre (carpetas, archivos, variables, tipos).
-3. **Naming de TypeScript:**
-
-   | Elemento                         | Convención                       | Ejemplo                    |
-   | -------------------------------- | -------------------------------- | -------------------------- |
-   | Archivos y carpetas              | `kebab-case`                     | `user-card.tsx`            |
-   | Componentes, tipos, interfaces   | `PascalCase`                     | `UserCard`, `UserDto`      |
-   | Funciones, variables, hooks      | `camelCase` (hooks con `use`)    | `getUsers`, `useUserList`  |
-   | Constantes globales              | `UPPER_SNAKE_CASE`               | `API_BASE_URL`             |
-   | Schemas Zod                      | `camelCase` + sufijo `Schema`    | `createUserSchema`         |
-   | Stores Zustand                   | `use` + nombre + `Store`         | `useUserFilterStore`       |
-   | Tests                            | mismo nombre + `.test.ts(x)`     | `user-service.test.ts`     |
-
-4. **App Router:** `app/` contiene **solo routing** (`page.tsx`, `layout.tsx`, `loading.tsx`, `error.tsx`, `route.ts`). Las páginas son delgadas: importan y componen desde `modules/`. Nada de lógica de negocio ni componentes de dominio dentro de `app/`.
-5. **Server Components por defecto.** `"use client"` solo en el archivo que lo necesite (interactividad, hooks de estado/efecto, TanStack Query, Zustand), lo más abajo posible en el árbol.
-6. **Un módulo no importa los internos de otro.** Lo que se comparte entre módulos se expone desde su `index.ts` o se sube a `components/shared`, `hooks` o `lib`.
-7. **Solo se crean las subcarpetas que el módulo necesita** (YAGNI). Un módulo puede tener únicamente `components/` y `types/`.
-
-### Estructura base
-
-```
-app/                          # routing only (App Router)
-  (dashboard)/                # route group, no afecta la URL
-    users/
-      page.tsx
-      [id]/page.tsx
-  layout.tsx
-  globals.css
-
-modules/                      # dominio: una carpeta por módulo
-  users/
-    components/               # UI del dominio
-      user-card.tsx
-      user-table.tsx
-    hooks/                    # hooks del dominio (queries, mutations)
-      use-user-list.ts
-    services/                 # acceso a datos (Axios), sin React
-      user-service.ts
-    schemas/                  # validación con Zod + tipos inferidos
-      user-schema.ts
-    store/                    # estado cliente (Zustand), solo si hace falta
-      use-user-filter-store.ts
-    types/
-      user.ts
-    index.ts                  # API pública del módulo
-
-components/
-  ui/                         # shadcn/ui (generado, no editar a lo loco)
-  shared/                     # componentes reutilizables entre módulos
-hooks/                        # hooks reutilizables entre módulos
-lib/                          # utilidades transversales (cn, axios instance)
-docs/                         # documentación
-```
-
-### Ejemplo de uso
-
-```tsx
-// modules/users/services/user-service.ts
-import { api } from "@/lib/api";
-import type { User } from "../types/user";
-
-export const getUsers = async (): Promise<User[]> => {
-  const { data } = await api.get<User[]>("/users");
-  return data;
-};
-```
-
-```ts
-// modules/users/hooks/use-user-list.ts
-import { useQuery } from "@tanstack/react-query";
-import { getUsers } from "../services/user-service";
-
-export const useUserList = () =>
-  useQuery({ queryKey: ["users"], queryFn: getUsers });
-```
-
-```tsx
-// modules/users/components/user-table.tsx
-"use client";
-
-import { useUserList } from "../hooks/use-user-list";
-
-export function UserTable() {
-  const { data } = useUserList();
-  // ...
-}
-```
-
-```ts
-// modules/users/index.ts  (lo único que ven los demás módulos y app/)
-export { UserTable } from "./components/user-table";
-export type { User } from "./types/user";
-```
-
-```tsx
-// app/(dashboard)/users/page.tsx  (delgada: solo compone)
-import { UserTable } from "@/modules/users";
-
-export default function UsersPage() {
-  return <UserTable />;
-}
-```
+Vive en [ARCHITECTURE.md](ARCHITECTURE.md). **Leerlo al crear o mover archivos**: módulos de dominio, naming de TypeScript, `app/` solo routing, Server Components por defecto, rutas por rol.
 
 ---
 
@@ -138,6 +34,7 @@ Al empezar cualquier componente de UI:
 1. **Verificar si existe en shadcn** (`npx shadcn@latest add <name>`). Si existe, se usa.
 2. Si no existe, **lo creamos nosotros pensando en reutilización**: props genéricas, estilos con Tailwind + `cn()`, sin lógica de dominio. Va en `components/shared/` si lo usan varios módulos, o en `modules/<domain>/components/` si es específico de uno.
 3. Nota: el preset de shadcn es `base-nova` (basado en `@base-ui/react`, no Radix).
+4. Colores, tipografía y tokens: [DESIGN-SYSTEM.md](DESIGN-SYSTEM.md). Leerlo al hacer UI.
 
 ### Verificar antes de crear
 
@@ -148,5 +45,18 @@ Al empezar cualquier componente de UI:
 ## 3. Unit testing
 
 - Se testea **donde aporta valor**: lógica de negocio, services, hooks con lógica, schemas Zod, utilidades y stores. No se testea markup trivial ni componentes que solo componen.
-- Los tests van junto al archivo que prueban: `user-service.ts` → `user-service.test.ts`.
+- Los tests van junto al archivo que prueban: `booking-service.ts` → `booking-service.test.ts`.
 - El test runner todavía **no está instalado**. Se elige y configura al implementar el primer test; hasta entonces no se agrega.
+
+---
+
+## Qué documento leer y cuándo
+
+Cada documento se lee **solo si la tarea lo necesita**. Son enlaces, no importaciones.
+
+| Documento                                  | Leer cuando…                                                              |
+| ------------------------------------------ | ------------------------------------------------------------------------- |
+| [ARCHITECTURE.md](ARCHITECTURE.md)         | Creás o movés archivos, decidís en qué módulo va algo, agregás una ruta   |
+| [ERM.md](ERM.md)                           | Tocás la base de datos: schema, migraciones, services, queries, permisos por rol |
+| [SYSTEM-DESIGN.md](SYSTEM-DESIGN.md)       | Tocás auth, pagos, webhooks, variables de entorno, despliegue             |
+| [DESIGN-SYSTEM.md](DESIGN-SYSTEM.md)       | Construís o cambiás UI, colores, tipografía, `globals.css`                |

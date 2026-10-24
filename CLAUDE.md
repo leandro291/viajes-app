@@ -17,9 +17,20 @@ Run `npm install` first (no `node_modules` committed); `AGENTS.md` points to `no
 ## Workflow
 
 **`docs/SETUP.md` is the source of truth** for project rules — read it before writing code:
-- §1 Folder structure: domain modules under `modules/<domain>/`, English names, kebab-case files, `app/` is routing only.
+- §1 Folder structure: stub that points to `docs/ARCHITECTURE.md`.
 - §2 Best practices: SOLID/DRY/KISS/YAGNI; check shadcn first; search for an existing component/function/hook before creating one.
 - §3 Unit testing: test business logic/services/schemas/stores/utils only, colocated as `<file>.test.ts(x)`. No runner installed; pick one when the first test is needed.
+
+Other docs are read **on demand only** (plain links, no `@` imports, so they cost no tokens until opened):
+
+| Doc | Read when |
+| --- | --- |
+| `docs/ARCHITECTURE.md` | creating/moving files, choosing a module, adding a route (domain modules under `modules/<domain>/`, English names, kebab-case files, `app/` is routing only, route groups by role) |
+| `docs/ERM.md` | touching the DB: schema, migrations, services, queries, per-role permissions |
+| `docs/SYSTEM-DESIGN.md` | touching auth (Clerk), payments (Stripe), webhooks, env vars, deploy (Vercel/Neon) |
+| `docs/DESIGN-SYSTEM.md` | building or changing UI, colors, typography, `globals.css` |
+
+The source of truth for the product is the Wayra design artifact (see `docs/SYSTEM-DESIGN.md` and `docs/ERM.md` for what was derived from it). Roles: `super_admin`, `admin`, `organizer` (operator who publishes its own packages/tours), `customer`.
 
 The SDD methodology itself is **not** in SETUP (removed); it lives only in the agent prompts below. `spec.md` still mentions a "plantilla de spec" in SETUP that no longer exists, and `docs/specs/` is not created yet.
 
