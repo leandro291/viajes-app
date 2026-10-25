@@ -14,7 +14,7 @@ import {
 import type { CategoryDto, PackageCardDto, PackageFilters } from "../types/package";
 
 // Único lugar del filtro de visibilidad pública (lo reutilizan 008/011).
-const isPublished = eq(packages.status, "published");
+export const isPublished = eq(packages.status, "published");
 
 const cardColumns = {
   id: packages.id,
