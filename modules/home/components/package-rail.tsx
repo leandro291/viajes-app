@@ -114,6 +114,7 @@ export function PackageRail({
             tag={card.tag}
             durationLabel={card.durationLabel}
             priceLabel={card.priceLabel}
+            className="w-[280px] shrink-0 snap-start md:w-[300px]"
           />
         ))}
       </div>
