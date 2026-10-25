@@ -11,6 +11,12 @@ export type {
   PackageFilters,
   DurationFilter,
   SortOrder,
+  PackageDetailDto,
+  DepartureDto,
+  PackageImageDto,
+  ItineraryDayDto,
 } from "./types/package";
 export { PackageCard } from "./components/package-card";
 export { PackagesListing } from "./components/packages-listing";
+export { PackageDetail, generateDetailMetadata } from "./components/package-detail";
+export { getPackageBySlug, getDepartures } from "./services/package-detail-service";
