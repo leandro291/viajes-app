@@ -2,8 +2,23 @@
 
 - Module: offers (con `newsletter`)
 - Status: done
-- Approved by: leandro291 (2026-10-25)
+- Approved by: leandro291 (2026-10-25; Enmienda 1 re-aprobada 2026-10-25)
 - Mode: SDD
+
+## Enmienda 1 (2026-10-25): adaptación al marco de diseño de `main`
+**Motivo.** Después de aprobar esta spec entraron a `main` las tarjetas 034–040 y 009: `PageHero` (encabezado superpuesto sobre un hero a todo el ancho; el layout público quita el contenedor de `main` cuando la página lo usa), `HeroCarousel` compartido (`components/shared/hero-carousel.tsx`), `SectionHeading`, escala tipográfica global (`h1`/`h2`) y la tarjeta nueva (foto `rounded-[22px]`, texto suelto debajo). El PR #11 quedó en conflicto y `OfferHeroCarousel` duplica el carrusel compartido. El merge de `origin/main` a la rama ya está hecho (conflictos: `lib/cache-tags.ts`, con `departures` y `offers`, y `modules/home/components/hero-carousel.tsx`, que `main` movió a `components/shared` y se acepta su eliminación).
+
+**Precedencia.** Donde la Enmienda 1 contradiga el texto de más abajo, manda la Enmienda. No cambian: utils, service, tipos, tests existentes, ni el módulo `newsletter` (schema, service, action, formulario).
+
+- **E1. Se reutiliza el `HeroCarousel` compartido (sustituye D7, T7, T9 y AC22).** Se elimina `OfferHeroCarousel` y `hooks/use-reduced-motion.ts` (sin consumidores: el compartido ya trae su lógica) y se descarta el cambio al hero del Inicio (el archivo ya no existe; esta tarea ya no toca el Inicio). Extensión mínima y retrocompatible del compartido: `labels?: { tabs: string; previous: string; next: string }` (por defecto "Elegir destino", "Destino anterior", "Destino siguiente") y `aside?: ReactNode` en cada slide (bloque a la derecha del slide; si existe, reemplaza a la tarjeta "Siguiente"). Inicio y Paquetes no cambian. **Consecuencia aceptada:** el compartido no maneja flechas/Inicio/Fin ni foco rotativo en las pestañas (cada pestaña es un botón enfocable con Tab); AC14 se reduce a lo que hace el compartido (pausa, hover/foco, swipe, reduced motion, pestañas y flechas con clic). Agregar teclado de pestañas al compartido beneficiaría a Inicio y Paquetes y queda como spec aparte.
+- **E2. Hero según el tablero de Ofertas.** `OfferHero` arma los slides (`id`, `imageUrl`, `label` = `badge + título`, `ariaLabel`, `content`, `aside`) y los pasa a `HeroCarousel` con `className="min-h-[640px]"`. `content` = pastilla del tipo (`bg-accent`, 14 px, mayúsculas), título del slide como `<p>` con el tamaño "h1 grande Ofertas" de `DESIGN-SYSTEM` (`clamp(44px,7vw,92px)`, 0.92, −0.045em), fila de precio (final 40 px, tachado 20 px) con CTA "Aprovechar oferta →" (botón `cta`, `ArrowRight`) y "{nota} · Válido hasta {fecha}"; en móvil, además, el círculo de descuento de 96 px (`accent`) arriba del tipo. `aside` = círculo crema de 190 px con el descuento (`hidden md:flex`). Entrada del texto con `wy-up` solo con `motion-safe`. `labels` = "Elegir oferta", "Oferta anterior", "Oferta siguiente". El `h1` sigue oculto (D9) y va en `children` del carrusel. **Sin ofertas:** `PageHero` plano (`min-h-[640px]`) con `h1` visible "Ofertas" y un subtítulo corto, para que la página conserve el marco (sin `PageHero`, el layout devuelve `main` contenido y las secciones con contenedor propio duplicarían el padding).
+- **E3. Tarjeta y tipos como en el tablero (sustituye lo visual de D6 y D13).** `OfferCard`: foto `rounded-[22px]` `aspect-[4/3.4]`, círculo de descuento de 64 px rotado −8° arriba a la derecha, chip blanco del tipo abajo a la izquierda, texto suelto debajo (región · días en `text-primary`, título 22 px, tachado, precio final `accent`, "{nota} · hasta {fecha}") y círculo con flecha de 40 px que se llena `accent` al hover. Grilla `repeat(auto-fill, minmax(min(270px,100%),1fr))` con gap 32/24 desde `sm`; a 390 px se mantienen las 2 columnas compactas del tablero móvil. Tipos: siguen siendo links con `aria-current` (sin `role="tablist"`), pero dentro de un contenedor píldora blanco como el tablero. `OffersSkeleton` copia la nueva silueta.
+- **E4. Encabezado de sección con `SectionHeading`** (eyebrow "Ofertas", `h2` "Viaja más, paga menos") y el contador ("N ofertas", 20 px display) a la derecha como `children`; el contador conserva `aria-live="polite"`. El encabezado va dentro del `Suspense` para que el contador llegue con los datos; el `fallback` muestra el mismo encabezado sin contador y el skeleton.
+- **E5. Contenedores.** Con `PageHero`, `main` no tiene `max-width` ni `px`: la sección de la grilla (`pt-14`) y `NewsletterSignup` (`py-24`) ponen cada una su `mx-auto w-full max-w-[1240px] px-6`, como `packages-listing.tsx`. El bloque del newsletter pasa a `rounded-[32px]`. Se mantienen D11 (fondo sólido, sin foto, sin promesa de día ni frecuencia) y el formulario tal como está. `page.tsx` no cambia.
+
+**Criterios afectados.** AC13 (hero con el compartido, medidas de E2), AC14 (según E1), AC16 (tarjeta y grilla de E3), AC19 (jerarquía `h1` > `h2` > `h3`; sin animaciones con movimiento reducido), AC20 (el único `"use client"` nuevo es el formulario; el carrusel cliente es el compartido), AC22 (se elimina). El resto, igual.
+
+**Notas de implementación (sin cambio de contrato).** (a) Los AC13/14/15 que describen el carrusel propio (`tabIndex` rotativo, flechas ←/→, `inert`) y "N ofertas activas" quedan sustituidos por E1–E4: el compartido usa pestañas con Tab, y el contador dice "N ofertas". (b) El hero toma las 4 mejores ofertas **con portada** (`imageUrl` es obligatorio en el slide, como `PackagesHero`), en vez de un fondo `bg-dark` sin foto. (c) `HeroCarousel` envuelve `aside` en un `Fragment` con `key` propia: sin ella React avisa de hijo sin `key` al rotar el slide. (d) En móvil los tipos son un riel de una fila con scroll horizontal, como `Movil-Ofertas`.
 
 ## Goal
 Crear la ruta pública `/ofertas` (tarjeta Trello 012): hero con carrusel de las 4 ofertas activas de mayor descuento, grilla de ofertas filtrable por tipo desde la URL y formulario de newsletter ("Recibe las ofertas antes que nadie") con Server Action. Deja además la función pura de cálculo de descuento que reutilizará el pago (tarjeta 013).
@@ -348,9 +363,9 @@ Entrega: hero, tarjeta, grilla, tabs y skeleton listos para componer; el hook co
 
 | ID | Task | Owns | Depends on | Group | Criteria | Status |
 | -- | ---- | ---- | ---------- | ----- | -------- | ------ |
-| T7 | setup: `useReducedMotion` y hero del Inicio usándolo | hooks/use-reduced-motion.ts, modules/home/components/hero-carousel.tsx | - | A | AC22 | done |
-| T8 | `OfferCard`, `OfferGrid` (con estado vacío), `OfferTabs`, `OffersSkeleton` | modules/offers/components/offer-card.tsx, modules/offers/components/offer-grid.tsx, modules/offers/components/offer-tabs.tsx, modules/offers/components/offers-skeleton.tsx | T2 | B | AC15, AC16, AC17, AC19 | done |
-| T9 | `OfferHeroCarousel` (cliente) y `OfferHero` (servidor) | modules/offers/components/offer-hero-carousel.tsx, modules/offers/components/offer-hero.tsx | T3, T7 | B | AC13, AC14, AC19, AC20 | done |
+| T7 | setup: `useReducedMotion` y hero del Inicio usándolo | hooks/use-reduced-motion.ts, modules/home/components/hero-carousel.tsx | - | A | AC22 | reemplazada (E1: T12) |
+| T8 | `OfferCard`, `OfferGrid` (con estado vacío), `OfferTabs`, `OffersSkeleton` | modules/offers/components/offer-card.tsx, modules/offers/components/offer-grid.tsx, modules/offers/components/offer-tabs.tsx, modules/offers/components/offers-skeleton.tsx | T2 | B | AC15, AC16, AC17, AC19 | hecha; se rehace en T13 (E3) |
+| T9 | `OfferHeroCarousel` (cliente) y `OfferHero` (servidor) | modules/offers/components/offer-hero-carousel.tsx, modules/offers/components/offer-hero.tsx | T3, T7 | B | AC13, AC14, AC19, AC20 | reemplazada (E1/E2: T11, T12) |
 
 ### Phase 4 — Página y ruta
 Entrega: `/ofertas` completa con datos reales, tipos por URL, carrusel y newsletter.
@@ -358,6 +373,16 @@ Entrega: `/ofertas` completa con datos reales, tipos por URL, carrusel y newslet
 | ID | Task | Owns | Depends on | Group | Criteria | Status |
 | -- | ---- | ---- | ---------- | ----- | -------- | ------ |
 | T10 | `OffersPage` (shell, Suspense, contador), `index.ts` del módulo y ruta delgada | modules/offers/components/offers-page.tsx, modules/offers/index.ts, app/(public)/ofertas/page.tsx | T3, T6, T8, T9 | A | AC1, AC13, AC15, AC17, AC20, AC21 | done |
+
+### Phase 5 — Adaptación al marco de `main` (Enmienda 1)
+Entrega: `/ofertas` con `PageHero` y `HeroCarousel` compartidos, tarjeta y tipos del tablero, `SectionHeading` y contenedores propios. T11 y T13 tocan archivos disjuntos y corren en paralelo; T12 depende de T11 y T14 de T12 y T13.
+
+| ID | Task | Owns | Depends on | Group | Criteria | Status |
+| -- | ---- | ---- | ---------- | ----- | -------- | ------ |
+| T11 | `HeroCarousel` compartido: props opcionales `labels` y `aside` por slide (E1); Inicio y Paquetes sin cambio | components/shared/hero-carousel.tsx | - | A | AC14, AC20 | done |
+| T12 | `OfferHero` sobre `HeroCarousel` (E2); eliminar `OfferHeroCarousel` y `hooks/use-reduced-motion.ts` | modules/offers/components/offer-hero.tsx, modules/offers/components/offer-hero-carousel.tsx (eliminar), hooks/use-reduced-motion.ts (eliminar) | T11 | B | AC13, AC14, AC19, AC20 | done |
+| T13 | `OfferCard`, `OfferGrid`, `OfferTabs`, `OffersSkeleton` con la silueta del tablero (E3) | modules/offers/components/offer-card.tsx, modules/offers/components/offer-grid.tsx, modules/offers/components/offer-tabs.tsx, modules/offers/components/offers-skeleton.tsx | - | A | AC15, AC16, AC17, AC19 | done |
+| T14 | `OffersPage` con `SectionHeading`, contador y contenedor propio (E4/E5); `NewsletterSignup` con su contenedor y `rounded-[32px]` | modules/offers/components/offers-page.tsx, modules/newsletter/components/newsletter-signup.tsx | T12, T13 | C | AC13, AC15, AC16, AC17, AC19 | done |
 
 ### Verificación (orquestador, tras T10; no es tarea de developer)
 Con `.env.local` (DB sembrada + claves de Clerk): `npm run build && npm start`; `npm run test:db`. Playwright a 390×844 y 1280×800 sobre `/ofertas`, `/ofertas?tipo=groups`, `/ofertas?tipo=xyz` y el Inicio (hero igual que antes); formulario con correo inválido, nuevo y repetido (verificando en la tabla que no se duplica y que `unsubscribed_at` se limpia si se pone a mano). Resultado y capturas van al PR; no se commitea código de Playwright. Reviewer por fase: `tsc`, `lint`, `build`, `test` (AC1).
