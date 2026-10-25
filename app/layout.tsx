@@ -1,3 +1,4 @@
+import { esES } from "@clerk/localizations";
 import { ClerkProvider } from "@clerk/nextjs";
 import { shadcn } from "@clerk/ui/themes";
 import type { Metadata } from "next";
@@ -30,7 +31,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${bricolage.variable} ${dmSans.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <ClerkProvider appearance={{ theme: shadcn }}>{children}</ClerkProvider>
+        <ClerkProvider
+          localization={esES}
+          appearance={{ theme: shadcn, variables: { colorInput: "#FFFFFF" } }}
+        >
+          {children}
+        </ClerkProvider>
       </body>
     </html>
   );
