@@ -26,7 +26,7 @@ Se rehace la presentación de `/paquetes` para parecerse al tablero `Explorar.dc
 ## Notas
 - Etiquetas de pestaña con el título completo porque el DTO no trae nombre corto.
 - Se anula localmente el `min-h-[340px]` de `HeroCarousel` con una clase; lo limpio sería una prop en el componente compartido.
-- Varias tarjetas se ven sin foto: son paquetes del seed sin portada, no un error de esta tarea.
+- En las pruebas en dev algunas fotos tardaron en cargar (el optimizador de imágenes atiende pedidos en frío); las URL responden 200 al pedirlas directo. No parece un error de esta tarea, pero no se descartó del todo: conviene mirarlo con el build de producción.
 
 ## Revisión
 - Reviewer: n.a. (no se corrió el agente `reviewer`)
