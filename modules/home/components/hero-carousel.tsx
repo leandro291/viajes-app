@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { cn } from "@/lib/utils";
 
 export type HeroSlide = {
@@ -18,16 +19,6 @@ export type HeroSlide = {
 };
 
 const INTERVAL_MS = 6500;
-const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
-
-function subscribeReducedMotion(onChange: () => void) {
-  const mql = window.matchMedia(REDUCED_MOTION_QUERY);
-  mql.addEventListener("change", onChange);
-  return () => mql.removeEventListener("change", onChange);
-}
-
-const getReducedMotion = () => window.matchMedia(REDUCED_MOTION_QUERY).matches;
-const getReducedMotionServer = () => false;
 
 const controlClass =
   "size-12 rounded-full bg-black/45 text-white hover:bg-black/65 hover:text-white";
@@ -39,11 +30,7 @@ export function HeroCarousel({ slides }: { slides: HeroSlide[] }) {
   const [userPaused, setUserPaused] = useState<boolean | null>(null);
   const [hovered, setHovered] = useState(false);
   const [focused, setFocused] = useState(false);
-  const reducedMotion = useSyncExternalStore(
-    subscribeReducedMotion,
-    getReducedMotion,
-    getReducedMotionServer,
-  );
+  const reducedMotion = useReducedMotion();
 
   const paused = userPaused ?? reducedMotion;
   const running = !paused && !hovered && !focused && count > 1;
