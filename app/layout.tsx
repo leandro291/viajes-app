@@ -1,3 +1,5 @@
+import { ClerkProvider } from "@clerk/nextjs";
+import { shadcn } from "@clerk/ui/themes";
 import type { Metadata } from "next";
 import { Bricolage_Grotesque, DM_Sans } from "next/font/google";
 import "./globals.css";
@@ -13,7 +15,10 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: { default: "Wayra · Paquetes y tours en Perú", template: "%s · Wayra" },
+  title: {
+    default: "Wayra · Paquetes y tours en Perú",
+    template: "%s · Wayra",
+  },
   description:
     "Descubre y reserva paquetes y tours de un día por Perú con operadores locales.",
 };
@@ -24,7 +29,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="es"
       className={`${bricolage.variable} ${dmSans.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <ClerkProvider appearance={{ theme: shadcn }}>{children}</ClerkProvider>
+      </body>
     </html>
   );
 }
