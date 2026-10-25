@@ -1,41 +1,35 @@
 import { Show, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
-import Link from "next/link";
 import { Suspense } from "react";
 
+import { SiteNav, SiteNavPlain } from "@/components/shared/site-nav";
 import { SITE_LINKS } from "@/components/shared/site-links";
 import { WayraLogo } from "@/components/shared/wayra-logo";
 
+// Depende del ancestro `group/shell` de app/(public)/layout.tsx: si la página trae un
+// `[data-page-hero]`, el encabezado es transparente y va superpuesto sobre la foto;
+// si no, queda sólido y en flujo. Conserva `bg-dark` para que el foco use `focus`.
 export function SiteHeader() {
   return (
-    <header className="bg-dark text-white">
-      <div className="mx-auto flex w-full max-w-[1240px] flex-wrap items-center justify-between gap-x-6 gap-y-2 px-6 py-2">
+    <header className="z-30 bg-dark text-white group-has-[[data-page-hero]]/shell:absolute group-has-[[data-page-hero]]/shell:inset-x-0 group-has-[[data-page-hero]]/shell:top-0 group-has-[[data-page-hero]]/shell:bg-transparent">
+      <div className="mx-auto flex w-full max-w-[1240px] flex-wrap items-center gap-x-10 gap-y-3 px-6 py-5">
         <WayraLogo />
-        <div className="flex min-w-0 flex-wrap items-center gap-x-6 gap-y-1">
-          <nav aria-label="Principal" className="min-w-0">
-            <ul className="flex flex-wrap gap-x-6">
-              {SITE_LINKS.map(({ label, href }) => (
-                <li key={href}>
-                  <Link
-                    href={href}
-                    className="inline-flex min-h-11 items-center text-[15px] font-medium text-white hover:underline"
-                  >
-                    {label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
-          <span className="text-[15px] font-medium text-white">PEN · S/</span>
+        <Suspense fallback={<SiteNavPlain links={SITE_LINKS} />}>
+          <SiteNav links={SITE_LINKS} />
+        </Suspense>
+        <div className="flex items-center gap-2">
+          <span className="px-3 py-2.5 text-base font-medium whitespace-nowrap text-white">
+            PEN · S/
+          </span>
           <Suspense>
             <Show when="signed-out">
               <SignInButton>
-                <button className="inline-flex min-h-11 items-center text-[15px] font-medium text-white hover:underline">
-                  Ingresar
+                <button className="inline-flex min-h-11 cursor-pointer items-center px-3 py-2.5 text-[15px] font-bold whitespace-nowrap text-white transition-colors duration-150 hover:text-accent-soft">
+                  Iniciar sesión
                 </button>
               </SignInButton>
               <SignUpButton>
-                <button className="inline-flex min-h-11 items-center rounded-full border border-white/40 px-4 text-[15px] font-bold text-white hover:bg-white/10">
-                  Crear cuenta
+                <button className="inline-flex min-h-11 cursor-pointer items-center rounded-full bg-white px-[22px] py-3 text-[15px] font-bold text-ink transition-colors duration-150 hover:bg-accent-soft">
+                  Registrarse
                 </button>
               </SignUpButton>
             </Show>
