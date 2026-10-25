@@ -1,4 +1,16 @@
-export { getFeaturedPackages, getCategories } from "./services/package-service";
+export {
+  getFeaturedPackages,
+  getCategories,
+  getPackages,
+} from "./services/package-service";
 export { isDayTour, formatDuration } from "./utils/package-utils";
-export type { PackageCardDto, CategoryDto } from "./types/package";
+export { buildListingHref } from "./utils/package-filters";
+export type {
+  PackageCardDto,
+  CategoryDto,
+  PackageFilters,
+  DurationFilter,
+  SortOrder,
+} from "./types/package";
 export { PackageCard } from "./components/package-card";
+export { PackagesListing } from "./components/packages-listing";

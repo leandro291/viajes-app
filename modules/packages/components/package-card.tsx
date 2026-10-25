@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Clock, MapPin } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 export function PackageCard({
   slug,
@@ -12,6 +13,8 @@ export function PackageCard({
   tag,
   durationLabel,
   priceLabel,
+  className,
+  sizes = "(min-width: 768px) 300px, 280px",
 }: {
   slug: string;
   title: string;
@@ -20,11 +23,16 @@ export function PackageCard({
   tag: string | null;
   durationLabel: string;
   priceLabel: string;
+  className?: string;
+  sizes?: string;
 }) {
   return (
     <Link
       href={`/paquetes/${slug}`}
-      className="group block w-[280px] shrink-0 snap-start overflow-hidden rounded-card bg-surface shadow-card md:w-[300px]"
+      className={cn(
+        "group block overflow-hidden rounded-card bg-surface shadow-card",
+        className,
+      )}
     >
       <div className="relative aspect-[4/3] overflow-hidden bg-sand">
         {coverImageUrl && (
@@ -32,7 +40,7 @@ export function PackageCard({
             src={coverImageUrl}
             alt={title}
             fill
-            sizes="(min-width: 768px) 300px, 280px"
+            sizes={sizes}
             className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
         )}

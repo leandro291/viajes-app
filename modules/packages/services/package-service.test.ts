@@ -158,4 +158,128 @@ describe.skipIf(!process.env.DATABASE_URL)("package-service (db)", () => {
     expect(cache.cacheLife).toHaveBeenCalledWith("hours");
     expect(cache.cacheTag).toHaveBeenCalledWith(CACHE_TAGS.categories);
   });
+
+  describe("getPackages", () => {
+    type Seeded = (typeof import("@/lib/db/seed/data/packages"))["seedPackages"][number];
+    const isDay = (p: Seeded) => p.kind === "day_tour" || p.durationDays === 1;
+    const sortedIds = (list: { id: string }[]) => list.map((p) => p.id).sort();
+    const seedIds = (pred: (p: Seeded) => boolean) =>
+      seed.seedPackages
+        .filter(pred)
+        .map((p) => p.id!)
+        .sort();
+    const inCategory = (slug: string) => {
+      const categoryId = seedHelpers.seedId(`category:${slug}`);
+      const withCat = new Set(
+        seed.seedPackageCategories.filter((pc) => pc.categoryId === categoryId).map((pc) => pc.packageId),
+      );
+      return (p: Seeded) => withCat.has(p.id!);
+    };
+    const inDestination = (slug: string) => (p: Seeded) =>
+      p.destinationId === seedHelpers.seedId(`destination:${slug}`);
+
+    it("AC5: getPackages({}) devuelve todos los published y ningún draft", async () => {
+      const all = await service.getPackages({});
+      expect(all.some((p) => p.slug === DRAFT_SLUG)).toBe(false);
+      expect(sortedIds(all)).toEqual(seedIds(() => true));
+    });
+
+    it("AC5: getPackages trae destino y categorías ordenadas por nombre", async () => {
+      const all = await service.getPackages({});
+      const catName = new Map(seed.seedCategories.map((c) => [c.id, c.name]));
+      for (const p of all) {
+        expect(p.destination.slug).toBeTruthy();
+        expect(p.destination.name).toBeTruthy();
+        expect(p.destination.region).toBeTruthy();
+        const expected = seed.seedPackageCategories
+          .filter((pc) => pc.packageId === p.id)
+          .map((pc) => catName.get(pc.categoryId)!)
+          .sort((a, b) => a.localeCompare(b, "es"));
+        expect(p.categories.map((c) => c.name)).toEqual(expected);
+      }
+      expect(JSON.parse(JSON.stringify(all[0]))).toEqual(all[0]);
+    });
+
+    it("AC6: duracion devuelve los rangos 1 / 2-3 / 4-mas, disjuntos y completos", async () => {
+      const one = await service.getPackages({ duracion: "1" });
+      const mid = await service.getPackages({ duracion: "2-3" });
+      const long = await service.getPackages({ duracion: "4-mas" });
+
+      expect(sortedIds(one)).toEqual(seedIds(isDay));
+      expect(sortedIds(mid)).toEqual(seedIds((p) => p.durationDays >= 2 && p.durationDays <= 3));
+      expect(sortedIds(long)).toEqual(seedIds((p) => p.durationDays >= 4));
+
+      const union = new Set([...one, ...mid, ...long].map((p) => p.id));
+      expect(union.size).toBe(one.length + mid.length + long.length);
+      expect(union.size).toBe(seed.seedPackages.length);
+    });
+
+    it("AC7: categoria devuelve solo los paquetes con esa categoría", async () => {
+      for (const c of seed.seedCategories) {
+        const res = await service.getPackages({ categoria: c.slug });
+        expect(sortedIds(res)).toEqual(seedIds(inCategory(c.slug)));
+        for (const p of res) expect(p.categories.map((x) => x.slug)).toContain(c.slug);
+      }
+    });
+
+    it("AC7: destino devuelve solo los de ese destino", async () => {
+      const cusco = await service.getPackages({ destino: "cusco" });
+      expect(sortedIds(cusco)).toEqual(seedIds(inDestination("cusco")));
+      const slugs = cusco.map((p) => p.slug);
+      expect(slugs).toContain("machu-picchu-magico");
+      expect(slugs).not.toContain("titicaca-islas-uros");
+      expect(slugs).not.toContain(DRAFT_SLUG);
+    });
+
+    it("AC7: filtros combinados son AND y sin coincidencias devuelve []", async () => {
+      const combo = await service.getPackages({
+        destino: "cusco",
+        categoria: "cultura",
+        duracion: "2-3",
+      });
+      expect(sortedIds(combo)).toEqual(
+        seedIds(
+          (p) =>
+            inDestination("cusco")(p) &&
+            inCategory("cultura")(p) &&
+            p.durationDays >= 2 &&
+            p.durationDays <= 3,
+        ),
+      );
+      expect(await service.getPackages({ destino: "no-existe" })).toEqual([]);
+      expect(await service.getPackages({ categoria: "no-existe" })).toEqual([]);
+      expect(await service.getPackages({ duracion: "1", categoria: "playas" })).toHaveLength(
+        seedIds((p) => isDay(p) && inCategory("playas")(p)).length,
+      );
+    });
+
+    it("AC8: sin orden sigue el ranking de más reservados de getFeaturedPackages", async () => {
+      const all = await service.getPackages({});
+      const featured = await service.getFeaturedPackages(100);
+      expect(all.map((p) => p.slug)).toEqual(featured.map((p) => p.slug));
+      const top5 = await service.getFeaturedPackages(5);
+      expect(all.slice(0, 5).map((p) => p.slug).sort()).toEqual(top5.map((p) => p.slug).sort());
+    });
+
+    it("AC8: precio-asc / precio-desc ordenan por priceCents con empate por id asc", async () => {
+      const asc = await service.getPackages({ orden: "precio-asc" });
+      const desc = await service.getPackages({ orden: "precio-desc" });
+      const byId = (a: { id: string }, b: { id: string }) => (a.id < b.id ? -1 : 1);
+
+      expect(asc.map((p) => p.id)).toEqual(
+        [...asc].sort((a, b) => a.priceCents - b.priceCents || byId(a, b)).map((p) => p.id),
+      );
+      expect(desc.map((p) => p.id)).toEqual(
+        [...desc].sort((a, b) => b.priceCents - a.priceCents || byId(a, b)).map((p) => p.id),
+      );
+      // El draft (S/ 1) lideraría precio-asc si se filtrara.
+      expect(asc.some((p) => p.slug === DRAFT_SLUG)).toBe(false);
+    });
+
+    it("AC9: getPackages declara cacheLife y cacheTag(packages)", async () => {
+      await service.getPackages({});
+      expect(cache.cacheLife).toHaveBeenCalledWith("hours");
+      expect(cache.cacheTag).toHaveBeenCalledWith(CACHE_TAGS.packages);
+    });
+  });
 });
