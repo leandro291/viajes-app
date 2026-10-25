@@ -12,24 +12,24 @@ export function PackageItinerary({ days }: { days: ItineraryDayDto[] }) {
           key={day.dayNumber}
           name="itinerary"
           open={i === 0}
-          className="group overflow-hidden rounded-[22px] border-[1.5px] border-row-divider bg-surface transition-colors open:border-primary"
+          className="group overflow-hidden rounded-[22px] border-[1.5px] border-[#EAE4D9] bg-surface transition-colors hover:border-primary open:border-primary"
         >
-          <summary className="flex min-h-[76px] cursor-pointer list-none items-center gap-4 p-3.5 pr-5 [&::-webkit-details-marker]:hidden">
+          <summary className="flex min-h-[76px] rounded-[20px] cursor-pointer list-none items-center gap-4 p-3.5 pr-5 focus-visible:outline-offset-[-3px] [&::-webkit-details-marker]:hidden">
             <span className="flex size-[52px] shrink-0 flex-col items-center justify-center rounded-2xl bg-sand leading-none group-open:bg-primary group-open:text-white">
               <span className="text-[10px] font-bold uppercase tracking-[0.08em]">Día</span>
               <span className="font-display text-[22px] font-extrabold">{day.dayNumber}</span>
             </span>
-            <span className="flex-1 font-display text-xl font-bold tracking-tight">{day.title}</span>
+            <span className="flex-1 font-display text-xl font-bold tracking-[-0.01em]">{day.title}</span>
             <span
               aria-hidden
               className="flex size-9 shrink-0 items-center justify-center rounded-full bg-sand transition-transform group-open:rotate-45"
             >
-              <Plus className="size-4" />
+              <Plus className="size-4" strokeWidth={2.6} />
             </span>
           </summary>
-          <div className="flex flex-wrap gap-5 px-5 pb-5 sm:pl-[86px]">
-            <div className="flex min-w-[240px] flex-1 flex-col gap-3">
-              <p className="leading-relaxed text-ink-muted">{day.description}</p>
+          <div className="flex flex-wrap gap-5 px-5 pb-5 sm:pl-[82px]">
+            <div className="flex min-w-0 flex-[1_1_260px] flex-col gap-3">
+              <p className="leading-[1.65] text-ink-muted">{day.description}</p>
               <p className="inline-flex items-center gap-1.5 text-sm font-bold text-ink">
                 <MapPin aria-hidden className="size-4 text-accent" />
                 {day.place}
