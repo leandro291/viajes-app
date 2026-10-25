@@ -24,6 +24,23 @@ export const metadata: Metadata = {
     "Descubre y reserva paquetes y tours de un día por Perú con operadores locales.",
 };
 
+// Mismos textos que el encabezado: "Ingresar" y "Crear cuenta".
+const localization = {
+  ...esES,
+  signIn: {
+    ...esES.signIn,
+    start: {
+      ...esES.signIn?.start,
+      title: "Ingresar",
+      actionLink: "Crear cuenta",
+    },
+  },
+  signUp: {
+    ...esES.signUp,
+    start: { ...esES.signUp?.start, actionLink: "Ingresar" },
+  },
+};
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
@@ -32,7 +49,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col">
         <ClerkProvider
-          localization={esES}
+          localization={localization}
           appearance={{ theme: shadcn, variables: { colorInput: "#FFFFFF" } }}
         >
           {children}
