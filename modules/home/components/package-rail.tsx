@@ -1,8 +1,10 @@
 "use client"
 
 import { useRef, useState } from "react"
+import Link from "next/link"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 
+import { SectionHeading } from "@/components/shared/section-heading"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 // Excepción a "no importar internos de otro módulo": PackageCard es presentacional
@@ -17,6 +19,9 @@ import {
 } from "../utils/category-chips"
 
 const MAX_CARDS = 12
+
+const roundControl =
+  "size-12 rounded-full border-[1.5px] border-border-strong bg-surface text-ink hover:border-ink hover:bg-ink hover:text-white"
 
 export function PackageRail({
   cards,
@@ -49,36 +54,47 @@ export function PackageRail({
   }
 
   return (
-    <section className="flex flex-col gap-6 py-12">
-      <div className="flex items-center justify-between gap-4">
-        <h2 className="font-display text-3xl font-bold text-ink">
-          Paquetes para cada viaje
-        </h2>
-        <div className="flex gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            size="icon-lg"
-            aria-label="Paquetes anteriores"
-            onClick={() =>
-              scrollRail(-(railRef.current?.clientWidth ?? 0), true)
-            }
-          >
-            <ChevronLeft aria-hidden />
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            size="icon-lg"
-            aria-label="Más paquetes"
-            onClick={() => scrollRail(railRef.current?.clientWidth ?? 0, true)}
-          >
-            <ChevronRight aria-hidden />
-          </Button>
-        </div>
+    <section className="mx-auto flex w-full max-w-[1240px] flex-col px-6 pt-22">
+      <div className="mb-6">
+        <SectionHeading eyebrow="Lo más reservado" title="Paquetes para cada viaje">
+          <div className="flex items-center gap-2.5">
+            <Link
+              href="/paquetes"
+              className="inline-flex min-h-11 items-center px-3 font-bold text-primary hover:text-accent max-[720px]:hidden"
+            >
+              Ver todos
+            </Link>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon-lg"
+              className={roundControl}
+              aria-label="Paquetes anteriores"
+              onClick={() =>
+                scrollRail(-(railRef.current?.clientWidth ?? 0), true)
+              }
+            >
+              <ChevronLeft aria-hidden strokeWidth={2.4} />
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon-lg"
+              className={roundControl}
+              aria-label="Más paquetes"
+              onClick={() => scrollRail(railRef.current?.clientWidth ?? 0, true)}
+            >
+              <ChevronRight aria-hidden strokeWidth={2.4} />
+            </Button>
+          </div>
+        </SectionHeading>
       </div>
 
-      <div className="flex flex-wrap gap-2">
+      <div
+        role="group"
+        aria-label="Tipo de experiencia"
+        className="mb-7 flex flex-wrap gap-2"
+      >
         {chips.map((chip) => {
           const isActive = chip.key === active
           return (
@@ -88,10 +104,10 @@ export function PackageRail({
               aria-pressed={isActive}
               onClick={() => selectChip(chip.key)}
               className={cn(
-                "inline-flex h-11 items-center rounded-full border px-5 text-sm font-semibold transition-colors",
+                "inline-flex min-h-11 items-center rounded-full border-[1.5px] px-5 py-[11px] text-[15px] font-bold transition-colors",
                 isActive
-                  ? "border-primary bg-primary text-primary-foreground"
-                  : "border-border-field bg-surface text-ink hover:bg-sand",
+                  ? "border-ink bg-ink text-white"
+                  : "border-border-strong bg-surface text-ink hover:bg-sand",
               )}
             >
               {chip.label}
@@ -102,7 +118,7 @@ export function PackageRail({
 
       <div
         ref={railRef}
-        className="flex snap-x snap-mandatory gap-5 overflow-x-auto pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="-mx-6 flex snap-x snap-mandatory scroll-pl-6 gap-[22px] overflow-x-auto px-6 pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {visible.map((card) => (
           <PackageCard
@@ -114,7 +130,7 @@ export function PackageRail({
             tag={card.tag}
             durationLabel={card.durationLabel}
             priceLabel={card.priceLabel}
-            className="w-[280px] shrink-0 snap-start md:w-[300px]"
+            className="shrink-0 basis-[min(290px,76%)] snap-start"
           />
         ))}
       </div>

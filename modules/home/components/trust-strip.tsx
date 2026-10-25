@@ -1,21 +1,18 @@
-import { BadgeCheckIcon, CreditCardIcon, TagIcon, TicketIcon } from "lucide-react"
+import { Check } from "lucide-react"
 
 const ITEMS = [
-  { icon: CreditCardIcon, text: "Paga con tarjeta" },
-  { icon: TicketIcon, text: "Voucher en la página de confirmación" },
-  { icon: BadgeCheckIcon, text: "Operadores locales verificados" },
-  { icon: TagIcon, text: "Precios en soles, por persona" },
+  "Confirmación inmediata",
+  "Cancelación gratis hasta 48 h antes",
+  "Paga con tarjeta",
+  "Soporte en español por WhatsApp",
 ]
 
 export function TrustStrip() {
   return (
-    <ul className="mt-6 grid grid-cols-2 gap-x-4 gap-y-4 lg:grid-cols-4">
-      {ITEMS.map(({ icon: Icon, text }) => (
-        <li
-          key={text}
-          className="flex items-center gap-3 text-sm font-medium text-ink-muted"
-        >
-          <Icon aria-hidden="true" className="size-5 shrink-0 text-primary" />
+    <ul className="flex flex-wrap justify-center gap-x-8 gap-y-2.5 px-2 pt-[22px] text-[15px] font-medium text-[#2E4A48]">
+      {ITEMS.map((text) => (
+        <li key={text} className="flex items-center gap-2">
+          <Check aria-hidden className="size-[18px] text-primary" strokeWidth={2.4} />
           {text}
         </li>
       ))}
