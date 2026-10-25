@@ -13,7 +13,7 @@ Reglas de componentes (shadcn primero): [SETUP.md](SETUP.md#componentes-shadcn-p
 | `accent`          | `#C2410C` | Terracota: botón principal (CTA), paso actual, mes actual |
 | `accent-hover`    | `#9A3412` | Hover del CTA                                             |
 | `accent-soft`     | `#FFD9C2` | Hover del botón claro, enlaces sobre oscuro               |
-| `focus`           | `#F59E6B` | Anillo de foco (`outline 3px`, offset 3px)                |
+| `focus`           | `#F59E6B` | Anillo de foco dentro de `bg-dark` (`outline 3px`, offset 3px); en claro el anillo es `accent` |
 | `ink`             | `#17211F` | Texto principal, botones oscuros                          |
 | `ink-muted`       | `#55615E` | Texto secundario                                          |
 | `dark`            | `#0B1513` | Encabezado y pie                                          |
@@ -71,7 +71,7 @@ Fuentes por Google Fonts (`next/font/google` al implementar).
 
 - **Un solo CTA por vista**, en `accent`. Texto blanco sobre `accent` (contraste ≥ 4.5:1).
 - **Objetivos táctiles ≥ 44 px**; campos de 52 px de alto.
-- **Foco siempre visible** en `a`, `button`, `select`, `input` (`focus-visible`, anillo `focus`).
+- **Foco siempre visible** en `a`, `button`, `select`, `input` (`focus-visible`, anillo de 3 px con offset 3 px): `accent` sobre superficies claras y `focus` solo dentro de `bg-dark`, porque `focus` sobre claro da ~2:1 (< 3:1 WCAG 1.4.11).
 - **Respetar `prefers-reduced-motion`**: sin animaciones ni transiciones.
 - **Campos:** etiqueta visible (`<label>`), 16 px mínimo (evita zoom en iOS), borde 1.5 px; en foco, borde `primary` y halo `0 0 0 4px rgba(15,82,87,.12)`.
 - **Semántica real:** `button`, `a href`, `input` + `label`; nunca `div` clicable. Íconos solo decorativos llevan `aria-hidden`.
