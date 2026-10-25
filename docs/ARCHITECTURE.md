@@ -70,8 +70,9 @@ docs/                         # documentación
 | `organizers`   | Perfil del operador (razón social, RUC)                            | `organizers`                                               |
 | `admin`        | Resumen, KPIs, reportes, clientes (lecturas agregadas)             | derivado, sin tablas propias                               |
 | `newsletter`   | Suscripción a ofertas                                              | `newsletter_subscribers`                                   |
+| `home`         | Composición de la pantalla Inicio (`/`)                            | derivado, sin tablas propias                               |
 
-`checkout` y `admin` solo componen: llaman a la API pública (`index.ts`) de otros módulos.
+`checkout`, `admin` y `home` solo componen: llaman a la API pública (`index.ts`) de otros módulos.
 
 ## 4. Rutas por rol
 
