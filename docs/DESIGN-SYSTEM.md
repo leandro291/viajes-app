@@ -44,12 +44,21 @@ Los estados siempre llevan **ícono + texto**, no solo color.
 | Títulos   | Bricolage Grotesque    | 500, 700, 800 | Tracking −0.02em (h2) a −0.045em (h1); interlineado 0.95–1.05 en títulos grandes |
 | Cuerpo    | DM Sans                | 400, 500, 700 | 16 px base; 18 px en subtítulos                  |
 
-| Estilo   | Tamaño                       |
-| -------- | ---------------------------- |
-| h1       | `clamp(36px, 5vw, 58px)`     |
-| h2       | 24 px                        |
-| Dinero grande | 34 px, peso 800         |
-| Etiqueta | 12–14 px, peso 700, mayúsculas con 0.06em en metadatos |
+Todos los títulos van en peso 800. La escala sale de los tableros de escritorio del artefacto; un `h1` más grande que el base es decisión de la pantalla, no del token.
+
+| Estilo                  | Tamaño                       | Interlineado | Tracking | Dónde |
+| ----------------------- | ---------------------------- | ------------ | -------- | ----- |
+| h1 (base)               | `clamp(42px, 6.5vw, 84px)`   | 0.95         | −0.045em | Paquetes, Tours; es el `h1` global |
+| h1 grande               | `clamp(46px, 7.5vw, 96px)` (Detalle) · `clamp(44px, 7vw, 92px)` (Ofertas) · `clamp(44px, 7vw, 88px)` (Confirmación) · `clamp(48px, 8vw, 104px)` (Inicio) · `clamp(64px, 11vw, 148px)` (Destino) | 0.92 | −0.045em | Hero de cada pantalla, con clase propia |
+| h1 compacto             | `clamp(36px, 5vw, 58px)`     | 0.95         | −0.045em | Pago (pantalla transaccional) |
+| h2 (base, de sección)   | `clamp(32px, 4vw, 48px)`     | 1            | −0.035em | Encabezado de sección, con etiqueta encima (`SectionHeading`) |
+| h2 de bloque            | `clamp(30px, 3.6vw, 42px)`   | 1.05         | −0.03em  | Subsecciones de Detalle, Destino, Confirmación |
+| Título de tarjeta/panel | 22–26 px, peso 700–800       | 1.15         | −0.015em a −0.02em | Tarjetas de paquete, paneles de Pago, resumen |
+| Dinero grande           | 34 px, peso 800              | 1            | −0.03em  | Total del resumen |
+| Etiqueta de sección     | 13 px, peso 700, mayúsculas con 0.1em, color `accent` | — | — | Encima del `h2` de sección |
+| Etiqueta de dato        | 12–14 px, peso 700, mayúsculas con 0.06em | — | — | Metadatos |
+
+El `h2` global ya trae la escala de sección. Los títulos de tarjeta y panel son más chicos: llevan su clase (`text-2xl`, etc.) en vez de usar el `h2` base.
 
 Fuentes por Google Fonts (`next/font/google` al implementar).
 
@@ -65,7 +74,7 @@ Fuentes por Google Fonts (`next/font/google` al implementar).
 | Sombra destacada (resumen) | `0 30px 70px rgba(11,21,19,.14), 0 2px 6px rgba(11,21,19,.06)` |
 | Ancho máximo  | 1240 px, gutter 24 px                                              |
 | Breakpoints   | móvil 390 px, escritorio 1280 px; el contenido fluye entre ambos   |
-| Movimiento    | transiciones 0.15 s; entrada `translateY(10px)` en 0.4 s           |
+| Movimiento    | transiciones 0.15 s; entrada `translateY(10px)` en 0.4 s; entrada del texto del hero `wy-up` (`translateY(22px)`, 0.8 s) |
 
 ## Reglas
 
@@ -85,9 +94,9 @@ Fuentes por Google Fonts (`next/font/google` al implementar).
 
 | Componente            | Notas                                                                        |
 | --------------------- | ---------------------------------------------------------------------------- |
-| Encabezado / pie      | Fondo `dark`, logo Wayra (círculo `accent` + montaña), selector `PEN · S/`   |
+| Encabezado / pie      | Fondo `dark`, logo Wayra (círculo `accent` + montaña), selector `PEN · S/`; encabezado superpuesto sobre el hero (ver abajo); pie de 3 bloques (marca, Explorar, Medios de pago) |
 | Botón principal       | Pill `accent`, 17 px/700, ícono opcional; secundario: blanco o contorno      |
-| Tarjeta de paquete    | Foto, destino, duración, "Desde S/ …"; radio 28                              |
+| Tarjeta de paquete    | `PackageCard`: foto (radio 22) con chips de tipo y duración, texto suelto debajo, "Desde S/ …". `rail` 4/5; `grid` 4/3.4 con `blurb` y círculo con flecha |
 | Chip de filtro        | Pill; activo `ink` con texto blanco, inactivo blanco con borde `border`      |
 | Stepper de reserva    | 3 pasos con barra de 4 px: completado `primary`, actual `accent`, pendiente `#E4DED2` |
 | Selector de método de pago | Tarjetas radio con borde 2 px; seleccionada `accent` sobre `#FFF6F0`    |
@@ -98,6 +107,31 @@ Fuentes por Google Fonts (`next/font/google` al implementar).
 | Resumen del pedido    | Sticky, sombra destacada, total en 34 px                                     |
 
 Antes de crear uno: revisar shadcn (`npx shadcn@latest add <name>`) y [SETUP.md](SETUP.md).
+
+## Encabezado superpuesto y `PageHero`
+
+- Una página con hero renderiza `components/shared/page-hero.tsx` (`<section data-page-hero>`, ancho completo, `bg-dark`, gradiente único del tablero, contenido en 1240/24 alineado abajo). Cada pantalla sólo fija el `min-h-*` (720 Inicio, 600 Paquetes, 660 Detalle) y el padding inferior (`contentClassName`).
+- El layout público detecta el hero con CSS (`group/shell` + `has-[[data-page-hero]]`): `main` pierde `max-width` y `px` (cada sección pone su contenedor 1240/24) y el encabezado pasa de sólido en flujo a transparente `absolute` sobre la foto. Sin hero (404, páginas sin hero) todo queda sólido y contenido.
+- El encabezado conserva la clase `bg-dark` aun transparente: así el foco usa `focus`, no `accent`.
+- `PageHero` reserva espacio superior para el encabezado (que envuelve en 1-3 filas según el ancho): el contenido nunca se cruza con él.
+- Link activo del nav: `aria-current="page"`, peso 700, subrayado inset 2 px `focus` (`SiteNav`, cliente por `usePathname`).
+
+## Radios
+
+Escala observada en los tableros: 12 / 14 / 16 / 18 / 20 / 22 / 24 / 26 / 28 / 32 px (y 999 pill). Los que tienen token (14 campo, 18 tarjeta chica, 28 tarjeta) usan el token; el resto se escribe como valor arbitrario (`rounded-[22px]`), sin inventar un token para un solo uso.
+
+## Fidelidad al artefacto
+
+Criterio para construir o ajustar cualquier pantalla contra el artefacto:
+
+1. **Fuente.** El tablero (HTML con estilos inline) manda en medidas, estructura y textos; no la memoria ni capturas viejas. Sin tableros móviles, el móvil se implementa contra las `@media` del HTML de escritorio y las reglas de accesibilidad; si queda mal se abre una tarea de ajuste.
+2. **Estructura.** Mismos bloques, orden, textos e íconos; cada bloque del tablero tiene su contraparte o una desviación listada.
+3. **Medidas.** Tamaño, peso, interlineado, tracking, radios, padding, gap e íconos a 1280 y 390 px: ±1 px en valores fijos, misma fórmula `clamp` en fluidos. Se mide (`getComputedStyle`, `getBoundingClientRect`), no a ojo.
+4. **Color y tokens.** Token exacto si existe; si no, literal como valor arbitrario.
+5. **Gana este documento en accesibilidad:** foco, objetivos ≥ 44 px, `prefers-reduced-motion`, contraste y una sola acción `accent` por vista. Excepciones deliberadas, por nombre: primera pantalla del Inicio ("Ver paquete" del hero y "Buscar" del buscador, ambos `accent`). Cada desvío del tablero por esto se lista.
+6. **Gana el producto en veracidad y datos.** El copy no promete lo que v1 no cumple (sin Yape/Plin/PagoEfectivo); lo que depende del contenido real (meses, cupos, fotos, créditos) se conserva aunque el tablero no lo muestre.
+7. **Sin inventar.** Primer paso: capturar la app a 1280 y 390 y compararla con el tablero; sólo se corrige lo medido. El PR trae la tabla "elemento | tablero | antes | después" y las desviaciones con su motivo.
+8. **Fidelidad ≠ alcance funcional.** Piezas que requieren datos, rutas o dependencias inexistentes (mapa, `/destinos`, métodos de pago) quedan fuera con su razón, no como enlaces muertos.
 
 ## Implementación (Tailwind 4 + shadcn `base-nova`)
 

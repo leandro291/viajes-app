@@ -155,7 +155,7 @@ Columnas fijas para todos: `organizer_id` = Wayra, `currency = PEN`, `status = p
   - `included`: 3 noches de alojamiento con desayuno · Traslados aeropuerto, estación y hotel · Tren panorámico ida y vuelta · Entrada a Machu Picchu y bus de subida · Guía profesional en español o inglés · Seguro de viaje durante el tour
   - `excluded`: Vuelos hasta Cusco · Almuerzos y cenas no indicados · Propinas · Gastos personales
 
-Los demás paquetes no llevan galería, itinerario ni inclusiones (el artefacto solo las muestra para este).
+Los demás paquetes no llevan galería, itinerario ni inclusiones (el artefacto solo las muestra para este), **salvo cuatro con contenido de ejemplo ficticio** (no sale del artefacto) añadido por la tarjeta 009 para probar el detalle: `cusco-valle-sagrado` (3 fotos, 5 días, 9 inclusiones), `titicaca-islas-uros` (1 foto, 3 días, 8), `canon-del-colca` (2 fotos, 3 días, 8) y `lima-sabores-y-cultura` (1 foto, 3 días, 8). Usan solo fotos y créditos de `SEED_IMAGES`; un día sin foto propia deja `image_url` nulo. Los datos están en `lib/db/seed/data/package-details.ts`.
 
 ## 6. Ofertas (8)
 
@@ -232,7 +232,7 @@ Del panel admin. `unit_price_cents` = precio de lista (snapshot); descuento con 
 | destination_climate_months | 12 | payments | 8 |
 | destination_sights | 5 | stripe_events | 0 |
 | destination_faqs | 3 | newsletter_subscribers | 4 |
-| categories | 5 | package_images | 6 |
-| packages | 20 | package_itinerary_days | 4 |
-| package_categories | 29 | package_inclusions | 10 |
+| categories | 5 | package_images | 13 |
+| packages | 20 | package_itinerary_days | 18 |
+| package_categories | 29 | package_inclusions | 43 |
 | guides | 4 | | |
