@@ -74,7 +74,7 @@ Fuentes por Google Fonts (`next/font/google` al implementar).
 | Sombra destacada (resumen) | `0 30px 70px rgba(11,21,19,.14), 0 2px 6px rgba(11,21,19,.06)` |
 | Ancho máximo  | 1240 px, gutter 24 px                                              |
 | Breakpoints   | móvil 390 px, escritorio 1280 px; el contenido fluye entre ambos   |
-| Movimiento    | transiciones 0.15 s; entrada `translateY(10px)` en 0.4 s           |
+| Movimiento    | transiciones 0.15 s; entrada `translateY(10px)` en 0.4 s; entrada del texto del hero `wy-up` (`translateY(22px)`, 0.8 s) |
 
 ## Reglas
 
@@ -94,9 +94,9 @@ Fuentes por Google Fonts (`next/font/google` al implementar).
 
 | Componente            | Notas                                                                        |
 | --------------------- | ---------------------------------------------------------------------------- |
-| Encabezado / pie      | Fondo `dark`, logo Wayra (círculo `accent` + montaña), selector `PEN · S/`   |
+| Encabezado / pie      | Fondo `dark`, logo Wayra (círculo `accent` + montaña), selector `PEN · S/`; encabezado superpuesto sobre el hero (ver abajo); pie de 3 bloques (marca, Explorar, Medios de pago) |
 | Botón principal       | Pill `accent`, 17 px/700, ícono opcional; secundario: blanco o contorno      |
-| Tarjeta de paquete    | Foto, destino, duración, "Desde S/ …"; radio 28                              |
+| Tarjeta de paquete    | `PackageCard`: foto (radio 22) con chips de tipo y duración, texto suelto debajo, "Desde S/ …". `rail` 4/5; `grid` 4/3.4 con `blurb` y círculo con flecha |
 | Chip de filtro        | Pill; activo `ink` con texto blanco, inactivo blanco con borde `border`      |
 | Stepper de reserva    | 3 pasos con barra de 4 px: completado `primary`, actual `accent`, pendiente `#E4DED2` |
 | Selector de método de pago | Tarjetas radio con borde 2 px; seleccionada `accent` sobre `#FFF6F0`    |
@@ -107,6 +107,31 @@ Fuentes por Google Fonts (`next/font/google` al implementar).
 | Resumen del pedido    | Sticky, sombra destacada, total en 34 px                                     |
 
 Antes de crear uno: revisar shadcn (`npx shadcn@latest add <name>`) y [SETUP.md](SETUP.md).
+
+## Encabezado superpuesto y `PageHero`
+
+- Una página con hero renderiza `components/shared/page-hero.tsx` (`<section data-page-hero>`, ancho completo, `bg-dark`, gradiente único del tablero, contenido en 1240/24 alineado abajo). Cada pantalla sólo fija el `min-h-*` (720 Inicio, 600 Paquetes, 660 Detalle) y el padding inferior (`contentClassName`).
+- El layout público detecta el hero con CSS (`group/shell` + `has-[[data-page-hero]]`): `main` pierde `max-width` y `px` (cada sección pone su contenedor 1240/24) y el encabezado pasa de sólido en flujo a transparente `absolute` sobre la foto. Sin hero (404, páginas sin hero) todo queda sólido y contenido.
+- El encabezado conserva la clase `bg-dark` aun transparente: así el foco usa `focus`, no `accent`.
+- `PageHero` reserva espacio superior para el encabezado (que envuelve en 1-3 filas según el ancho): el contenido nunca se cruza con él.
+- Link activo del nav: `aria-current="page"`, peso 700, subrayado inset 2 px `focus` (`SiteNav`, cliente por `usePathname`).
+
+## Radios
+
+Escala observada en los tableros: 12 / 14 / 16 / 18 / 20 / 22 / 24 / 26 / 28 / 32 px (y 999 pill). Los que tienen token (14 campo, 18 tarjeta chica, 28 tarjeta) usan el token; el resto se escribe como valor arbitrario (`rounded-[22px]`), sin inventar un token para un solo uso.
+
+## Fidelidad al artefacto
+
+Criterio para construir o ajustar cualquier pantalla contra el artefacto:
+
+1. **Fuente.** El tablero (HTML con estilos inline) manda en medidas, estructura y textos; no la memoria ni capturas viejas. Sin tableros móviles, el móvil se implementa contra las `@media` del HTML de escritorio y las reglas de accesibilidad; si queda mal se abre una tarea de ajuste.
+2. **Estructura.** Mismos bloques, orden, textos e íconos; cada bloque del tablero tiene su contraparte o una desviación listada.
+3. **Medidas.** Tamaño, peso, interlineado, tracking, radios, padding, gap e íconos a 1280 y 390 px: ±1 px en valores fijos, misma fórmula `clamp` en fluidos. Se mide (`getComputedStyle`, `getBoundingClientRect`), no a ojo.
+4. **Color y tokens.** Token exacto si existe; si no, literal como valor arbitrario.
+5. **Gana este documento en accesibilidad:** foco, objetivos ≥ 44 px, `prefers-reduced-motion`, contraste y una sola acción `accent` por vista. Excepciones deliberadas, por nombre: primera pantalla del Inicio ("Ver paquete" del hero y "Buscar" del buscador, ambos `accent`). Cada desvío del tablero por esto se lista.
+6. **Gana el producto en veracidad y datos.** El copy no promete lo que v1 no cumple (sin Yape/Plin/PagoEfectivo); lo que depende del contenido real (meses, cupos, fotos, créditos) se conserva aunque el tablero no lo muestre.
+7. **Sin inventar.** Primer paso: capturar la app a 1280 y 390 y compararla con el tablero; sólo se corrige lo medido. El PR trae la tabla "elemento | tablero | antes | después" y las desviaciones con su motivo.
+8. **Fidelidad ≠ alcance funcional.** Piezas que requieren datos, rutas o dependencias inexistentes (mapa, `/destinos`, métodos de pago) quedan fuera con su razón, no como enlaces muertos.
 
 ## Implementación (Tailwind 4 + shadcn `base-nova`)
 

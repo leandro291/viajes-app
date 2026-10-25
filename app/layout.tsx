@@ -24,20 +24,20 @@ export const metadata: Metadata = {
     "Descubre y reserva paquetes y tours de un día por Perú con operadores locales.",
 };
 
-// Mismos textos que el encabezado: "Ingresar" y "Crear cuenta".
+// Mismos textos que el encabezado: "Iniciar sesión" y "Registrarse".
 const localization = {
   ...esES,
   signIn: {
     ...esES.signIn,
     start: {
       ...esES.signIn?.start,
-      title: "Ingresar",
-      actionLink: "Crear cuenta",
+      title: "Iniciar sesión",
+      actionLink: "Registrarse",
     },
   },
   signUp: {
     ...esES.signUp,
-    start: { ...esES.signUp?.start, actionLink: "Ingresar" },
+    start: { ...esES.signUp?.start, actionLink: "Iniciar sesión" },
   },
 };
 
