@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Suspense } from "react";
 
+import { SectionHeading } from "@/components/shared/section-heading";
 import { formatPen } from "@/lib/money";
 
 import { getDepartures, getPackageBySlug } from "../services/package-detail-service";
@@ -22,6 +23,10 @@ import { PackageGallery } from "./package-gallery";
 import { CancellationNotice, PackageInclusions } from "./package-inclusions";
 import { PackageItinerary } from "./package-itinerary";
 
+// Enlaces de la miga: objetivo >= 44 px (-my compensa para no agrandar la fila visual).
+const crumbLink =
+  "-my-3 inline-flex min-h-11 min-w-11 items-center justify-center transition-colors hover:text-accent-soft";
+
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
@@ -34,11 +39,9 @@ export function PackageDetail({
 }) {
   // params y searchParams son datos de runtime: se leen dentro de la frontera (D5).
   return (
-    <div className="py-6 lg:py-10">
-      <Suspense fallback={<DetailSkeleton />}>
-        <DetailContent params={params} searchParams={searchParams} />
-      </Suspense>
-    </div>
+    <Suspense fallback={<DetailSkeleton />}>
+      <DetailContent params={params} searchParams={searchParams} />
+    </Suspense>
   );
 }
 
@@ -86,60 +89,54 @@ async function DetailContent({
 
   return (
     <>
-      <nav aria-label="Migas de pan" className="mb-4 text-sm text-ink-muted">
-        <ol className="flex flex-wrap items-center gap-2">
-          <li>
-            <Link href="/" className="hover:text-ink">
-              Inicio
-            </Link>
-          </li>
-          <li aria-hidden>/</li>
-          <li>
-            <Link href="/paquetes" className="hover:text-ink">
-              Paquetes
-            </Link>
-          </li>
-          <li aria-hidden>/</li>
-          <li aria-current="page" className="font-bold text-ink">
-            {pkg.title}
-          </li>
-        </ol>
-      </nav>
-
       <PackageGallery images={images}>
-        <h1 className="font-display text-5xl font-extrabold leading-[0.95] tracking-tight text-balance lg:text-7xl">
-          {pkg.title}
-        </h1>
-        <p className="max-w-xl text-lg leading-relaxed text-white/90">{pkg.blurb}</p>
+        <nav aria-label="Migas de pan" className="text-sm text-white/85">
+          <ol className="flex flex-wrap items-center gap-2">
+            <li>
+              <Link href="/" className={crumbLink}>
+                Inicio
+              </Link>
+            </li>
+            <li aria-hidden>/</li>
+            <li>
+              <Link href="/paquetes" className={crumbLink}>
+                Paquetes
+              </Link>
+            </li>
+            <li aria-hidden>/</li>
+            <li aria-current="page" className="font-bold text-white">
+              {pkg.title}
+            </li>
+          </ol>
+        </nav>
+        <h1 className="text-[clamp(46px,7.5vw,96px)] leading-[0.92] text-balance">{pkg.title}</h1>
+        <p className="max-w-[560px] text-[clamp(17px,1.6vw,20px)] leading-normal text-white/90">
+          {pkg.blurb}
+        </p>
       </PackageGallery>
 
-      <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1fr)_400px] lg:gap-14">
-        <div className="lg:col-start-1">
+      <div className="mx-auto grid w-full max-w-[1240px] gap-14 px-6 pt-12 pb-[104px] min-[1021px]:grid-cols-[minmax(0,1.85fr)_minmax(340px,1fr)] min-[1021px]:items-start min-[1021px]:gap-y-16">
+        <div className="min-[1021px]:col-start-1">
           <PackageFacts pkg={pkg} />
         </div>
 
-        <div className="lg:sticky lg:top-6 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:self-start">
+        <div className="relative z-20 w-full max-w-[410px] min-w-[300px] min-[1021px]:sticky min-[1021px]:top-6 min-[1021px]:col-start-2 min-[1021px]:row-span-2 min-[1021px]:row-start-1 min-[1021px]:-mt-[140px]">
           <BookingPanel pkg={pkg} departures={departures} params={detailParams} />
         </div>
 
-        <div className="flex min-w-0 flex-col gap-14 lg:col-start-1">
+        <div className="flex min-w-0 flex-col gap-16 min-[1021px]:col-start-1">
           {pkg.description && (
             <section className="flex flex-col gap-4">
-              <span className="text-[13px] font-bold uppercase tracking-[0.1em] text-accent">
-                El viaje
-              </span>
-              <h2 className="font-display text-3xl font-extrabold tracking-tight lg:text-4xl">
-                Qué vas a vivir
-              </h2>
-              <p className="text-lg leading-relaxed text-ink-muted">{pkg.description}</p>
+              <div className="[&_h2]:text-[clamp(30px,3.6vw,42px)]">
+                <SectionHeading eyebrow="El viaje" title="Qué vas a vivir" />
+              </div>
+              <p className="text-[19px] leading-[1.65] text-[#3D4A47]">{pkg.description}</p>
             </section>
           )}
 
           {pkg.itinerary.length > 0 && (
             <section className="flex flex-col gap-5">
-              <h2 className="font-display text-3xl font-extrabold tracking-tight lg:text-4xl">
-                Itinerario día a día
-              </h2>
+              <h2 className="text-[clamp(30px,3.6vw,42px)]">Itinerario día a día</h2>
               <PackageItinerary days={pkg.itinerary} />
             </section>
           )}

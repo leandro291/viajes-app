@@ -60,14 +60,19 @@ export function BookingPanel({
     <aside
       id="reserva"
       aria-label="Reserva"
-      className="flex flex-col gap-5 rounded-card bg-surface p-6 shadow-raised lg:p-7"
+      className="flex flex-col gap-[22px] rounded-card bg-surface p-6 shadow-raised lg:p-7"
     >
-      <div className="flex flex-col gap-0.5">
-        <span className="text-sm text-ink-muted">Desde</span>
-        <span className="font-display text-[42px] font-extrabold leading-none tracking-tight">
-          {formatPen(pkg.priceCents)}
+      <div className="flex items-end justify-between gap-3">
+        <div className="flex flex-col gap-0.5">
+          <span className="text-sm text-ink-muted">Desde</span>
+          <span className="font-display text-[42px] font-extrabold leading-none tracking-[-0.03em]">
+            {formatPen(pkg.priceCents)}
+          </span>
+          <span className="text-sm text-ink-muted">por persona, habitación doble</span>
+        </div>
+        <span className="rounded-full bg-primary-soft px-3 py-2 text-[13px] font-bold text-primary">
+          Confirmación inmediata
         </span>
-        <span className="text-sm text-ink-muted">por persona, habitación doble</span>
       </div>
 
       <div className="flex flex-col gap-2.5">
@@ -140,7 +145,7 @@ export function BookingPanel({
         </div>
       </div>
 
-      <div className="flex flex-col gap-2 border-t border-dashed border-border-strong pt-4 text-ink-muted">
+      <div className="flex flex-col gap-2 border-t border-dashed border-border-strong pt-[18px] text-ink-muted">
         <div className="flex justify-between gap-3">
           <span>
             {formatPen(pkg.priceCents)} × {travelers}
@@ -153,29 +158,29 @@ export function BookingPanel({
         </div>
         <div className="mt-1.5 flex items-baseline justify-between gap-3 text-ink">
           <span className="text-lg font-bold">Total</span>
-          <span className="font-display text-3xl font-extrabold tracking-tight">{total}</span>
+          <span className="font-display text-3xl font-extrabold tracking-[-0.02em]">{total}</span>
         </div>
       </div>
 
       {selected ? (
         <Link
           href={buildCheckoutHref(selected.id, travelers)}
-          className={cn(buttonVariants({ variant: "cta" }), "h-14 w-full gap-2.5")}
+          className={cn(buttonVariants({ variant: "cta" }), "h-auto w-full gap-2.5 px-6 py-[18px]")}
         >
           Reservar ahora
-          <ArrowRight aria-hidden className="size-[18px]" />
+          <ArrowRight aria-hidden className="size-[18px]" strokeWidth={2.4} />
         </Link>
       ) : (
         <span
           aria-disabled="true"
-          className={cn(buttonVariants({ variant: "cta" }), "h-14 w-full opacity-50")}
+          className={cn(buttonVariants({ variant: "cta" }), "h-auto w-full px-6 py-[18px] opacity-50")}
         >
           Reservar ahora
         </span>
       )}
       <p className="text-center text-[13px] leading-snug text-ink-muted">
         {selected
-          ? `Salida el ${formatDepartureDate(selected.startsAt)} a las ${formatDepartureTime(selected.startsAt)} Puedes cancelar gratis hasta 48 h antes.`
+          ? `Salida el ${formatDepartureDate(selected.startsAt)} a las ${formatDepartureTime(selected.startsAt)}. Puedes cancelar gratis hasta 48 h antes.`
           : "No hay salidas con cupo por ahora. Vuelve pronto."}
       </p>
     </aside>
