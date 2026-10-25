@@ -3,11 +3,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 import type { PackageFilters as Filters } from "../types/package";
-import {
-  buildListingHref,
-  DURATION_OPTIONS,
-  SORT_OPTIONS,
-} from "../utils/package-filters";
+import { buildListingHref, DURATION_OPTIONS } from "../utils/package-filters";
 
 type Option = { value: string | undefined; label: string };
 
@@ -36,7 +32,6 @@ export function PackageFilters({
       ],
     },
     { id: "duracion", title: "Duración", key: "duracion", options: DURATION_OPTIONS },
-    { id: "orden", title: "Ordenar", key: "orden", options: SORT_OPTIONS },
   ];
 
   const hasActive = Boolean(
@@ -46,7 +41,7 @@ export function PackageFilters({
   return (
     <nav
       aria-label="Filtros"
-      className="flex flex-col gap-4 lg:sticky lg:top-6 lg:w-[290px] lg:shrink-0 lg:gap-6 lg:rounded-card lg:bg-surface lg:p-6 lg:shadow-card"
+      className="flex flex-col gap-4 lg:sticky lg:top-6 lg:min-w-[230px] lg:max-w-[290px] lg:flex-[1_1_240px] lg:gap-[26px] lg:rounded-[24px] lg:bg-surface lg:p-6 lg:shadow-card"
     >
       <div
         className={cn(
@@ -54,10 +49,10 @@ export function PackageFilters({
           !hasActive && "max-lg:hidden",
         )}
       >
-        <span className="hidden font-display text-[22px] font-extrabold tracking-tight lg:block">
+        <span className="hidden font-display text-[22px] font-extrabold tracking-[-0.02em] lg:block">
           Filtros
         </span>
-        {hasActive && (
+        {hasActive ? (
           <Link
             href="/paquetes"
             scroll={false}
@@ -65,6 +60,15 @@ export function PackageFilters({
           >
             Limpiar
           </Link>
+        ) : (
+          // Sin filtros activos: visible pero sin acción (AC16).
+          <span
+            role="link"
+            aria-disabled="true"
+            className="inline-flex min-h-11 items-center px-1 text-sm font-bold text-primary opacity-45 lg:ml-auto"
+          >
+            Limpiar
+          </span>
         )}
       </div>
 
@@ -89,10 +93,10 @@ export function PackageFilters({
                     scroll={false}
                     aria-current={active ? "true" : undefined}
                     className={cn(
-                      "flex min-h-11 items-center gap-3 whitespace-nowrap rounded-full border px-4 text-[15px] transition-colors lg:rounded-xl lg:border-transparent lg:px-2.5 lg:text-base",
+                      "flex min-h-11 items-center gap-3 whitespace-nowrap rounded-full border px-4 text-[15px] transition-colors lg:-mx-2.5 lg:rounded-[12px] lg:border-transparent lg:px-2.5 lg:text-base",
                       active
                         ? "border-ink bg-ink font-bold text-white lg:bg-transparent lg:text-ink"
-                        : "border-border bg-surface text-ink hover:bg-sand",
+                        : "border-border bg-surface font-medium text-ink hover:bg-sand",
                     )}
                   >
                     <span

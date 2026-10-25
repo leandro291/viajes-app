@@ -7,22 +7,22 @@ import type { PackageCardDto } from "../types/package";
 import { formatDuration } from "../utils/package-utils";
 import { PackageCard } from "./package-card";
 
+// auto-fill como el tablero: 1 columna a 390, 3 a 1280 sin saltos fijos de breakpoint.
 export const LISTING_GRID_CLASS =
-  "grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3";
+  "grid grid-cols-[repeat(auto-fill,minmax(min(270px,100%),1fr))] gap-x-6 gap-y-8";
 
 export function PackageGrid({ packages }: { packages: PackageCardDto[] }) {
   if (packages.length === 0) {
     return (
-      <div className="rounded-card bg-surface px-6 py-16 text-center shadow-card">
-        <h2 className="font-display text-2xl font-extrabold text-ink">
+      <div className="flex flex-col items-center gap-3.5 rounded-[24px] bg-surface px-6 py-14 text-center">
+        <h2 className="text-[26px] tracking-[-0.02em] text-ink">
           No hay paquetes con esos filtros
         </h2>
-        <p className="mt-2 text-ink-muted">
+        <p className="text-ink-muted">
           Prueba con otra duración o tipo de experiencia.
         </p>
         <Button
           variant="cta"
-          className="mt-6"
           nativeButton={false}
           render={<Link href="/paquetes" />}
         >
@@ -44,9 +44,11 @@ export function PackageGrid({ packages }: { packages: PackageCardDto[] }) {
               coverImageUrl={p.coverImageUrl}
               regionLabel={p.destination.region}
               tag={p.categories[0]?.name ?? null}
+              variant="grid"
+              blurb={p.blurb}
               durationLabel={formatDuration(p.durationDays)}
               priceLabel={formatPen(p.priceCents)}
-              sizes="(min-width: 1024px) 300px, (min-width: 768px) 45vw, 100vw"
+              sizes="(min-width: 1024px) 280px, (min-width: 640px) 45vw, 100vw"
             />
           </li>
         ))}
