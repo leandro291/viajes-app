@@ -4,6 +4,7 @@
 - Status: approved
 - Approved by: Leandro Rojas (2026-10-25)
 - Mode: SDD
+- Enmienda (2026-10-25): `Owns` de T0 ampliado con `components/shared/wayra-logo.tsx` (tamaño del logo en header y pie, AC2/AC3), aprobado por Leandro Rojas.
 
 ## Goal
 Acercar las tres pantallas ya construidas (Inicio `/`, Paquetes `/paquetes`, Detalle `/paquetes/[slug]`) al artefacto de diseño aprobado de Wayra (https://claude.ai/artifact/GgfxectTG6a6hFmZmc5Xmj): mismo marco (encabezado superpuesto sobre un hero a todo el ancho), mismas medidas, mismas piezas. Sin cambios de datos, DB, rutas ni contratos de services. Deja además un criterio de fidelidad reutilizable para specs futuras (Tours, Ofertas, Destino, Pago, Confirmación).
@@ -202,7 +203,7 @@ Son **5 tareas** (T0, T0b, T1, T2, T3) en 2 fases. Orden de merge: **034 → T0 
 ### Phase 1 — Marco compartido y carrusel (la app queda consistente, sin cambiar pantallas)
 | ID | Task | Owns | Depends on | Group | Criteria | Status |
 | -- | ---- | ---- | ---------- | ----- | -------- | ------ |
-| T0 | setup: encabezado superpuesto (CSS `:has`), `SiteNav`, pie de 3 bloques, `PageHero`, layout público, keyframe `wy-up`, `PackageCard` con `variant`, textos del header en localización de Clerk, sección de fidelidad en DESIGN-SYSTEM. Primer paso: captura de header/footer vs tablero. Las pantallas siguen funcionando (sin `data-page-hero` el header es sólido y `main` contenido) | components/shared/site-header.tsx, components/shared/site-nav.tsx, components/shared/site-footer.tsx, components/shared/page-hero.tsx, app/(public)/layout.tsx, app/layout.tsx, app/globals.css, docs/DESIGN-SYSTEM.md, modules/packages/components/package-card.tsx | 034 mergeada | - | AC1, AC2, AC3, AC4, AC5, AC6, AC26, AC27, AC29, AC33, AC34 | todo |
+| T0 | setup: encabezado superpuesto (CSS `:has`), `SiteNav`, pie de 3 bloques, `PageHero`, layout público, keyframe `wy-up`, `PackageCard` con `variant`, textos del header en localización de Clerk, sección de fidelidad en DESIGN-SYSTEM. Primer paso: captura de header/footer vs tablero. Las pantallas siguen funcionando (sin `data-page-hero` el header es sólido y `main` contenido) | components/shared/site-header.tsx, components/shared/site-nav.tsx, components/shared/site-footer.tsx, components/shared/wayra-logo.tsx, components/shared/page-hero.tsx, app/(public)/layout.tsx, app/layout.tsx, app/globals.css, docs/DESIGN-SYSTEM.md, modules/packages/components/package-card.tsx | 034 mergeada | - | AC1, AC2, AC3, AC4, AC5, AC6, AC26, AC27, AC29, AC33, AC34 | todo |
 | T0b | setup: `HeroCarousel` compartido y genérico (extraído del de `modules/home`, D13) sobre `PageHero`. No toca el Inicio: el `hero-carousel.tsx` viejo sigue en uso hasta que T1 migre, así la app queda funcionando. Verificación en aislamiento con página temporal no versionada | components/shared/hero-carousel.tsx | T0 | - | AC35, AC8 (comportamiento), AC28, AC26, AC27, AC33, AC34 | todo |
 
 ### Phase 2 — Pantallas (tres tareas en paralelo, archivos disjuntos)
