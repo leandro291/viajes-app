@@ -6,7 +6,7 @@ export function WhatsAppCta({ href }: { href: string }) {
   return (
     <section className="flex flex-col items-start gap-4 rounded-card bg-primary px-6 py-10 text-primary-foreground lg:flex-row lg:items-center lg:justify-between lg:px-12">
       <div className="flex max-w-xl flex-col gap-2">
-        <h2 className="text-primary-foreground">
+        <h2 className="text-2xl text-primary-foreground">
           ¿Quieres un viaje a tu medida?
         </h2>
         <p>Cuéntanos qué buscas y armamos el plan contigo.</p>

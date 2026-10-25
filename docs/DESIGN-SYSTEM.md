@@ -44,12 +44,21 @@ Los estados siempre llevan **ícono + texto**, no solo color.
 | Títulos   | Bricolage Grotesque    | 500, 700, 800 | Tracking −0.02em (h2) a −0.045em (h1); interlineado 0.95–1.05 en títulos grandes |
 | Cuerpo    | DM Sans                | 400, 500, 700 | 16 px base; 18 px en subtítulos                  |
 
-| Estilo   | Tamaño                       |
-| -------- | ---------------------------- |
-| h1       | `clamp(36px, 5vw, 58px)`     |
-| h2       | 24 px                        |
-| Dinero grande | 34 px, peso 800         |
-| Etiqueta | 12–14 px, peso 700, mayúsculas con 0.06em en metadatos |
+Todos los títulos van en peso 800. La escala sale de los tableros de escritorio del artefacto; un `h1` más grande que el base es decisión de la pantalla, no del token.
+
+| Estilo                  | Tamaño                       | Interlineado | Tracking | Dónde |
+| ----------------------- | ---------------------------- | ------------ | -------- | ----- |
+| h1 (base)               | `clamp(42px, 6.5vw, 84px)`   | 0.95         | −0.045em | Paquetes, Tours; es el `h1` global |
+| h1 grande               | `clamp(46px, 7.5vw, 96px)` (Detalle) · `clamp(44px, 7vw, 92px)` (Ofertas) · `clamp(44px, 7vw, 88px)` (Confirmación) · `clamp(48px, 8vw, 104px)` (Inicio) · `clamp(64px, 11vw, 148px)` (Destino) | 0.92 | −0.045em | Hero de cada pantalla, con clase propia |
+| h1 compacto             | `clamp(36px, 5vw, 58px)`     | 0.95         | −0.045em | Pago (pantalla transaccional) |
+| h2 (base, de sección)   | `clamp(32px, 4vw, 48px)`     | 1            | −0.035em | Encabezado de sección, con etiqueta encima (`SectionHeading`) |
+| h2 de bloque            | `clamp(30px, 3.6vw, 42px)`   | 1.05         | −0.03em  | Subsecciones de Detalle, Destino, Confirmación |
+| Título de tarjeta/panel | 22–26 px, peso 700–800       | 1.15         | −0.015em a −0.02em | Tarjetas de paquete, paneles de Pago, resumen |
+| Dinero grande           | 34 px, peso 800              | 1            | −0.03em  | Total del resumen |
+| Etiqueta de sección     | 13 px, peso 700, mayúsculas con 0.1em, color `accent` | — | — | Encima del `h2` de sección |
+| Etiqueta de dato        | 12–14 px, peso 700, mayúsculas con 0.06em | — | — | Metadatos |
+
+El `h2` global ya trae la escala de sección. Los títulos de tarjeta y panel son más chicos: llevan su clase (`text-2xl`, etc.) en vez de usar el `h2` base.
 
 Fuentes por Google Fonts (`next/font/google` al implementar).
 
