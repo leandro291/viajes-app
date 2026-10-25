@@ -156,3 +156,13 @@
     }
   }
 }
+
+/* Barra de progreso del hero (Inicio): 0% -> 100% de ancho */
+@keyframes wy-fill {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
