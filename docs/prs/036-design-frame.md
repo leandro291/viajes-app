@@ -10,6 +10,7 @@ Tarea T0 de la spec de fidelidad: el marco compartido (header superpuesto, nav, 
 - `components/shared/site-header.tsx`, `site-nav.tsx` (nuevo), `site-footer.tsx`, `page-hero.tsx` (nuevo)
 - `app/(public)/layout.tsx`, `app/layout.tsx`, `app/globals.css`
 - `modules/packages/components/package-card.tsx`
+- `components/shared/wayra-logo.tsx` (Owns ampliado en la spec, aprobado por el usuario)
 - `docs/DESIGN-SYSTEM.md`
 - `changelog/036-design-frame.md`, `docs/prs/036-design-frame.md`
 
@@ -20,7 +21,7 @@ Tarea T0 de la spec de fidelidad: el marco compartido (header superpuesto, nav, 
 - [x] `PackageCard` en variante `grid`: foto 4:5, chips de tipo y duración, título y precio (visto a 1280 y 390 px)
 - [x] Controles del header sin saltos de línea a 390 px (se corrigió con `whitespace-nowrap`)
 - [ ] Header superpuesto sobre un hero: sin verificar, ninguna pantalla usa `PageHero` todavía
-- [ ] Tamaño del logo (AC2/AC3): pendiente, `wayra-logo.tsx` no está en `Owns` de T0
+- [ ] Logo de 34 px/28 px en el header y 32 px en el pie: aplicado en código, sin medir en pantalla
 - [ ] Medidas finas, foco y contraste: sin medir
 
 ## Cómo probar

@@ -8,7 +8,7 @@ export function SiteFooter() {
     <footer className="bg-dark text-[#C9D6D4]">
       <div className="mx-auto flex w-full max-w-[1240px] flex-wrap gap-10 px-6 pt-16 pb-9">
         <div className="flex flex-[2_1_280px] flex-col gap-3.5">
-          <WayraLogo />
+          <WayraLogo compact />
           <p className="max-w-[340px] leading-relaxed">
             Paquetes y tours por todo el Perú, con operadores locales y soporte
             en español.
