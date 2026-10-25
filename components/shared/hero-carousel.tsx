@@ -1,6 +1,7 @@
 "use client"
 
 import {
+  Fragment,
   useEffect,
   useId,
   useRef,
@@ -24,6 +25,15 @@ export type HeroCarouselSlide = {
   ariaLabel: string
   /** Contenido del slide (nodos de servidor): sólo el activo se monta. */
   content: ReactNode
+  /** Bloque a la derecha del contenido; si existe, reemplaza la tarjeta "Siguiente". */
+  aside?: ReactNode
+}
+
+type HeroCarouselLabels = {
+  /** aria-label del tablist. */
+  tabs: string
+  previous: string
+  next: string
 }
 
 type HeroCarouselProps = {
@@ -32,6 +42,8 @@ type HeroCarouselProps = {
   label: string
   /** Tarjeta "Siguiente" (miniatura = imagen del siguiente slide). */
   showNext?: boolean
+  /** Textos accesibles de pestañas y flechas (por defecto, "destino"). */
+  labels?: HeroCarouselLabels
   intervalMs?: number
   /** Alto mínimo del hero: `min-h-[720px]` | `min-h-[600px]`. */
   className?: string
@@ -53,6 +65,12 @@ function subscribeReducedMotion(onChange: () => void) {
 const getReducedMotion = () => window.matchMedia(REDUCED_MOTION_QUERY).matches
 const getReducedMotionServer = () => false
 
+const DEFAULT_LABELS: HeroCarouselLabels = {
+  tabs: "Elegir destino",
+  previous: "Destino anterior",
+  next: "Destino siguiente",
+}
+
 const roundControl =
   "size-12 rounded-full border-[1.5px] border-white/60 text-white hover:bg-white hover:text-ink"
 
@@ -60,6 +78,7 @@ export function HeroCarousel({
   slides,
   label,
   showNext = false,
+  labels = DEFAULT_LABELS,
   intervalMs = 6500,
   className,
   contentClassName,
@@ -159,7 +178,9 @@ export function HeroCarousel({
           {active.content}
         </div>
 
-        {showNext && multiple && (
+        {active.aside && <Fragment key={`${active.id}-aside`}>{active.aside}</Fragment>}
+
+        {!active.aside && showNext && multiple && (
           <button
             type="button"
             onClick={() => go(1)}
@@ -194,7 +215,7 @@ export function HeroCarousel({
         <div className="flex flex-wrap items-center gap-x-5 gap-y-4">
           <div
             role="tablist"
-            aria-label="Elegir destino"
+            aria-label={labels.tabs}
             className="flex min-w-0 flex-[1_1_100%] gap-2.5 sm:flex-1"
           >
             {slides.map((slide, i) => {
@@ -255,7 +276,7 @@ export function HeroCarousel({
               variant="ghost"
               size="icon-lg"
               className={roundControl}
-              aria-label="Destino anterior"
+              aria-label={labels.previous}
               onClick={() => go(-1)}
             >
               <ChevronLeft />
@@ -264,7 +285,7 @@ export function HeroCarousel({
               variant="ghost"
               size="icon-lg"
               className={roundControl}
-              aria-label="Destino siguiente"
+              aria-label={labels.next}
               onClick={() => go(1)}
             >
               <ChevronRight />
