@@ -21,6 +21,9 @@ export { PackageCard } from "./components/package-card";
 export { PackagesListing } from "./components/packages-listing";
 export { PackageDetail, generateDetailMetadata } from "./components/package-detail";
 export { getPackageBySlug, getDepartures } from "./services/package-detail-service";
+export { getTours } from "./services/tour-service";
+export { ToursListing } from "./components/tours-listing";
+export type { TourFilters, TourSort, TourCardDto, TourCityDto } from "./types/package";
 export { getBookableDeparture } from "./services/departure-service";
 export {
   buildCheckoutHref,
