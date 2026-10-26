@@ -15,6 +15,7 @@ function offer(over: Partial<OfferDto> & { priceCents: number }): OfferDto {
     minPeople: null,
     validUntil: "2026-12-01T04:59:00.000Z",
     package: {
+      id: "p1",
       slug: "x",
       title: "X",
       durationDays: 1,

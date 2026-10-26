@@ -7,13 +7,13 @@ import { formatDuration } from "@/modules/packages";
 import type { OfferDto } from "../types/offer";
 import { describeOffer } from "../utils/offer-view";
 
-export function OfferCard({ offer }: { offer: OfferDto }) {
+export function OfferCard({ offer, href }: { offer: OfferDto; href: string }) {
   const { package: pkg } = offer;
   const labels = describeOffer(offer);
 
   return (
     <Link
-      href={`/paquetes/${pkg.slug}`}
+      href={href}
       className="group flex h-full flex-col gap-2.5 text-ink sm:gap-3.5"
     >
       <div className="relative aspect-square overflow-hidden rounded-[18px] bg-sand sm:aspect-[4/3.4] sm:rounded-[22px]">

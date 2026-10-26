@@ -12,6 +12,7 @@ export type OfferDto = OfferTerms & {
   kind: OfferKind;
   validUntil: string | null; // ISO 8601 (serializable en la caché)
   package: {
+    id: string;
     slug: string;
     title: string;
     durationDays: number;

@@ -15,6 +15,7 @@ export type {
   DepartureDto,
   PackageImageDto,
   ItineraryDayDto,
+  BookableDepartureDto,
 } from "./types/package";
 export { PackageCard } from "./components/package-card";
 export { PackagesListing } from "./components/packages-listing";
@@ -23,3 +24,9 @@ export { getPackageBySlug, getDepartures } from "./services/package-detail-servi
 export { getTours } from "./services/tour-service";
 export { ToursListing } from "./components/tours-listing";
 export type { TourFilters, TourSort, TourCardDto, TourCityDto } from "./types/package";
+export { getBookableDeparture } from "./services/departure-service";
+export {
+  buildCheckoutHref,
+  formatDepartureDate,
+  formatDepartureTime,
+} from "./utils/package-detail";

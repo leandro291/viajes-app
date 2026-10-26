@@ -54,8 +54,16 @@ describe("hrefs (AC3)", () => {
     );
   });
 
-  it("buildCheckoutHref", () => {
+  it("AC3: buildCheckoutHref", () => {
     expect(buildCheckoutHref(ID, 3)).toBe(`/pago?salida=${ID}&viajeros=3`);
+  });
+
+  it("AC3: buildCheckoutHref suma oferta al final y la omite si es undefined, null o vacía", () => {
+    const offer = "0b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6e";
+    expect(buildCheckoutHref(ID, 3, offer)).toBe(`/pago?salida=${ID}&viajeros=3&oferta=${offer}`);
+    for (const empty of [undefined, null, ""]) {
+      expect(buildCheckoutHref(ID, 3, empty)).toBe(`/pago?salida=${ID}&viajeros=3`);
+    }
   });
 });
 

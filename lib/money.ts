@@ -9,3 +9,11 @@ export function formatPen(cents: number): string {
   const decimals = rest === 0 ? "" : `.${String(rest).padStart(2, "0")}`;
   return `S/${NBSP}${int}${decimals}`;
 }
+
+// Cobro en USD (Stripe): siempre 2 decimales, mismo separador de miles que formatPen.
+export function formatUsd(cents: number): string {
+  const whole = Math.trunc(cents / 100);
+  const rest = Math.abs(cents % 100);
+  const int = String(whole).replace(/\B(?=(\d{3})+(?!\d))/g, NNBSP);
+  return `US$${NBSP}${int}.${String(rest).padStart(2, "0")}`;
+}
