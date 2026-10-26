@@ -2,6 +2,9 @@ import Stripe from "stripe";
 
 // Solo el tipo: nadie más importa "stripe" (ARCHITECTURE §5).
 export type CheckoutSessionParams = Stripe.Checkout.SessionCreateParams;
+export type StripeEvent = Stripe.Event;
+export type StripeCheckoutSession = Stripe.Checkout.Session;
+export type StripeCharge = Stripe.Charge;
 
 let client: Stripe | undefined;
 
