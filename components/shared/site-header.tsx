@@ -1,8 +1,9 @@
-import { Show, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
+import { Show, SignInButton, SignUpButton } from "@clerk/nextjs";
 import { Suspense } from "react";
 
 import { SiteNav, SiteNavPlain } from "@/components/shared/site-nav";
 import { SITE_LINKS } from "@/components/shared/site-links";
+import { UserMenu } from "@/components/shared/user-menu";
 import { WayraLogo } from "@/components/shared/wayra-logo";
 
 // Depende del ancestro `group/shell` de app/(public)/layout.tsx: si la página trae un
@@ -34,7 +35,7 @@ export function SiteHeader() {
               </SignUpButton>
             </Show>
             <Show when="signed-in">
-              <UserButton />
+              <UserMenu />
             </Show>
           </Suspense>
         </div>
