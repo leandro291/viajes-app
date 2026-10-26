@@ -1,4 +1,4 @@
-import { count, getTableName } from "drizzle-orm";
+import { count, getTableName, sql } from "drizzle-orm";
 
 import {
   bookings,
@@ -102,12 +102,40 @@ async function main(): Promise<void> {
         .insert(notificationPreferences)
         .values(seedNotificationPreferences)
         .onConflictDoNothing();
-      await tx.insert(destinations).values(seedDestinations).onConflictDoNothing();
+      // D7: destinos y lugares se actualizan en cada seed (ids determinísticos); el resto, DoNothing.
+      await tx
+        .insert(destinations)
+        .values(seedDestinations)
+        .onConflictDoUpdate({
+          target: destinations.id,
+          set: {
+            tagline: sql`excluded.tagline`,
+            description: sql`excluded.description`,
+            altitudeM: sql`excluded.altitude_m`,
+            bestSeasonText: sql`excluded.best_season_text`,
+            fromLimaText: sql`excluded.from_lima_text`,
+            howToGetText: sql`excluded.how_to_get_text`,
+            tipsText: sql`excluded.tips_text`,
+          },
+        });
       await tx
         .insert(destinationClimateMonths)
         .values(seedDestinationClimateMonths)
         .onConflictDoNothing();
-      await tx.insert(destinationSights).values(seedDestinationSights).onConflictDoNothing();
+      await tx
+        .insert(destinationSights)
+        .values(seedDestinationSights)
+        .onConflictDoUpdate({
+          target: destinationSights.id,
+          set: {
+            name: sql`excluded.name`,
+            description: sql`excluded.description`,
+            imageUrl: sql`excluded.image_url`,
+            sortOrder: sql`excluded.sort_order`,
+            lat: sql`excluded.lat`,
+            lng: sql`excluded.lng`,
+          },
+        });
       await tx.insert(destinationFaqs).values(seedDestinationFaqs).onConflictDoNothing();
       await tx.insert(categories).values(seedCategories).onConflictDoNothing();
       await tx.insert(packages).values(seedPackages).onConflictDoNothing();

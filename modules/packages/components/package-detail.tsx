@@ -99,8 +99,11 @@ async function DetailContent({
             </li>
             <li aria-hidden>/</li>
             <li>
-              <Link href="/paquetes" className={crumbLink}>
-                Paquetes
+              <Link
+                href={`/destinos/${encodeURIComponent(pkg.destination.slug)}`}
+                className={crumbLink}
+              >
+                {pkg.destination.name}
               </Link>
             </li>
             <li aria-hidden>/</li>

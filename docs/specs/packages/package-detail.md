@@ -226,6 +226,7 @@ Ajustes menores respecto de los contratos de arriba, todos aditivos (no cambian 
 - `PackageGallery` recibe `children` (título y resumen) para superponerlos sobre la foto sin volverlos cliente; `CancellationNotice` vive en `package-inclusions.tsx`.
 - Datos clave: para `day_tour` con `start_time` la cuarta tarjeta es "Hora de salida".
 - Phase 3 (T9) quedó con 4 paquetes: 13 fotos, 18 días y 43 inclusiones en total (anexo del seed actualizado). Los días sin foto propia dejan `image_url` nulo.
+- Miga actualizada por la spec 011 (`docs/specs/destinations/destination-page.md`, D4/AC24): D7, Q2 y AC10 de esta spec ("Inicio / Paquetes / …") quedan reemplazados por "Inicio / <Destino> / <título>", con el destino enlazado a `/destinos/<slug>` y sin el nivel "Paquetes". No cambian los demás criterios ni el `Status`.
 - Verificación: Playwright a 1280 y 390 px sobre `/paquetes/machu-picchu-magico`, `/paquetes/cusco-valle-sagrado` y `/paquetes/montana-de-colores`; `?salida=zzz&viajeros=99`; slug inexistente. `/paquetes/no-existe` muestra la página 404 de Next con status HTTP 200 (límite conocido de D5).
 
 ## Open questions

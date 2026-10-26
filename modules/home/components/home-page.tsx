@@ -6,6 +6,7 @@ import {
   type HeroCarouselSlide,
 } from "@/components/shared/hero-carousel";
 import { PageHero } from "@/components/shared/page-hero";
+import { PhotoCredits } from "@/components/shared/photo-credits";
 import { Button } from "@/components/ui/button";
 import { formatPen } from "@/lib/money";
 import {
@@ -20,7 +21,6 @@ import { buildCategoryChips, type RailCard } from "../utils/category-chips";
 import { buildWhatsAppUrl } from "../utils/whatsapp";
 import { DestinationBento } from "./destination-bento";
 import { PackageRail } from "./package-rail";
-import { PhotoCredits } from "./photo-credits";
 import { SearchForm } from "./search-form";
 import { TrustStrip } from "./trust-strip";
 import { WhatsAppCta } from "./whatsapp-cta";

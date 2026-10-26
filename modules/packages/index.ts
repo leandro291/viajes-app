@@ -18,6 +18,7 @@ export type {
   BookableDepartureDto,
 } from "./types/package";
 export { PackageCard } from "./components/package-card";
+export { PackageCardList } from "./components/package-card-list";
 export { PackagesListing } from "./components/packages-listing";
 export { PackageDetail, generateDetailMetadata } from "./components/package-detail";
 export { getPackageBySlug, getDepartures } from "./services/package-detail-service";

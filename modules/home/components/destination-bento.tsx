@@ -36,9 +36,8 @@ export function DestinationBento({
       <div className="grid auto-rows-[230px] grid-cols-4 gap-4 max-[720px]:auto-rows-[190px] max-[720px]:grid-cols-2">
         {destinations.slice(0, 8).map((d, i) => (
           <Link
-            // Mientras /destinos/[slug] no exista, el mosaico filtra el listado.
             key={d.slug}
-            href={`/paquetes?destino=${encodeURIComponent(d.slug)}`}
+            href={`/destinos/${encodeURIComponent(d.slug)}`}
             className={cn(
               "group relative block overflow-hidden rounded-[24px] bg-[#1B2A27] text-white",
               TILE_LAYOUT[i],

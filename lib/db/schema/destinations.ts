@@ -1,6 +1,7 @@
 import { sql } from "drizzle-orm";
 import {
   check,
+  doublePrecision,
   index,
   integer,
   pgTable,
@@ -22,6 +23,8 @@ export const destinations = pgTable("destinations", {
   altitudeM: integer(),
   bestSeasonText: text(),
   fromLimaText: text(),
+  howToGetText: text(),
+  tipsText: text(),
   heroImageUrl: text(),
 });
 
@@ -51,6 +54,8 @@ export const destinationSights = pgTable(
     description: text().notNull(),
     imageUrl: text().notNull(),
     sortOrder: integer().notNull(),
+    lat: doublePrecision(),
+    lng: doublePrecision(),
   },
   (t) => [index("destination_sights_destination_sort_idx").on(t.destinationId, t.sortOrder)],
 );

@@ -1,11 +1,12 @@
 "use client"
 
-import { useRef, useState } from "react"
+import { useState } from "react"
 import Link from "next/link"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 
 import { SectionHeading } from "@/components/shared/section-heading"
 import { Button } from "@/components/ui/button"
+import { useScrollRail } from "@/hooks/use-scroll-rail"
 import { cn } from "@/lib/utils"
 // Excepción a "no importar internos de otro módulo": PackageCard es presentacional
 // y sin db; el barrel de @/modules/packages arrastraría services/lib/db al cliente (AC19).
@@ -31,26 +32,16 @@ export function PackageRail({
   chips: CategoryChip[]
 }) {
   const [active, setActive] = useState(CHIP_ALL)
-  const railRef = useRef<HTMLDivElement>(null)
+  const { ref: railRef, scrollByPage, scrollToStart } =
+    useScrollRail<HTMLDivElement>()
 
   if (cards.length === 0) return null
 
   const visible = filterByChip(cards.slice(0, MAX_CARDS), active)
 
-  function scrollRail(left: number, relative: boolean) {
-    const rail = railRef.current
-    if (!rail) return
-    const behavior = window.matchMedia("(prefers-reduced-motion: reduce)")
-      .matches
-      ? "auto"
-      : "smooth"
-    if (relative) rail.scrollBy({ left, behavior })
-    else rail.scrollTo({ left, behavior })
-  }
-
   function selectChip(key: string) {
     setActive(key)
-    scrollRail(0, false)
+    scrollToStart()
   }
 
   return (
@@ -70,9 +61,7 @@ export function PackageRail({
               size="icon-lg"
               className={roundControl}
               aria-label="Paquetes anteriores"
-              onClick={() =>
-                scrollRail(-(railRef.current?.clientWidth ?? 0), true)
-              }
+              onClick={() => scrollByPage(-1)}
             >
               <ChevronLeft aria-hidden strokeWidth={2.4} />
             </Button>
@@ -82,7 +71,7 @@ export function PackageRail({
               size="icon-lg"
               className={roundControl}
               aria-label="Más paquetes"
-              onClick={() => scrollRail(railRef.current?.clientWidth ?? 0, true)}
+              onClick={() => scrollByPage(1)}
             >
               <ChevronRight aria-hidden strokeWidth={2.4} />
             </Button>
