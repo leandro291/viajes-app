@@ -2,6 +2,7 @@ import { Suspense } from "react";
 
 import { SectionHeading } from "@/components/shared/section-heading";
 
+import { getOfferHrefs } from "../services/offer-link-service";
 import { getActiveOffers } from "../services/offer-service";
 import { parseOfferParams } from "../utils/offer-params";
 import { OfferGrid } from "./offer-grid";
@@ -37,6 +38,7 @@ async function OffersCatalog({ searchParams }: { searchParams: SearchParams }) {
   const { tipo } = parseOfferParams(await searchParams);
   const all = await getActiveOffers();
   const offers = tipo ? all.filter((o) => o.kind === tipo) : all;
+  const hrefs = await getOfferHrefs(offers);
 
   return (
     <div className="flex flex-col gap-7">
@@ -46,7 +48,7 @@ async function OffersCatalog({ searchParams }: { searchParams: SearchParams }) {
         </p>
       </SectionHeading>
       <OfferTabs tipo={tipo} />
-      <OfferGrid offers={offers} tipo={tipo} />
+      <OfferGrid offers={offers} hrefs={hrefs} tipo={tipo} />
     </div>
   );
 }

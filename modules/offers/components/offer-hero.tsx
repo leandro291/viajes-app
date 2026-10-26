@@ -5,6 +5,7 @@ import { HeroCarousel, type HeroCarouselSlide } from "@/components/shared/hero-c
 import { PageHero } from "@/components/shared/page-hero";
 import { Button } from "@/components/ui/button";
 
+import { getOfferHrefs } from "../services/offer-link-service";
 import { getActiveOffers } from "../services/offer-service";
 import { describeOffer } from "../utils/offer-view";
 
@@ -23,11 +24,12 @@ export async function OfferHero() {
   const offers = (await getActiveOffers())
     .filter((offer) => offer.package.coverImageUrl !== null)
     .slice(0, HERO_SLIDES);
+  const hrefs = await getOfferHrefs(offers);
 
   const slides: HeroCarouselSlide[] = offers.map((offer) => {
     const { kindLabel, badge, badgeSub, wasLabel, nowLabel, note, validUntilLabel } =
       describeOffer(offer);
-    const { title, slug } = offer.package;
+    const { title } = offer.package;
 
     return {
       id: offer.id,
@@ -70,7 +72,7 @@ export async function OfferHero() {
             <Button
               variant="cta"
               nativeButton={false}
-              render={<Link href={`/paquetes/${slug}`} />}
+              render={<Link href={hrefs[offer.id]} />}
             >
               Aprovechar oferta
               <ArrowRight aria-hidden strokeWidth={2.4} />

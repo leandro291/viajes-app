@@ -4,3 +4,6 @@ export { getPenPerUsd, penToUsdCents, STRIPE_MIN_AMOUNT_USD_CENTS } from "./util
 export { PaymentAmountError } from "./utils/payment-error";
 export type { PaymentAmountErrorCode } from "./utils/payment-error";
 export type { BookingAmount, BookingAmountInput } from "./types/payment";
+export { createCheckoutSession, expireCheckoutSession } from "./services/checkout-session-service";
+export type { CreateCheckoutSessionInput } from "./services/checkout-session-service";
+export { createPendingPayment } from "./services/payment-service";

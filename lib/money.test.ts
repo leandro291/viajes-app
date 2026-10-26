@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { formatPen } from "./money";
+import { formatPen, formatUsd } from "./money";
 
 const S = "S/ ";
 const T = " ";
@@ -26,5 +26,26 @@ describe("formatPen", () => {
 
   it("AC3: 2 decimales con cero a la izquierda", () => {
     expect(formatPen(12005)).toBe(`${S}120.05`);
+  });
+});
+
+const U = "US$\u00a0";
+
+describe("formatUsd", () => {
+  it.each([
+    [34500, `${U}345.00`],
+    [103200, `${U}1${T}032.00`],
+    [50, `${U}0.50`],
+    [5, `${U}0.05`],
+    [0, `${U}0.00`],
+  ])("AC2: %i -> %s", (cents, expected) => {
+    expect(formatUsd(cents)).toBe(expected);
+  });
+
+  it("AC2: usa U+00A0 tras US$ y U+202F como separador de miles", () => {
+    const out = formatUsd(103200);
+    expect(out.charCodeAt(3)).toBe(0x00a0);
+    expect(out.charCodeAt(5)).toBe(0x202f);
+    expect(out).not.toContain(" ");
   });
 });

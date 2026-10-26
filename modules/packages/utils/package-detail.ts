@@ -48,8 +48,15 @@ export function buildDetailHref(
   return query ? `/paquetes/${slug}?${query}` : `/paquetes/${slug}`;
 }
 
-export function buildCheckoutHref(departureId: string, travelers: number): string {
-  return `/pago?${new URLSearchParams({ salida: departureId, viajeros: String(travelers) })}`;
+// Orden fijo: salida, viajeros, oferta (omitida si es vacía).
+export function buildCheckoutHref(
+  departureId: string,
+  travelers: number,
+  offerId?: string | null,
+): string {
+  const params = new URLSearchParams({ salida: departureId, viajeros: String(travelers) });
+  if (offerId) params.set("oferta", offerId);
+  return `/pago?${params}`;
 }
 
 export function seatsLeft(d: { capacity: number; bookedSeats: number }): number {

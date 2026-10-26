@@ -10,9 +10,11 @@ export const OFFERS_GRID_CLASS =
 
 export function OfferGrid({
   offers,
+  hrefs,
   tipo,
 }: {
   offers: OfferDto[];
+  hrefs: Record<string, string>;
   tipo?: OfferKind;
 }) {
   if (offers.length === 0) {
@@ -39,7 +41,7 @@ export function OfferGrid({
     <ul className={OFFERS_GRID_CLASS}>
       {offers.map((offer) => (
         <li key={offer.id} className="min-w-0">
-          <OfferCard offer={offer} />
+          <OfferCard offer={offer} href={hrefs[offer.id]} />
         </li>
       ))}
     </ul>
