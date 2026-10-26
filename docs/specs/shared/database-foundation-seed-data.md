@@ -66,7 +66,7 @@ Anexo de [database-foundation.md](database-foundation.md). Es la **fuente de dat
 
 ## 3. Destinos (8)
 
-Cada uno con `hero_image_url = SEED_IMAGES[<img>].path`. Solo Cusco tiene el detalle completo en el artefacto; el resto lleva únicamente `slug`, `name`, `region` y `hero_image_url` (las demás columnas son nullable y quedan `null`).
+Cada uno con `hero_image_url = SEED_IMAGES[<img>].path`. Cusco tiene el detalle completo en el artefacto. Los otros 7 destinos se completaron en la spec [destination-page.md](../destinations/destination-page.md) (D2/D7) con datos **ilustrativos y aproximados** (altitudes, tiempos de viaje, coordenadas, clima y textos; requieren revisión humana en el PR, Q7). Desde entonces `destinations` y `destination_sights` se siembran con `onConflictDoUpdate` (el resto sigue en `DoNothing`).
 
 | slug | name | region | img |
 | ---- | ---- | ------ | --- |
@@ -95,6 +95,23 @@ Cada uno con `hero_image_url = SEED_IMAGES[<img>].path`. Solo Cusco tiene el det
   1. ¿Cuántos días necesito en Cusco? — "Lo ideal son 4 o 5 días: uno para aclimatarte, uno para la ciudad, uno para el Valle Sagrado y uno para Machu Picchu."
   2. ¿La entrada a Machu Picchu está incluida? — "Sí, en los paquetes que la indican. Reservamos tu horario de ingreso al confirmar la compra."
   3. ¿Puedo cambiar la fecha después de reservar? — "Sí, desde Mis reservas, hasta 48 horas antes de la salida y sujeto a disponibilidad."
+
+### Detalle de los 8 destinos (ilustrativo)
+
+Columnas nuevas: `destinations.how_to_get_text`, `destinations.tips_text`, `destination_sights.lat`, `destination_sights.lng`. Cada destino tiene `tagline`, `description`, `how_to_get_text`, `tips_text` y 3 preguntas (`destination_faq:<slug>:<n>`); `from_lima_text` es `null` solo en `lima`. Clima: patrón de Cusco = 1 a 3 `rainy`, 4 `mixed`, 5 a 9 `dry`, 10 `mixed`, 11 y 12 `rainy`.
+
+| slug | altitude_m | from_lima_text | best_season_text | clima (ene → dic) | lugares (foto, lat, lng) |
+| ---- | ---------- | -------------- | ---------------- | ----------------- | ------------------------ |
+| `cusco` | 3399 | ~1 h 30 en avión | Mayo a septiembre | patrón de Cusco | Machu Picchu (mp, -13.163, -72.545), Valle Sagrado (pis, -13.421, -71.848), Sacsayhuamán (sac, -13.509, -71.982), Vinicunca (vin, -13.870, -71.303), Aguas Calientes (agc, -13.155, -72.526) |
+| `arequipa` | 2335 | ~1 h 45 en avión | Abril a diciembre | rainy, rainy, mixed, dry×8, mixed | Plaza de Armas (are, -16.399, -71.537), Cañón del Colca (col, -15.605, -71.890) |
+| `puno` | 3827 | ~1 h 50 en avión a Juliaca | Mayo a septiembre | patrón de Cusco | Islas Uros (uro, -15.822, -69.969) |
+| `amazonia` | 183 | ~1 h 40 en avión a Puerto Maldonado | Mayo a octubre | rainy×3, mixed, dry×6, mixed, rainy | Reserva Nacional Tambopata (tam, -12.900, -69.400) |
+| `ica-paracas` | 406 | ~4 h en bus | Todo el año | dry×4, mixed×4, dry×4 | Huacachina (hua, -14.088, -75.763), Islas Ballestas (bal, -13.736, -76.417), Bahía de Paracas (par, -13.834, -76.251) |
+| `huaraz` | 3052 | ~8 h en bus | Mayo a septiembre | patrón de Cusco | Laguna 69 (l69, -9.013, -77.607) |
+| `lima` | 154 | `null` | Diciembre a abril | dry×4, mixed×7, dry | Costa Verde (lim, -12.125, -77.039) |
+| `mancora` | 4 | ~1 h 50 en avión a Talara + 1 h por tierra | Diciembre a abril | dry×4, mixed×7, dry | Playa de Máncora (man, -4.103, -81.045) |
+
+Los textos (tagline, descripción, cómo llegar, consejos, descripciones de lugares nuevos y las 24 preguntas) viven en `lib/db/seed/data/destinations.ts`; no se prometen resultados ni precios, y la entrada incluida se afirma solo "en los paquetes que lo indican".
 
 ## 4. Paquetes y tours (20)
 
@@ -229,9 +246,9 @@ Del panel admin. `unit_price_cents` = precio de lista (snapshot); descuento con 
 | organizers | 1 | offers | 8 |
 | notification_preferences | 9 | bookings | 8 |
 | destinations | 8 | booking_travelers | 9 |
-| destination_climate_months | 12 | payments | 8 |
-| destination_sights | 5 | stripe_events | 0 |
-| destination_faqs | 3 | newsletter_subscribers | 4 |
+| destination_climate_months | 96 | payments | 8 |
+| destination_sights | 15 | stripe_events | 0 |
+| destination_faqs | 24 | newsletter_subscribers | 4 |
 | categories | 5 | package_images | 13 |
 | packages | 20 | package_itinerary_days | 18 |
 | package_categories | 29 | package_inclusions | 43 |

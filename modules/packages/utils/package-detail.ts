@@ -8,11 +8,7 @@ const TZ = "America/Lima";
 const MAX_TRAVELERS = 20;
 const DEFAULT_TRAVELERS = 2;
 
-const SLUG_RE = /^[a-z0-9-]{1,100}$/;
-
-export function isValidSlug(slug: string): boolean {
-  return SLUG_RE.test(slug);
-}
+export { isValidSlug } from "@/lib/slug";
 
 const first = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
 

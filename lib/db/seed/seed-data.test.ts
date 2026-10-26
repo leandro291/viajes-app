@@ -57,9 +57,9 @@ const expectedCounts: Record<keyof typeof tables, number> = {
   organizers: 1,
   notification_preferences: 9,
   destinations: 8,
-  destination_climate_months: 12,
-  destination_sights: 5,
-  destination_faqs: 3,
+  destination_climate_months: 96,
+  destination_sights: 15,
+  destination_faqs: 24,
   categories: 5,
   packages: 20,
   package_categories: 29,
@@ -253,5 +253,87 @@ describe("seed data: imágenes (AC15)", () => {
   it("AC15: package_images.credit sale de SEED_IMAGES", () => {
     const credits = new Set(Object.values(SEED_IMAGES).map((i) => i.credit));
     for (const r of seedPackageImages) expect(credits.has(r.credit as string)).toBe(true);
+  });
+});
+
+describe("seed data: destinos completos (AC5, AC6)", () => {
+  const D = "dry", M = "mixed", R = "rainy";
+  const ALT = [R, R, R, M, D, D, D, D, D, M, R, R];
+  const COAST = [D, D, D, D, M, M, M, M, M, M, M, D];
+  // slug: [altitudeM, fromLimaText, bestSeasonText, clima, lugares]
+  const expected = {
+    cusco: [3399, "~1 h 30 en avión", "Mayo a septiembre", ALT, 5],
+    arequipa: [2335, "~1 h 45 en avión", "Abril a diciembre", [R, R, M, D, D, D, D, D, D, D, D, M], 2],
+    puno: [3827, "~1 h 50 en avión a Juliaca", "Mayo a septiembre", ALT, 1],
+    amazonia: [183, "~1 h 40 en avión a Puerto Maldonado", "Mayo a octubre", [R, R, R, M, D, D, D, D, D, D, M, R], 1],
+    "ica-paracas": [406, "~4 h en bus", "Todo el año", [D, D, D, D, M, M, M, M, D, D, D, D], 3],
+    huaraz: [3052, "~8 h en bus", "Mayo a septiembre", ALT, 1],
+    lima: [154, null, "Diciembre a abril", COAST, 1],
+    mancora: [4, "~1 h 50 en avión a Talara + 1 h por tierra", "Diciembre a abril", COAST, 1],
+  } as const;
+  const bySlug = (slug: string) => seedDestinations.find((d) => d.slug === slug)!;
+  const sightsOf = (slug: string) =>
+    seedDestinationSights
+      .filter((s) => s.destinationId === bySlug(slug).id)
+      .sort((a, b) => a.sortOrder - b.sortOrder);
+
+  it.each(Object.entries(expected))("AC6: %s coincide con la tabla de datos", (slug, e) => {
+    const d = bySlug(slug);
+    expect(d.altitudeM).toBe(e[0]);
+    expect(d.fromLimaText).toBe(e[1]);
+    expect(d.bestSeasonText).toBe(e[2]);
+    const months = seedDestinationClimateMonths
+      .filter((c) => c.destinationId === d.id)
+      .sort((a, b) => a.month - b.month);
+    expect(months.map((c) => c.month)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
+    expect(months.map((c) => c.season)).toEqual(e[3]);
+    expect(sightsOf(slug)).toHaveLength(e[4]);
+  });
+
+  it("AC6: lugares con coordenadas en Perú, sort_order contiguo y fotos únicas del seed", () => {
+    const allowed = new Set(Object.values(SEED_IMAGES).map((i) => i.path));
+    for (const slug of Object.keys(expected)) {
+      sightsOf(slug).forEach((s, i) => {
+        expect(s.sortOrder, slug).toBe(i + 1);
+        expect(s.lat!, s.name).toBeGreaterThanOrEqual(-19);
+        expect(s.lat!, s.name).toBeLessThanOrEqual(0);
+        expect(s.lng!, s.name).toBeGreaterThanOrEqual(-82);
+        expect(s.lng!, s.name).toBeLessThanOrEqual(-68);
+      });
+    }
+    const urls = seedDestinationSights.map((s) => s.imageUrl);
+    expect(new Set(urls).size).toBe(15);
+    for (const u of urls) expect(allowed.has(u), u).toBe(true);
+  });
+
+  it("AC6: los 8 destinos tienen textos completos y 3 preguntas; Lima sin fromLimaText", () => {
+    for (const d of seedDestinations) {
+      for (const k of ["tagline", "description", "bestSeasonText", "howToGetText", "tipsText"] as const) {
+        expect(d[k], `${d.slug}.${k}`).toBeTruthy();
+      }
+      expect(d.altitudeM, d.slug).not.toBeNull();
+      expect(d.fromLimaText === null, d.slug).toBe(d.slug === "lima");
+      expect(seedDestinationFaqs.filter((f) => f.destinationId === d.id), d.slug).toHaveLength(3);
+    }
+    expect(bySlug("lima").howToGetText).not.toMatch(/desde lima/i);
+  });
+
+  it("AC6: textos sin vacíos, sin 'garantiz', sin precios y sin promesas de entrada", () => {
+    const texts = [
+      ...seedDestinations.flatMap((d) => [d.tagline, d.description, d.howToGetText, d.tipsText]),
+      ...seedDestinationSights.map((s) => s.description),
+      ...seedDestinationFaqs.flatMap((f) => [f.question, f.answer]),
+    ];
+    for (const t of texts) {
+      expect(t?.trim(), String(t)).toBeTruthy();
+      expect(t, String(t)).not.toMatch(/garantiz/i);
+      expect(t, String(t)).not.toMatch(/S\/[\s\u00a0\u202f]*\d/);
+      expect(t, String(t)).not.toMatch(/\n/);
+    }
+    for (const f of seedDestinationFaqs) {
+      if (/entrada/i.test(`${f.question} ${f.answer}`)) {
+        expect(f.answer, f.question).toMatch(/en los paquetes que (lo|la) indican/i);
+      }
+    }
   });
 });

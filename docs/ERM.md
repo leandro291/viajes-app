@@ -66,9 +66,9 @@ pk (`user_id`, `key`), `key` (`notification_key`), `enabled`.
 ### Catálogo
 
 **destinations** — pantalla Destino.
-`id`, `slug` (unique), `name`, `region`, `tagline`, `description`, `altitude_m`, `best_season_text`, `from_lima_text`, `hero_image_url`.
+`id`, `slug` (unique), `name`, `region`, `tagline`, `description`, `altitude_m`, `best_season_text`, `from_lima_text`, `how_to_get_text` ("Cómo llegar"), `tips_text` ("Aclimatación" o "Consejos"), `hero_image_url`.
 - **destination_climate_months**: pk (`destination_id`, `month` 1–12), `season`. Alimenta la barra "Cuándo viajar".
-- **destination_sights**: `id`, `destination_id`, `name`, `description`, `image_url`, `sort_order`. ("Lo imperdible")
+- **destination_sights**: `id`, `destination_id`, `name`, `description`, `image_url`, `sort_order`, `lat`, `lng` (nullable, pin del mapa de Destino). ("Lo imperdible")
 - **destination_faqs**: `id`, `destination_id`, `question`, `answer`, `sort_order`.
 
 **categories** — Aventura, Cultura, Naturaleza, Gastronomía, Playas. "Un día" **no** es categoría: se deriva de `kind = day_tour` o `duration_days = 1`.
