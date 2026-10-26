@@ -132,12 +132,14 @@ describe.skipIf(!process.env.DATABASE_URL)("offer-service (db)", () => {
       expect(Object.keys(o.package).sort()).toEqual([
         "coverImageUrl",
         "durationDays",
+        "id",
         "priceCents",
         "region",
         "slug",
         "title",
       ]);
       expect(o.package.region).toBeTruthy();
+      expect(o.package.id).toBeTruthy();
       if (o.validUntil !== null) {
         expect(new Date(o.validUntil).toISOString()).toBe(o.validUntil);
       }

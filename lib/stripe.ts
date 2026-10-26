@@ -1,5 +1,8 @@
 import Stripe from "stripe";
 
+// Solo el tipo: nadie más importa "stripe" (ARCHITECTURE §5).
+export type CheckoutSessionParams = Stripe.Checkout.SessionCreateParams;
+
 let client: Stripe | undefined;
 
 // Singleton perezoso: no lee el entorno al importar, así `next build` no se rompe sin la clave.

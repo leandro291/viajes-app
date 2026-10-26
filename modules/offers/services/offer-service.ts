@@ -25,6 +25,7 @@ export async function getActiveOffers(): Promise<OfferDto[]> {
       discountValue: offers.discountValue,
       minPeople: offers.minPeople,
       validUntil: offers.validUntil,
+      packageId: packages.id,
       slug: packages.slug,
       title: packages.title,
       durationDays: packages.durationDays,
@@ -53,6 +54,7 @@ export async function getActiveOffers(): Promise<OfferDto[]> {
         minPeople: r.minPeople,
         validUntil: r.validUntil ? r.validUntil.toISOString() : null,
         package: {
+          id: r.packageId,
           slug: r.slug,
           title: r.title,
           durationDays: r.durationDays,

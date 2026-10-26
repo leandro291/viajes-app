@@ -59,3 +59,18 @@ export type PackageDetailDto = {
 export type DepartureDto = { id: string; startsAt: Date; capacity: number; seatsLeft: number };
 
 export type DetailParams = { salida?: string; viajeros?: number };
+
+export type BookableDepartureDto = {
+  id: string;
+  startsAt: Date;
+  seatsLeft: number; // capacity − booked_seats, ≥ 0
+  package: {
+    id: string;
+    slug: string;
+    title: string;
+    coverImageUrl: string | null;
+    region: string;
+    durationDays: number;
+    nights: number;
+  };
+};
