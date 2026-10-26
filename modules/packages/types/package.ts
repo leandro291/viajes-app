@@ -23,6 +23,29 @@ export type PackageFilters = {
   orden?: SortOrder;
 };
 
+export type TourSort = "precio-asc" | "mas-cortos"; // ausente = recomendados (D4)
+
+export type TourFilters = {
+  ciudad?: string;
+  fecha?: string; // YYYY-MM-DD, día de Lima
+  orden?: TourSort;
+};
+
+export type TourCardDto = {
+  id: string;
+  slug: string;
+  title: string;
+  blurb: string;
+  priceCents: number; // por persona, PEN
+  coverImageUrl: string | null;
+  durationHours: number | null;
+  startTime: string | null; // "04:00:00" tal cual la BD
+  destination: { slug: string; name: string; region: string };
+  nextDeparture: { startsAt: Date; seatsLeft: number } | null; // D2
+};
+
+export type TourCityDto = { slug: string; name: string; count: number };
+
 export type PackageImageDto = { url: string; alt: string | null; credit: string | null };
 
 export type ItineraryDayDto = {

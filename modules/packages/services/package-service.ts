@@ -16,6 +16,9 @@ import type { CategoryDto, PackageCardDto, PackageFilters } from "../types/packa
 // Único lugar del filtro de visibilidad pública (lo reutilizan 008/011).
 export const isPublished = eq(packages.status, "published");
 
+// Regla "tour de un día" (D1), compartida con getTours.
+export const isDayTourRow = or(eq(packages.kind, "day_tour"), eq(packages.durationDays, 1))!;
+
 const cardColumns = {
   id: packages.id,
   slug: packages.slug,
@@ -122,7 +125,7 @@ export async function getPackages(filters: PackageFilters): Promise<PackageCardD
     );
   }
   if (filters.duracion === "1") {
-    conditions.push(or(eq(packages.kind, "day_tour"), eq(packages.durationDays, 1))!);
+    conditions.push(isDayTourRow);
   } else if (filters.duracion === "2-3") {
     conditions.push(between(packages.durationDays, 2, 3));
   } else if (filters.duracion === "4-mas") {
