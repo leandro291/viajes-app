@@ -1,4 +1,14 @@
-// El shell del panel llega con su spec.
+import { Suspense } from "react";
+
+import { OrganizerShell, OrganizerStatusNotice } from "@/modules/organizers";
+
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return children;
+  return (
+    <OrganizerShell>
+      <Suspense>
+        <OrganizerStatusNotice />
+      </Suspense>
+      {children}
+    </OrganizerShell>
+  );
 }
