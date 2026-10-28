@@ -1,4 +1,10 @@
-import { Building2, Package, UserRound, type LucideIcon } from "lucide-react";
+import {
+  Building2,
+  CalendarDays,
+  Package,
+  UserRound,
+  type LucideIcon,
+} from "lucide-react";
 
 // Cada tarjeta de página del panel agrega su link aquí (solo páginas existentes).
 export const ORGANIZER_NAV_LINKS: ReadonlyArray<{
@@ -8,6 +14,7 @@ export const ORGANIZER_NAV_LINKS: ReadonlyArray<{
 }> = [
   { label: "Perfil", href: "/operador", icon: Building2 },
   { label: "Paquetes", href: "/operador/paquetes", icon: Package },
+  { label: "Salidas", href: "/operador/salidas", icon: CalendarDays },
   { label: "Guías", href: "/operador/guias", icon: UserRound },
 ];
 

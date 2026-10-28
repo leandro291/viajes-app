@@ -13,6 +13,11 @@ export type ManageErrorCode =
   | "HAS_DEPARTURES"
   | "HAS_OFFERS"
   | "HAS_DEPENDENCIES"
+  | "SEATS_SOLD"
+  | "DEPARTURE_CLOSED"
+  | "INVALID_TRANSITION"
+  | "DEPARTURE_HAS_BOOKINGS"
+  | "STALE"
   | "UNKNOWN";
 
 export type ManageResult<T = object> =

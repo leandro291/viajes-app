@@ -24,6 +24,12 @@ export const MANAGE_MESSAGES: Record<ManageErrorCode, string> = {
     "Este paquete tiene ofertas, no se puede eliminar. Pásalo a borrador para ocultarlo.",
   HAS_DEPENDENCIES:
     "Este paquete tiene reservas, salidas u ofertas, no se puede eliminar. Pásalo a borrador para ocultarlo.",
+  SEATS_SOLD:
+    "Esta salida ya tiene cupos vendidos: no puedes cambiar su fecha ni cancelarla.",
+  DEPARTURE_CLOSED: "Una salida completada o cancelada ya no se puede modificar.",
+  INVALID_TRANSITION: "No puedes pasar la salida a ese estado desde el actual.",
+  DEPARTURE_HAS_BOOKINGS: "Esta salida tiene reservas, no se puede eliminar.",
+  STALE: "Los cupos cambiaron mientras editabas. Recarga e inténtalo de nuevo.",
   UNKNOWN: "No pudimos guardar los cambios. Inténtalo de nuevo.",
 };
 
