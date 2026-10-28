@@ -197,7 +197,7 @@ describe("createCheckout", () => {
         bookingCode: "WY-4822",
         amountUsdCents: 68800,
         customerEmail: "ana@example.com",
-        successUrl: `${APP}/confirmacion?reserva=WY-4822`,
+        successUrl: `${APP}/confirmacion/WY-4822`,
         cancelUrl: `${APP}/pago?salida=${DEP}&viajeros=2&oferta=${OFFER}`,
       }),
     );

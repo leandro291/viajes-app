@@ -181,3 +181,18 @@
     transform: none;
   }
 }
+
+/* Check de la confirmación: aparece con un pequeño rebote */
+@keyframes wy-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
