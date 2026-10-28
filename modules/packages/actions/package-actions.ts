@@ -4,7 +4,6 @@ import { updateTag } from "next/cache";
 import type { z } from "zod";
 
 import { CACHE_TAGS } from "@/lib/cache-tags";
-import { getCurrentOrganizer } from "@/modules/organizers";
 
 import { packageIdSchema, packageInputSchema, packageStatusSchema } from "../schemas/package-schema";
 import {
@@ -16,26 +15,16 @@ import {
 import type { ManageResult, OrganizerScope } from "../types/package-manage";
 import { toFieldErrors } from "../utils/field-errors";
 import { manageFail } from "../utils/manage-gate";
+import { withOrganizer } from "./with-organizer";
 
 const invalid = (error: z.ZodError) => manageFail("INVALID_INPUT", toFieldErrors(error));
 
-// Sesión (lanza AuthError, no se captura) -> organizer -> body (valida + service) ->
-// invalidación de caché solo si el catálogo público cambió (AC22).
-// El organizerId sale siempre de la sesión, nunca del input.
+// Invalida la caché solo si el catálogo público cambió (AC22), fuera del try/catch del wrapper.
 async function run<T extends { catalogChanged: boolean }>(
   name: string,
   body: (scope: OrganizerScope) => Promise<ManageResult<T>>,
 ): Promise<ManageResult<T>> {
-  const organizer = await getCurrentOrganizer();
-  if (!organizer) return manageFail("NO_ORGANIZER");
-  let result: ManageResult<T>;
-  try {
-    result = await body(organizer);
-  } catch {
-    // Texto fijo: sin datos del input ni del error.
-    console.error(`${name}: fallo inesperado`);
-    return manageFail("UNKNOWN");
-  }
+  const result = await withOrganizer(name, body);
   if (result.ok && result.catalogChanged) updateTag(CACHE_TAGS.packages);
   return result;
 }
