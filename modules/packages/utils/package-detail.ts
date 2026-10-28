@@ -92,11 +92,12 @@ const limaParts = new Intl.DateTimeFormat("es-PE", {
   weekday: "long",
   day: "numeric",
   month: "long",
+  year: "numeric",
 });
 
 function parts(d: Date) {
   const get = (type: string) => limaParts.formatToParts(d).find((p) => p.type === type)!.value;
-  return { weekday: get("weekday"), day: get("day"), month: get("month") };
+  return { weekday: get("weekday"), day: get("day"), month: get("month"), year: get("year") };
 }
 
 export function formatDepartureDate(d: Date): string {
@@ -108,6 +109,13 @@ export function formatDepartureChip(d: Date): { dow: string; day: string; month:
   const p = parts(d);
   const dow = p.weekday.slice(0, 3);
   return { dow: dow.charAt(0).toUpperCase() + dow.slice(1), day: p.day, month: p.month.slice(0, 3) };
+}
+
+// "Jue 5 nov 2026"
+export function formatDepartureShortDate(d: Date): string {
+  const p = parts(d);
+  const dow = p.weekday.slice(0, 3);
+  return `${dow.charAt(0).toUpperCase()}${dow.slice(1)} ${p.day} ${p.month.slice(0, 3)} ${p.year}`;
 }
 
 const limaTime = new Intl.DateTimeFormat("en-GB", {

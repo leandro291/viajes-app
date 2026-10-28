@@ -29,5 +29,6 @@ export { getBookableDeparture } from "./services/departure-service";
 export {
   buildCheckoutHref,
   formatDepartureDate,
+  formatDepartureShortDate,
   formatDepartureTime,
 } from "./utils/package-detail";

@@ -10,7 +10,7 @@ const input = {
   amountUsdCents: 68800,
   productName: "Machu Picchu Mágico · 2 viajeros",
   customerEmail: "ana@example.com",
-  successUrl: "https://wayra.example/confirmacion?reserva=WY-4822",
+  successUrl: "https://wayra.example/confirmacion/WY-4822",
   cancelUrl: "https://wayra.example/pago?salida=s1&viajeros=2",
   nowSeconds: 1_700_000_000,
 };

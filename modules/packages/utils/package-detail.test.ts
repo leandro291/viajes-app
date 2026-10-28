@@ -6,6 +6,7 @@ import {
   clampTravelers,
   formatDepartureChip,
   formatDepartureDate,
+  formatDepartureShortDate,
   formatDepartureTime,
   formatLanguages,
   formatPackageDuration,
@@ -97,6 +98,21 @@ describe("formato (AC5)", () => {
   it("una hora que en UTC ya es el día siguiente sigue en el día de Lima", () => {
     const d = new Date("2026-11-06T03:00:00Z"); // 22:00 del 5 en Lima
     expect(formatDepartureChip(d).day).toBe("5");
+  });
+
+  it("AC5: fecha corta en Lima", () => {
+    expect(formatDepartureShortDate(new Date("2026-11-05T12:30:00Z"))).toBe("Jue 5 nov 2026");
+    // 02:00 UTC del 6 nov = 21:00 del 5 en Lima
+    expect(formatDepartureShortDate(new Date("2026-11-06T02:00:00Z"))).toBe("Jue 5 nov 2026");
+  });
+
+  it("AC5: fecha corta de setiembre usa la abreviatura real de Intl", () => {
+    const d = new Date("2026-09-15T12:00:00Z");
+    const month = new Intl.DateTimeFormat("es-PE", { timeZone: "America/Lima", month: "long" })
+      .format(d)
+      .slice(0, 3)
+      .toLowerCase();
+    expect(formatDepartureShortDate(d)).toBe(`Mar 15 ${month} 2026`);
   });
 
   it("hora de la salida en Lima", () => {

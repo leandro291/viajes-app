@@ -169,7 +169,7 @@ export async function createCheckout({
       amountUsdCents: quote.amount.amountUsdCents,
       productName: `${quote.package.title} · ${formatTravelers(quote.pax)}`,
       customerEmail: data.email,
-      successUrl: `${appUrl}/confirmacion?reserva=${booking.code}`,
+      successUrl: `${appUrl}/confirmacion/${booking.code}`,
       cancelUrl: `${appUrl}${buildCheckoutHref(quote.departure.id, quote.pax, data.oferta)}`,
     });
   } catch (error) {

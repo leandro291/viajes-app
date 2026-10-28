@@ -18,7 +18,7 @@ import {
 import { getDestinations } from "@/modules/destinations";
 
 import { buildCategoryChips, type RailCard } from "../utils/category-chips";
-import { buildWhatsAppUrl } from "../utils/whatsapp";
+import { buildWhatsAppUrl } from "@/lib/whatsapp";
 import { DestinationBento } from "./destination-bento";
 import { PackageRail } from "./package-rail";
 import { SearchForm } from "./search-form";
