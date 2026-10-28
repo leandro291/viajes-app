@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { formatPen, formatUsd } from "./money";
+import {
+  centsToSolesInput,
+  formatPen,
+  formatUsd,
+  parseSolesToCents,
+} from "./money";
 
 const S = "S/ ";
 const T = " ";
@@ -47,5 +52,55 @@ describe("formatUsd", () => {
     expect(out.charCodeAt(3)).toBe(0x00a0);
     expect(out.charCodeAt(5)).toBe(0x202f);
     expect(out).not.toContain(" ");
+  });
+});
+
+describe("parseSolesToCents", () => {
+  it.each([
+    ["1290", 129000],
+    ["1290.5", 129050],
+    ["1290.50", 129050],
+    ["1290,50", 129050],
+    ["1290,5", 129050],
+    [" 95 ", 9500],
+    ["19.99", 1999],
+    ["0.07", 7],
+    ["0", 0],
+  ])("AC12: %j -> %i", (input, expected) => {
+    expect(parseSolesToCents(input)).toBe(expected);
+  });
+
+  it.each([
+    "",
+    "  ",
+    "abc",
+    "-5",
+    "1.234",
+    "1,234",
+    "1.",
+    ".5",
+    "1.2.3",
+    "1e3",
+    "99999999999999999999",
+  ])("AC12: %j -> null", (input) => {
+    expect(parseSolesToCents(input)).toBeNull();
+  });
+});
+
+describe("centsToSolesInput", () => {
+  it.each([
+    [129000, "1290"],
+    [12050, "120.50"],
+    [9500, "95"],
+    [7, "0.07"],
+    [0, "0"],
+  ])("AC12: %i -> %s", (cents, expected) => {
+    expect(centsToSolesInput(cents)).toBe(expected);
+  });
+
+  it("AC12: ida y vuelta", () => {
+    for (const c of [0, 1, 7, 99, 100, 1999, 9500, 12050, 129000]) {
+      expect(parseSolesToCents(centsToSolesInput(c))).toBe(c);
+    }
   });
 });

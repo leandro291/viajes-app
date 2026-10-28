@@ -32,3 +32,7 @@ export {
   formatDepartureShortDate,
   formatDepartureTime,
 } from "./utils/package-detail";
+export { GuidesPage } from "./components/guides-page";
+export { OwnPackagesList } from "./components/own-packages-list";
+export { PackageEditor } from "./components/package-editor";
+export { packageIdSchema } from "./schemas/package-schema";

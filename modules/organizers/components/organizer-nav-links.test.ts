@@ -11,9 +11,15 @@ describe("isActiveNavLink", () => {
   });
 
   it("AC9: subruta de un link no raíz activa ese link", () => {
-    expect(isActiveNavLink("/operador/paquetes", "/operador/paquetes")).toBe(true);
-    expect(isActiveNavLink("/operador/paquetes/nuevo", "/operador/paquetes")).toBe(true);
-    expect(isActiveNavLink("/operador/paquetesx", "/operador/paquetes")).toBe(false);
+    expect(isActiveNavLink("/operador/paquetes", "/operador/paquetes")).toBe(
+      true,
+    );
+    expect(
+      isActiveNavLink("/operador/paquetes/nuevo", "/operador/paquetes"),
+    ).toBe(true);
+    expect(isActiveNavLink("/operador/paquetesx", "/operador/paquetes")).toBe(
+      false,
+    );
   });
 
   it("AC9: pathname null devuelve false", () => {
@@ -26,7 +32,31 @@ describe("isActiveNavLink", () => {
 });
 
 describe("ORGANIZER_NAV_LINKS", () => {
-  it("AC2: solo contiene Perfil (/operador)", () => {
-    expect(ORGANIZER_NAV_LINKS.map((l) => l.href)).toEqual(["/operador"]);
+  it("AC1: contiene Perfil, Paquetes y Guías", () => {
+    expect(ORGANIZER_NAV_LINKS.map((l) => l.href)).toEqual([
+      "/operador",
+      "/operador/paquetes",
+      "/operador/guias",
+    ]);
+  });
+
+  it("AC32: /operador/guias y subrutas activan Guías y no Perfil", () => {
+    for (const path of ["/operador/guias", "/operador/guias/x"]) {
+      expect(isActiveNavLink(path, "/operador/guias")).toBe(true);
+      expect(isActiveNavLink(path, "/operador")).toBe(false);
+    }
+  });
+
+  it("AC32: /operador/paquetes y subrutas activan Paquetes y no Perfil ni Guías", () => {
+    const id = "123e4567-e89b-42d3-a456-426614174000";
+    for (const path of [
+      "/operador/paquetes",
+      "/operador/paquetes/nuevo",
+      `/operador/paquetes/${id}/editar`,
+    ]) {
+      expect(isActiveNavLink(path, "/operador/paquetes")).toBe(true);
+      expect(isActiveNavLink(path, "/operador")).toBe(false);
+      expect(isActiveNavLink(path, "/operador/guias")).toBe(false);
+    }
   });
 });
