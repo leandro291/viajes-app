@@ -109,6 +109,14 @@ export function CheckoutForm({
     docNumber: "",
   });
   const [terms, setTerms] = useState(false);
+  // El reset del <form> deja sin marcar el input interno de la casilla aunque `terms` siga en true
+  // (se vería marcada pero no enviaría `terms`). Remontarla tras cada respuesta la realinea.
+  const [seenState, setSeenState] = useState(state);
+  const [termsKey, setTermsKey] = useState(0);
+  if (seenState !== state) {
+    setSeenState(state);
+    setTermsKey((k) => k + 1);
+  }
 
   const errors = (state.status === "error" && state.fieldErrors) || {};
 
@@ -222,6 +230,7 @@ export function CheckoutForm({
         <Field data-invalid={errors.terms ? true : undefined} className="px-1">
           <Label className="items-start gap-3 text-base leading-normal font-normal">
             <Checkbox
+              key={termsKey}
               name="terms"
               checked={terms}
               onCheckedChange={setTerms}
