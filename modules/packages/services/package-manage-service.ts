@@ -14,7 +14,7 @@ import {
 import { slugify } from "@/lib/slug";
 
 import type { PackageInput } from "../schemas/package-schema";
-import type { ManageResult, OrganizerScope } from "../types/package-manage";
+import type { ManageResult, OrganizerScope, PackageScope } from "../types/package-manage";
 import { getWriteBlock, manageFail } from "../utils/manage-gate";
 import {
   fkViolationField,
@@ -59,12 +59,21 @@ async function deleteChildren(tx: Tx, packageId: string) {
   await tx.delete(packageInclusions).where(eq(packageInclusions.packageId, packageId));
 }
 
-// Bloquea la fila del paquete (solo si es del operador) hasta el fin de la transacción.
-async function lockOwn(tx: Tx, scope: OrganizerScope, id: string) {
+// Con "all" no se filtra por dueño. Con OrganizerScope aplica el estado del operador.
+const ownerFilter = (scope: PackageScope, id: string) =>
+  scope === "all"
+    ? eq(packages.id, id)
+    : and(eq(packages.id, id), eq(packages.organizerId, scope.id));
+
+const writeBlock = (scope: PackageScope, publishing: boolean) =>
+  scope === "all" ? null : getWriteBlock(scope.status, { publishing });
+
+// Bloquea la fila del paquete (solo si es del alcance) hasta el fin de la transacción.
+async function lockOwn(tx: Tx, scope: PackageScope, id: string) {
   const [row] = await tx
     .select({ status: packages.status, slug: packages.slug })
     .from(packages)
-    .where(and(eq(packages.id, id), eq(packages.organizerId, scope.id)))
+    .where(ownerFilter(scope, id))
     .for("update");
   return row;
 }
@@ -111,11 +120,11 @@ export async function createPackage(
 }
 
 export async function updatePackage(
-  scope: OrganizerScope,
+  scope: PackageScope,
   id: string,
   input: PackageInput,
 ): Promise<ManageResult<{ id: string; catalogChanged: boolean }>> {
-  const block = getWriteBlock(scope.status, { publishing: input.status === "published" });
+  const block = writeBlock(scope, input.status === "published");
   if (block) return manageFail(block);
 
   try {
@@ -142,11 +151,11 @@ export async function updatePackage(
 }
 
 export async function setPackageStatus(
-  scope: OrganizerScope,
+  scope: PackageScope,
   id: string,
   status: Status,
 ): Promise<ManageResult<{ catalogChanged: boolean }>> {
-  const block = getWriteBlock(scope.status, { publishing: status === "published" });
+  const block = writeBlock(scope, status === "published");
   if (block) return manageFail(block);
 
   return db.transaction(async (tx): Promise<ManageResult<{ catalogChanged: boolean }>> => {
@@ -159,11 +168,11 @@ export async function setPackageStatus(
 }
 
 export async function deletePackage(
-  scope: OrganizerScope,
+  scope: PackageScope,
   id: string,
 ): Promise<ManageResult<{ catalogChanged: boolean }>> {
   // Borrar no publica nada: solo `suspended` queda bloqueado.
-  const block = getWriteBlock(scope.status, { publishing: false });
+  const block = writeBlock(scope, false);
   if (block) return manageFail(block);
 
   try {
@@ -179,7 +188,7 @@ export async function deletePackage(
           offerCount: sql<number>`(select count(*)::int from ${offers} where ${offers.packageId} = ${id})`,
         })
         .from(packages)
-        .where(and(eq(packages.id, id), eq(packages.organizerId, scope.id)))
+        .where(ownerFilter(scope, id))
         .for("update");
       if (!row) return manageFail("NOT_FOUND");
       if (row.bookingCount > 0) return manageFail("HAS_BOOKINGS");

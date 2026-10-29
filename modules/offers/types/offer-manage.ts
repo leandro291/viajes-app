@@ -10,6 +10,7 @@ export type OwnOfferItem = {
   packageTitle: string;
   packageStatus: "draft" | "published";
   packageMaxGroupSize: number;
+  organizerName: string;
   kind: OfferKind;
   discountType: DiscountType;
   discountValue: number | null;
@@ -24,5 +25,6 @@ export type OfferFormOptions = {
     title: string;
     status: "draft" | "published";
     maxGroupSize: number;
+    organizerName: string;
   }[];
 };

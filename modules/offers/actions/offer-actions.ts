@@ -1,29 +1,16 @@
 "use server";
 
-import { updateTag } from "next/cache";
-import type { z } from "zod";
-
-import { CACHE_TAGS } from "@/lib/cache-tags";
-import { manageFail, toFieldErrors, withOrganizer } from "@/modules/packages";
+import { withOrganizer } from "@/modules/packages";
 import type { ManageResult, OrganizerScope } from "@/modules/packages";
 
 import { offerIdSchema, offerInputSchema, offerUpdateSchema } from "../schemas/offer-schema";
 import { createOffer, deleteOffer, updateOffer } from "../services/offer-manage-service";
+import { invalid, runOfferAction } from "./run-offer-action";
 
-const invalid = (error: z.ZodError) => manageFail("INVALID_INPUT", toFieldErrors(error));
-
-// Invalida la caché solo si el catálogo público cambió (AC15), fuera del try/catch del wrapper.
-// `catalogChanged` es interno: no se devuelve al cliente.
-async function run<T extends object>(
+const run = <T extends object>(
   name: string,
   body: (scope: OrganizerScope) => Promise<ManageResult<T & { catalogChanged: boolean }>>,
-): Promise<ManageResult<T>> {
-  const result = await withOrganizer(name, body);
-  if (!result.ok) return result;
-  const { catalogChanged, ...rest } = result;
-  if (catalogChanged) updateTag(CACHE_TAGS.offers);
-  return rest as unknown as ManageResult<T>;
-}
+) => runOfferAction<OrganizerScope, T>(withOrganizer, name, body);
 
 export async function createOfferAction(input: unknown): Promise<ManageResult<{ id: string }>> {
   return run<{ id: string }>("createOfferAction", async (scope) => {

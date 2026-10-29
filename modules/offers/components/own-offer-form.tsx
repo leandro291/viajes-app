@@ -16,6 +16,7 @@ import { instantToLimaParts } from "@/lib/lima-time";
 // Solo tipos: el barrel de packages arrastra lib/db al bundle cliente.
 import type { ManageResult } from "@/modules/packages";
 
+import { createOfferAdminAction, updateOfferAdminAction } from "../actions/admin-offer-actions";
 import { createOfferAction, updateOfferAction } from "../actions/offer-actions";
 import {
   MAX_OFFER_MIN_PEOPLE,
@@ -27,7 +28,12 @@ import type { DiscountType, OfferKind } from "../types/offer";
 import type { OfferFormOptions, OwnOfferItem } from "../types/offer-manage";
 import { OFFER_KIND_LABELS } from "../utils/offer-view";
 
-type OwnOfferFormProps =
+const ACTIONS = {
+  organizer: { create: createOfferAction, update: updateOfferAction },
+  admin: { create: createOfferAdminAction, update: updateOfferAdminAction },
+};
+
+type OwnOfferFormProps = { panel?: "organizer" | "admin" } & (
   | { mode: "create"; options: OfferFormOptions; minDate: string; disabled: boolean }
   | {
       mode: "edit";
@@ -37,7 +43,8 @@ type OwnOfferFormProps =
       disabled: boolean;
       onDone: () => void;
       onCancel: () => void;
-    };
+    }
+);
 
 // Entrada cruda: es lo que validan los schemas y lo que reciben las actions.
 type Values = {
@@ -97,7 +104,8 @@ function initialValues(props: OwnOfferFormProps): Values {
 }
 
 export function OwnOfferForm(props: OwnOfferFormProps) {
-  const { options, minDate, disabled } = props;
+  const { options, minDate, disabled, panel = "organizer" } = props;
+  const actions = ACTIONS[panel];
   const router = useRouter();
   const prefix = useId();
   const [values, setValues] = useState(() => initialValues(props));
@@ -132,8 +140,8 @@ export function OwnOfferForm(props: OwnOfferFormProps) {
       let result: ManageResult;
       try {
         result = edit
-          ? await updateOfferAction(edit.item.id, terms)
-          : await createOfferAction({ ...terms, packageId });
+          ? await actions.update(edit.item.id, terms)
+          : await actions.create({ ...terms, packageId });
       } catch {
         result = { ok: false, code: "UNKNOWN", message: UNKNOWN_MESSAGE };
       }
@@ -188,7 +196,7 @@ export function OwnOfferForm(props: OwnOfferFormProps) {
               <NativeSelectOption value="">Elige un paquete</NativeSelectOption>
               {options.packages.map((p) => (
                 <NativeSelectOption key={p.id} value={p.id}>
-                  {p.title}
+                  {panel === "admin" ? `${p.title} · ${p.organizerName}` : p.title}
                 </NativeSelectOption>
               ))}
             </NativeSelect>
