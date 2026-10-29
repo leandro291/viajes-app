@@ -51,7 +51,14 @@ async function DestinationContent({ params }: { params: Params }) {
 
   const { destination, packages, minPriceCents } = page;
   const { slug, name, sights, climate } = destination;
-  const pins = mapPins(sights);
+  const pins = mapPins(
+    sights.map((s) => ({
+      name: s.name,
+      lat: s.lat,
+      lng: s.lng,
+      card: { eyebrow: "Lugar imperdible", title: s.name, imageUrl: s.imageUrl },
+    })),
+  );
 
   return (
     <>

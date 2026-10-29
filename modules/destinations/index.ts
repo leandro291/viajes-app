@@ -11,6 +11,8 @@ export type {
   ClimateMonthDto,
   Season,
 } from "./types/destination";
+export { DestinationMap } from "./components/destination-map";
+export { mapPins } from "./utils/destination-page";
 export { getTopDestinations } from "./services/destination-sales-service";
 export type { TopDestinationDto } from "./types/destination-sales";
 export { AdminDestinationsList } from "./components/admin-destinations-list";
