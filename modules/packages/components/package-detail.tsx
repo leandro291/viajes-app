@@ -5,6 +5,7 @@ import { Suspense } from "react";
 
 import { SectionHeading } from "@/components/shared/section-heading";
 import { formatPen } from "@/lib/money";
+import { buildMetadata } from "@/lib/seo/metadata";
 
 import { getDepartures, getPackageBySlug } from "../services/package-detail-service";
 import type { PackageImageDto } from "../types/package";
@@ -52,12 +53,14 @@ async function loadPackage(params: Params) {
 
 export async function generateDetailMetadata(params: Params): Promise<Metadata> {
   const pkg = await loadPackage(params);
-  if (!pkg) return { title: "Paquete no encontrado" };
-  return {
+  if (!pkg) return { title: "Paquete no encontrado", robots: { index: false } };
+  return buildMetadata({
     title: pkg.title,
     description: pkg.blurb,
-    openGraph: pkg.coverImageUrl ? { images: [pkg.coverImageUrl] } : undefined,
-  };
+    path: `/paquetes/${pkg.slug}`,
+    image: pkg.coverImageUrl,
+    imageAlt: pkg.title,
+  });
 }
 
 async function DetailContent({

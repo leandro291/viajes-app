@@ -159,6 +159,22 @@ describe.skipIf(!process.env.DATABASE_URL)("package-service (db)", () => {
     expect(cache.cacheTag).toHaveBeenCalledWith(CACHE_TAGS.categories);
   });
 
+  it("AC8/AC9: getSitemapPackages devuelve solo publicados, { slug, updatedAt } ordenado por slug", async () => {
+    const list = await service.getSitemapPackages();
+    expect(list.some((p) => p.slug === DRAFT_SLUG)).toBe(false);
+    expect(list.map((p) => p.slug)).toEqual(seed.seedPackages.map((p) => p.slug).sort());
+    for (const p of list) {
+      expect(Object.keys(p).sort()).toEqual(["slug", "updatedAt"]);
+      expect(p.updatedAt).toBeInstanceOf(Date);
+    }
+  });
+
+  it("AC12: getSitemapPackages declara cacheLife y cacheTag(packages)", async () => {
+    await service.getSitemapPackages();
+    expect(cache.cacheLife).toHaveBeenCalledWith("hours");
+    expect(cache.cacheTag).toHaveBeenCalledWith(CACHE_TAGS.packages);
+  });
+
   describe("getPackages", () => {
     type Seeded = (typeof import("@/lib/db/seed/data/packages"))["seedPackages"][number];
     const isDay = (p: Seeded) => p.kind === "day_tour" || p.durationDays === 1;

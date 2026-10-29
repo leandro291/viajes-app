@@ -5,6 +5,7 @@ import { Suspense } from "react";
 
 import { PhotoCredits } from "@/components/shared/photo-credits";
 import { SectionHeading } from "@/components/shared/section-heading";
+import { buildMetadata } from "@/lib/seo/metadata";
 import { buildListingHref, PackageCardList } from "@/modules/packages";
 
 import { getDestinationPage } from "../services/destination-page-service";
@@ -36,13 +37,15 @@ async function loadDestination(params: Params) {
 
 export async function generateDestinationMetadata(params: Params): Promise<Metadata> {
   const page = await loadDestination(params);
-  if (!page) return { title: "Destino no encontrado" };
-  const { name, tagline, description, heroImageUrl } = page.destination;
-  return {
+  if (!page) return { title: "Destino no encontrado", robots: { index: false } };
+  const { slug, name, tagline, description, heroImageUrl } = page.destination;
+  return buildMetadata({
     title: name,
-    description: tagline ?? description ?? undefined,
-    openGraph: heroImageUrl ? { images: [heroImageUrl] } : undefined,
-  };
+    description: tagline || description,
+    path: `/destinos/${slug}`,
+    image: heroImageUrl,
+    imageAlt: name,
+  });
 }
 
 async function DestinationContent({ params }: { params: Params }) {

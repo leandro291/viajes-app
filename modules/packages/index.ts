@@ -2,6 +2,7 @@ export {
   getFeaturedPackages,
   getCategories,
   getPackages,
+  getSitemapPackages,
 } from "./services/package-service";
 export { isDayTour, formatDuration } from "./utils/package-utils";
 export { buildListingHref } from "./utils/package-filters";

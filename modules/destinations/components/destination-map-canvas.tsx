@@ -15,14 +15,16 @@ const TILE_URL = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
 const ATTRIBUTION =
   '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 
-const MARKER_CLASS =
-  "flex items-center justify-center rounded-full bg-white text-center text-sm leading-8 font-semibold text-ink shadow-card";
+// Área táctil de 44 px (AC20f); el círculo visible sigue siendo de 32 px.
+const MARKER_CLASS = "flex items-center justify-center";
+const PIN_CLASS =
+  "flex size-8 items-center justify-center rounded-full bg-white text-sm font-semibold text-ink shadow-card";
 
 function pinIcon(n: number) {
   return L.divIcon({
-    html: `<span>${n}</span>`,
+    html: `<span class="${PIN_CLASS}">${n}</span>`,
     className: MARKER_CLASS,
-    iconSize: [32, 32],
+    iconSize: [44, 44],
   });
 }
 

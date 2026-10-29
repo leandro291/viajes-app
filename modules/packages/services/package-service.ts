@@ -164,3 +164,16 @@ export async function getCategories(): Promise<CategoryDto[]> {
     .from(categories)
     .orderBy(asc(categories.name));
 }
+
+// Sitemap: solo publicados, orden estable por slug.
+export async function getSitemapPackages(): Promise<{ slug: string; updatedAt: Date }[]> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag(CACHE_TAGS.packages);
+
+  return db
+    .select({ slug: packages.slug, updatedAt: packages.updatedAt })
+    .from(packages)
+    .where(isPublished)
+    .orderBy(asc(packages.slug));
+}

@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 
+import { PhotoCredits } from "@/components/shared/photo-credits";
 import { SectionHeading } from "@/components/shared/section-heading";
 
 import { getOfferHrefs } from "../services/offer-link-service";
@@ -30,6 +31,7 @@ export function OffersPage({ searchParams }: { searchParams: SearchParams }) {
           <OffersCatalog searchParams={searchParams} />
         </Suspense>
       </section>
+      <PhotoCredits />
     </>
   );
 }

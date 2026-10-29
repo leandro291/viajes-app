@@ -4,6 +4,7 @@ import { X } from "lucide-react";
 
 import { HeroCarousel, type HeroCarouselSlide } from "@/components/shared/hero-carousel";
 import { PageHero } from "@/components/shared/page-hero";
+import { PhotoCredits } from "@/components/shared/photo-credits";
 import { formatPen } from "@/lib/money";
 import { getDestinations } from "@/modules/destinations";
 
@@ -34,6 +35,7 @@ export function PackagesListing({ searchParams }: { searchParams: SearchParams }
           <ListingContent searchParams={searchParams} />
         </Suspense>
       </section>
+      <PhotoCredits />
     </>
   );
 }
