@@ -8,7 +8,7 @@ import { FieldError } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 
 import { newKey, type PackageFormValues, type SectionProps } from "../utils/package-form";
-import { FieldShell, FormSection } from "./form-section";
+import { FieldShell, FormSection } from "@/components/shared/form-section";
 
 type ListKey = "included" | "excluded";
 

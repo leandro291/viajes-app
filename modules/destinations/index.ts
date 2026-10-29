@@ -13,3 +13,6 @@ export type {
 } from "./types/destination";
 export { getTopDestinations } from "./services/destination-sales-service";
 export type { TopDestinationDto } from "./types/destination-sales";
+export { AdminDestinationsList } from "./components/admin-destinations-list";
+export { DestinationEditor } from "./components/destination-editor";
+export { destinationIdSchema } from "./schemas/destination-schema";

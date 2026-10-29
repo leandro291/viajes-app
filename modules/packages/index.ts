@@ -46,3 +46,4 @@ export type { TodayDeparturesDto, TodayDepartureRow } from "./types/departure-to
 export { AdminPackagesList } from "./components/admin-packages-list";
 export { AdminPackageEditor } from "./components/admin-package-editor";
 export { withAdmin } from "./actions/with-admin";
+export { AdminCategoriesPage } from "./components/admin-categories-page";

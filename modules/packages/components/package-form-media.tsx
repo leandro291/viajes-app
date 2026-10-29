@@ -10,8 +10,8 @@ import { Input } from "@/components/ui/input";
 
 import { MAX_GALLERY_IMAGES } from "../schemas/package-schema";
 import { newKey, type SectionProps } from "../utils/package-form";
-import { FieldShell, FormSection } from "./form-section";
-import { ImageUploadField } from "./image-upload-field";
+import { FieldShell, FormSection } from "@/components/shared/form-section";
+import { ImageUploadField } from "@/components/shared/image-upload-field";
 
 function GalleryRow({
   image,

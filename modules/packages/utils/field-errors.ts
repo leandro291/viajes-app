@@ -1,10 +1,2 @@
-import type { ZodError } from "zod";
-
-export function toFieldErrors(error: ZodError): Record<string, string> {
-  const out: Record<string, string> = {};
-  for (const issue of error.issues) {
-    const key = issue.path.join(".");
-    if (!(key in out)) out[key] = issue.message;
-  }
-  return out;
-}
+// Vive en lib/ para que destinations (cliente) lo use sin importar el barrel de packages.
+export { toFieldErrors } from "@/lib/field-errors";

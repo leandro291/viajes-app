@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { PACKAGE_LANGUAGES } from "../schemas/package-schema";
 import type { ManageOptions } from "../services/own-package-service";
 import type { PackageFormValues, SectionProps } from "../utils/package-form";
-import { FieldShell, FormSection } from "./form-section";
+import { FieldShell, FormSection } from "@/components/shared/form-section";
 
 const LANGUAGE_LABELS: Record<(typeof PACKAGE_LANGUAGES)[number], string> = {
   es: "Español",

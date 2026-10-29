@@ -1,4 +1,4 @@
-import { ClipboardList, LayoutDashboard, Package, Tag } from "lucide-react";
+import { ClipboardList, LayoutDashboard, MapPin, Package, Tag, Tags } from "lucide-react";
 
 import type { PanelNavLink } from "@/components/shared/panel-nav-links";
 
@@ -8,4 +8,6 @@ export const ADMIN_NAV_LINKS: ReadonlyArray<PanelNavLink> = [
   { label: "Reservas", href: "/admin/reservas", icon: ClipboardList },
   { label: "Paquetes", href: "/admin/paquetes", icon: Package },
   { label: "Ofertas", href: "/admin/ofertas", icon: Tag },
+  { label: "Destinos", href: "/admin/destinos", icon: MapPin },
+  { label: "Categorías", href: "/admin/categorias", icon: Tags },
 ];

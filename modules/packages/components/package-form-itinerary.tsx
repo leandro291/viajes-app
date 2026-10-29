@@ -14,8 +14,8 @@ import {
   type PackageFormValues,
   type SectionProps,
 } from "../utils/package-form";
-import { FieldShell, FormSection } from "./form-section";
-import { ImageUploadField } from "./image-upload-field";
+import { FieldShell, FormSection } from "@/components/shared/form-section";
+import { ImageUploadField } from "@/components/shared/image-upload-field";
 
 type Day = PackageFormValues["itinerary"][number];
 type TextKey = "title" | "place" | "transportLeg" | "lat" | "lng";
