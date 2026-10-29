@@ -9,3 +9,4 @@ export type { CreateCheckoutSessionInput } from "./services/checkout-session-ser
 export { createPendingPayment } from "./services/payment-service";
 export { parseStripeEvent, StripeSignatureError } from "./services/stripe-event-service";
 export { handleStripeEvent } from "./services/stripe-webhook-service";
+export { refundPaymentIntent } from "./services/refund-service";
