@@ -2,7 +2,7 @@
 
 - Module: packages
 - Status: approved
-- Approved by: leandro291 (2026-10-25)
+- Approved by: leandro291 (2026-10-29)
 - Mode: SDD
 
 ## Goal
@@ -67,7 +67,7 @@ Crear la ruta pública `/paquetes/[slug]` (tarjeta Trello 009, pantalla 6 del di
 - AC17 *(visual)*: Banner de cancelación ("Cancelación gratuita hasta 48 h antes", con la regla del ERM: reembolso completo; con menos tiempo se retiene el costo de las entradas ya emitidas).
 - AC18 *(visual)*: `/paquetes/no-existe` y el slug de un `draft` muestran la página not-found (D5). Slug con mayúsculas o caracteres raros no rompe (404).
 - AC19 *(auto)*: `generateMetadata` devuelve `title` = título del paquete (la plantilla raíz produce "<título> · Wayra"), `description` = `blurb`, y `openGraph.images` = portada si existe. Slug desconocido → `title: "Paquete no encontrado"`.
-- AC20 *(auto)*: `PackageGallery` es el único `"use client"` nuevo; `package.json` no gana dependencias; no hay Leaflet ni mapa.
+- AC20 *(auto)*: `PackageGallery` es el único `"use client"` nuevo; `package.json` no gana dependencias. El mapa (Leaflet) muestra la ruta del itinerario, o el punto de encuentro si no hay coordenadas por día.
 - AC21 *(visual)*: Tokens y accesibilidad: chip/fecha activa `ink` con texto blanco; objetivos táctiles ≥ 44 px; foco visible; con `prefers-reduced-motion` no hay transiciones nuevas; contraste AA en texto sobre la foto del hero (degradado inferior).
 - AC22 *(visual)*: Con red lenta se ve el skeleton del detalle (no pantalla en blanco) y las migas no parpadean.
 
