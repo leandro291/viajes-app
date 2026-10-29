@@ -41,3 +41,5 @@ export { withOrganizer } from "./actions/with-organizer";
 export { manageFail, getWriteBlock, MANAGE_MESSAGES } from "./utils/manage-gate";
 export type { ManageResult, OrganizerScope, ManageErrorCode } from "./types/package-manage";
 export { toFieldErrors } from "./utils/field-errors";
+export { getTodayDepartures } from "./services/today-departure-service";
+export type { TodayDeparturesDto, TodayDepartureRow } from "./types/departure-today";

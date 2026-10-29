@@ -32,20 +32,30 @@ describe("isActiveNavLink", () => {
 });
 
 describe("ORGANIZER_NAV_LINKS", () => {
-  it("AC15: contiene Perfil, Paquetes, Salidas, Ofertas y Guías", () => {
+  it("AC13/AC15: contiene Perfil, Paquetes, Salidas, Reservas, Ofertas y Guías en ese orden", () => {
     expect(ORGANIZER_NAV_LINKS.map((l) => l.href)).toEqual([
       "/operador",
       "/operador/paquetes",
       "/operador/salidas",
+      "/operador/reservas",
       "/operador/ofertas",
       "/operador/guias",
     ]);
   });
 
-  it("AC16: /operador/ofertas activa Ofertas y no Perfil ni Salidas", () => {
+  it("AC13: /operador/reservas y subrutas activan Reservas y no Perfil", () => {
+    for (const path of ["/operador/reservas", "/operador/reservas/x"]) {
+      expect(isActiveNavLink(path, "/operador/reservas")).toBe(true);
+      expect(isActiveNavLink(path, "/operador")).toBe(false);
+      expect(isActiveNavLink(path, "/operador/salidas")).toBe(false);
+    }
+  });
+
+  it("AC16: /operador/ofertas activa Ofertas y no Perfil, Salidas ni Reservas", () => {
     expect(isActiveNavLink("/operador/ofertas", "/operador/ofertas")).toBe(true);
     expect(isActiveNavLink("/operador/ofertas", "/operador")).toBe(false);
     expect(isActiveNavLink("/operador/ofertas", "/operador/salidas")).toBe(false);
+    expect(isActiveNavLink("/operador/ofertas", "/operador/reservas")).toBe(false);
   });
 
   it("AC32: /operador/guias y subrutas activan Guías y no Perfil", () => {
