@@ -3,6 +3,7 @@ import {
   CalendarDays,
   ClipboardList,
   Package,
+  Tag,
   UserRound,
   type LucideIcon,
 } from "lucide-react";
@@ -17,6 +18,7 @@ export const ORGANIZER_NAV_LINKS: ReadonlyArray<{
   { label: "Paquetes", href: "/operador/paquetes", icon: Package },
   { label: "Salidas", href: "/operador/salidas", icon: CalendarDays },
   { label: "Reservas", href: "/operador/reservas", icon: ClipboardList },
+  { label: "Ofertas", href: "/operador/ofertas", icon: Tag },
   { label: "Guías", href: "/operador/guias", icon: UserRound },
 ];
 
