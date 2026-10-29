@@ -293,6 +293,19 @@ describe.skipIf(!process.env.DATABASE_URL)("booking-list-service (db)", () => {
     }
   });
 
+  it("AC12: organizerName es el business_name del operador, con { all: true } y { organizerId }", async () => {
+    const name = (i: number) => `Operador de prueba reservas ${i}`;
+    expect((await walk(q())).every((r) => r.organizerName === name(0))).toBe(true);
+    const b = await svc.listBookings({ organizerId: ORG_B }, q());
+    expect(b.rows.every((r) => r.organizerName === name(1))).toBe(true);
+
+    const all = await svc.listBookings({ all: true }, q());
+    const mine = all.rows.filter((r) => allIds.includes(r.id));
+    expect(new Set(mine.map((r) => r.organizerName)).size).toBeGreaterThanOrEqual(2);
+    expect(mine.filter((r) => B_CODES.includes(r.code)).every((r) => r.organizerName === name(1))).toBe(true);
+    expect(mine.filter((r) => !B_CODES.includes(r.code)).every((r) => r.organizerName === name(0))).toBe(true);
+  });
+
   it("AC12: solo lectura, no crea ni cambia filas", async () => {
     const { db, bookings } = dbModule;
     const count = async () =>

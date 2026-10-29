@@ -1,8 +1,11 @@
 import { eq, inArray } from "drizzle-orm";
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-const { refundPaymentIntent } = vi.hoisted(() => ({ refundPaymentIntent: vi.fn() }));
-vi.mock("@/modules/payments", () => ({ refundPaymentIntent }));
+const { refundPaymentIntent, expireCheckoutSession } = vi.hoisted(() => ({
+  refundPaymentIntent: vi.fn(),
+  expireCheckoutSession: vi.fn(),
+}));
+vi.mock("@/modules/payments", () => ({ refundPaymentIntent, expireCheckoutSession }));
 
 // lib/db lanza al importarse sin DATABASE_URL: import dinámico dentro del bloque.
 describe.skipIf(!process.env.DATABASE_URL)("cancellation-service (db)", () => {
@@ -52,7 +55,7 @@ describe.skipIf(!process.env.DATABASE_URL)("cancellation-service (db)", () => {
     hours?: number;
     bookingStatus?: "pending" | "confirmed" | "cancelled";
     depStatus?: DepStatus;
-    payment?: { status: PayStatus; intent: string | null } | null;
+    payment?: { status: PayStatus; intent: string | null; session?: string } | null;
   };
 
   async function seed(opts: Opts = {}) {
@@ -111,6 +114,7 @@ describe.skipIf(!process.env.DATABASE_URL)("cancellation-service (db)", () => {
         amountCents: AMOUNT,
         refundedCents: payment.status === "refunded" ? AMOUNT : 0,
         stripePaymentIntentId: payment.intent,
+        stripeCheckoutSessionId: payment.session ?? null,
       });
     }
     return x;
@@ -145,6 +149,8 @@ describe.skipIf(!process.env.DATABASE_URL)("cancellation-service (db)", () => {
   beforeEach(() => {
     refundPaymentIntent.mockReset();
     refundPaymentIntent.mockResolvedValue({ alreadyRefunded: false });
+    expireCheckoutSession.mockReset();
+    expireCheckoutSession.mockResolvedValue(undefined);
   });
 
   afterAll(async () => {
@@ -308,5 +314,175 @@ describe.skipIf(!process.env.DATABASE_URL)("cancellation-service (db)", () => {
     const res = await svc.cancelBooking(x.code, ownerId, NOW);
     expect(res).toMatchObject({ ok: true, alreadyCancelled: false, refundedUsdCents: AMOUNT });
     expect((await snapshot(x)).b.status).toBe("cancelled");
+  });
+
+  describe("cancelBookingAsAdmin", () => {
+    it("AC3: cancela reserva ajena a 1 h de la salida, libera cupo y reembolsa una vez", async () => {
+      const x = await seed({ hours: 1 });
+      const res = await svc.cancelBookingAsAdmin(x.code);
+      expect(res).toEqual({ ok: true, alreadyCancelled: false, refundedUsdCents: AMOUNT });
+
+      const { b, d, p } = await snapshot(x);
+      expect(b.status).toBe("cancelled");
+      expect(b.cancelledAt).not.toBeNull();
+      expect(d.bookedSeats).toBe(BOOKED - PAX);
+      expect(p.status).toBe("refunded");
+      expect(p.refundedCents).toBe(p.amountCents);
+      expect(refundPaymentIntent).toHaveBeenCalledTimes(1);
+      expect(refundPaymentIntent).toHaveBeenCalledWith(p.stripePaymentIntentId, `refund-cancel:${p.id}`);
+      expect(expireCheckoutSession).not.toHaveBeenCalled();
+    });
+
+    it("AC3: el cupo nunca baja de 0", async () => {
+      const x = await seed();
+      const { db, departures } = dbModule;
+      await db.update(departures).set({ bookedSeats: 1 }).where(eq(departures.id, x.dep));
+      await svc.cancelBookingAsAdmin(x.code);
+      expect((await snapshot(x)).d.bookedSeats).toBe(0);
+    });
+
+    it("AC4: confirmed con salida cancelled cancela y reembolsa", async () => {
+      const x = await seed({ depStatus: "cancelled" });
+      expect(await svc.cancelBookingAsAdmin(x.code)).toMatchObject({ ok: true, alreadyCancelled: false });
+      const { b, d } = await snapshot(x);
+      expect(b.status).toBe("cancelled");
+      expect(d.bookedSeats).toBe(BOOKED - PAX);
+      expect(refundPaymentIntent).toHaveBeenCalledTimes(1);
+    });
+
+    it("AC4: salida en_route o completed da not_cancellable, sin escrituras ni Stripe", async () => {
+      for (const depStatus of ["en_route", "completed"] as const) {
+        const x = await seed({ depStatus });
+        const before = await snapshot(x);
+        expect(await svc.cancelBookingAsAdmin(x.code)).toEqual({ ok: false, code: "not_cancellable" });
+        expect(await snapshot(x)).toEqual(before);
+      }
+      expect(refundPaymentIntent).not.toHaveBeenCalled();
+      expect(expireCheckoutSession).not.toHaveBeenCalled();
+    }, LOOP_TIMEOUT);
+
+    it("AC5: pending cancela sin tocar cupo, pagos pending -> failed y expira la sesión post-commit", async () => {
+      const x = await seed({
+        bookingStatus: "pending",
+        payment: { status: "pending", intent: null, session: "cs_test_pend_1" },
+      });
+      const res = await svc.cancelBookingAsAdmin(x.code);
+      expect(res).toEqual({ ok: true, alreadyCancelled: false, refundedUsdCents: 0 });
+
+      const { b, d, p } = await snapshot(x);
+      expect(b.status).toBe("cancelled");
+      expect(b.cancelledAt).not.toBeNull();
+      expect(d.bookedSeats).toBe(BOOKED);
+      expect(p.status).toBe("failed");
+      expect(refundPaymentIntent).not.toHaveBeenCalled();
+      expect(expireCheckoutSession).toHaveBeenCalledTimes(1);
+      expect(expireCheckoutSession).toHaveBeenCalledWith("cs_test_pend_1");
+    });
+
+    it("AC5: pending sin pagos cancela igual y no llama a Stripe", async () => {
+      const x = await seed({ bookingStatus: "pending", payment: null });
+      expect(await svc.cancelBookingAsAdmin(x.code)).toMatchObject({ ok: true, alreadyCancelled: false });
+      expect((await snapshot(x)).b.status).toBe("cancelled");
+      expect(expireCheckoutSession).not.toHaveBeenCalled();
+    });
+
+    it("AC5: pending con salida completed (limpieza) también cancela", async () => {
+      const x = await seed({ bookingStatus: "pending", depStatus: "completed", payment: null });
+      expect(await svc.cancelBookingAsAdmin(x.code)).toMatchObject({ ok: true });
+    });
+
+    it("AC5: no se expira la sesión si el commit falla", async () => {
+      const x = await seed({
+        bookingStatus: "pending",
+        payment: { status: "pending", intent: null, session: "cs_test_pend_fail" },
+      });
+      const { db } = dbModule;
+      const spy = vi.spyOn(db, "transaction").mockRejectedValueOnce(new Error("commit failed"));
+      await expect(svc.cancelBookingAsAdmin(x.code)).rejects.toThrow("commit failed");
+      spy.mockRestore();
+      expect(expireCheckoutSession).not.toHaveBeenCalled();
+      expect((await snapshot(x)).b.status).toBe("pending");
+    });
+
+    it("AC6: segunda llamada es idempotente, sin Stripe ni cambio de cupo", async () => {
+      const x = await seed();
+      await svc.cancelBookingAsAdmin(x.code);
+      refundPaymentIntent.mockClear();
+
+      expect(await svc.cancelBookingAsAdmin(x.code)).toEqual({
+        ok: true,
+        alreadyCancelled: true,
+        refundedUsdCents: 0,
+      });
+      expect(refundPaymentIntent).not.toHaveBeenCalled();
+      expect((await snapshot(x)).d.bookedSeats).toBe(BOOKED - PAX);
+    });
+
+    it("AC6: admin + cliente en paralelo dan un solo reembolso y un solo descuento de cupo", async () => {
+      const x = await seed();
+      const results = await Promise.all([
+        svc.cancelBookingAsAdmin(x.code),
+        svc.cancelBooking(x.code, ownerId, NOW),
+      ]);
+      expect(results.filter((r) => r.ok && !r.alreadyCancelled)).toHaveLength(1);
+      expect(results.filter((r) => r.ok && r.alreadyCancelled)).toHaveLength(1);
+      expect(refundPaymentIntent).toHaveBeenCalledTimes(1);
+      expect((await snapshot(x)).d.bookedSeats).toBe(BOOKED - PAX);
+    });
+
+    it("AC7: sin pago refundable da no_refundable_payment, sin escrituras", async () => {
+      const cases: Opts[] = [
+        { payment: null },
+        { payment: { status: "pending", intent: "pi_x" } },
+        { payment: { status: "failed", intent: "pi_x" } },
+        { payment: { status: "partially_refunded", intent: "pi_x" } },
+        { payment: { status: "succeeded", intent: null } },
+      ];
+      for (const opts of cases) {
+        const x = await seed(opts);
+        const before = await snapshot(x);
+        expect(await svc.cancelBookingAsAdmin(x.code)).toEqual({ ok: false, code: "no_refundable_payment" });
+        expect(await snapshot(x)).toEqual(before);
+      }
+      expect(refundPaymentIntent).not.toHaveBeenCalled();
+    }, LOOP_TIMEOUT);
+
+    it("AC7: si Stripe lanza hace rollback total y un reintento cancela", async () => {
+      const x = await seed();
+      const before = await snapshot(x);
+      refundPaymentIntent.mockRejectedValueOnce(new Error("stripe down"));
+
+      expect(await svc.cancelBookingAsAdmin(x.code)).toEqual({ ok: false, code: "refund_failed" });
+      expect(await snapshot(x)).toEqual(before);
+
+      expect(await svc.cancelBookingAsAdmin(x.code)).toMatchObject({ ok: true, alreadyCancelled: false });
+      expect((await snapshot(x)).b.status).toBe("cancelled");
+    });
+
+    it("AC7: pago ya refunded cancela y libera el cupo sin llamar a Stripe", async () => {
+      const x = await seed({ payment: { status: "refunded", intent: "pi_done" } });
+      expect(await svc.cancelBookingAsAdmin(x.code)).toMatchObject({ ok: true, alreadyCancelled: false });
+      const { b, d } = await snapshot(x);
+      expect(b.status).toBe("cancelled");
+      expect(d.bookedSeats).toBe(BOOKED - PAX);
+      expect(refundPaymentIntent).not.toHaveBeenCalled();
+    });
+
+    it("AC8: código inexistente o mal formado da not_found", async () => {
+      expect(await svc.cancelBookingAsAdmin("WY-8799")).toEqual({ ok: false, code: "not_found" });
+      expect(await svc.cancelBookingAsAdmin("wy-8701 ")).toEqual({ ok: false, code: "not_found" });
+      expect(refundPaymentIntent).not.toHaveBeenCalled();
+    });
+  });
+
+  it("AC9: el cliente sigue sin poder cancelar una reserva pending", async () => {
+    const x = await seed({
+      bookingStatus: "pending",
+      payment: { status: "pending", intent: null, session: "cs_test_client" },
+    });
+    const before = await snapshot(x);
+    expect(await svc.cancelBooking(x.code, ownerId, NOW)).toEqual({ ok: false, code: "not_cancellable" });
+    expect(await snapshot(x)).toEqual(before);
+    expect(expireCheckoutSession).not.toHaveBeenCalled();
   });
 });

@@ -5,6 +5,7 @@ import {
   bookingTravelers,
   db,
   departures,
+  organizers,
   packages,
   payments,
   users,
@@ -54,6 +55,7 @@ export async function listBookings(
       id: bookings.id,
       code: bookings.code,
       packageTitle: packages.title,
+      organizerName: organizers.businessName,
       departureStartsAt: departures.startsAt,
       userFirstName: users.firstName,
       userLastName: users.lastName,
@@ -65,6 +67,7 @@ export async function listBookings(
     })
     .from(bookings)
     .innerJoin(packages, eq(packages.id, bookings.packageId))
+    .innerJoin(organizers, eq(organizers.id, packages.organizerId))
     .innerJoin(departures, eq(departures.id, bookings.departureId))
     .innerJoin(users, eq(users.id, bookings.customerId))
     .where(where)
