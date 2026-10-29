@@ -1,6 +1,7 @@
 import {
   Building2,
   CalendarDays,
+  ClipboardList,
   Package,
   UserRound,
   type LucideIcon,
@@ -15,6 +16,7 @@ export const ORGANIZER_NAV_LINKS: ReadonlyArray<{
   { label: "Perfil", href: "/operador", icon: Building2 },
   { label: "Paquetes", href: "/operador/paquetes", icon: Package },
   { label: "Salidas", href: "/operador/salidas", icon: CalendarDays },
+  { label: "Reservas", href: "/operador/reservas", icon: ClipboardList },
   { label: "Guías", href: "/operador/guias", icon: UserRound },
 ];
 
