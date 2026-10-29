@@ -4,6 +4,7 @@ import {
   db,
   departures,
   destinations,
+  organizers,
   packageCategories,
   packageImages,
   packageInclusions,
@@ -13,9 +14,10 @@ import {
 
 import { packageIdSchema, type PackageInput } from "../schemas/package-schema";
 import type { CategoryDto } from "../types/package";
+import type { PackageScope } from "../types/package-manage";
 import { getCategories } from "./package-service";
 
-// Lecturas del panel del operador: dinámicas (sin "use cache") y siempre filtradas por organizer_id.
+// Lecturas del panel del operador: dinámicas (sin "use cache") y filtradas por organizer_id (o sin filtro con scope "all", admin).
 
 export type OwnPackageListItem = {
   id: string;
@@ -28,6 +30,7 @@ export type OwnPackageListItem = {
   coverImageUrl: string | null;
   destinationName: string;
   departureCount: number;
+  organizerName: string;
 };
 
 export type OwnPackageEdit = {
@@ -42,7 +45,10 @@ export type ManageOptions = {
   categories: CategoryDto[];
 };
 
-export async function listOwnPackages(organizerId: string): Promise<OwnPackageListItem[]> {
+const scopeFilter = (scope: PackageScope) =>
+  scope === "all" ? undefined : eq(packages.organizerId, scope.id);
+
+export async function listOwnPackages(scope: PackageScope): Promise<OwnPackageListItem[]> {
   return db
     .select({
       id: packages.id,
@@ -55,18 +61,20 @@ export async function listOwnPackages(organizerId: string): Promise<OwnPackageLi
       coverImageUrl: packages.coverImageUrl,
       destinationName: destinations.name,
       departureCount: count(departures.id),
+      organizerName: organizers.businessName,
     })
     .from(packages)
     .innerJoin(destinations, eq(destinations.id, packages.destinationId))
+    .innerJoin(organizers, eq(organizers.id, packages.organizerId))
     .leftJoin(departures, eq(departures.packageId, packages.id))
-    .where(eq(packages.organizerId, organizerId))
-    .groupBy(packages.id, destinations.id)
+    .where(scopeFilter(scope))
+    .groupBy(packages.id, destinations.id, organizers.id)
     .orderBy(desc(packages.createdAt), asc(packages.id));
 }
 
 // `id` mal formado -> null (el uuid de Postgres lanzaría); la action/página puede validar antes igualmente.
 export async function getOwnPackageForEdit(
-  organizerId: string,
+  scope: PackageScope,
   id: string,
 ): Promise<OwnPackageEdit | null> {
   if (!packageIdSchema.safeParse(id).success) return null;
@@ -74,7 +82,7 @@ export async function getOwnPackageForEdit(
   const [pkg] = await db
     .select()
     .from(packages)
-    .where(and(eq(packages.id, id), eq(packages.organizerId, organizerId)));
+    .where(and(eq(packages.id, id), scopeFilter(scope)));
   if (!pkg) return null;
 
   const [cats, images, days, inclusions, [{ departureCount }]] = await Promise.all([

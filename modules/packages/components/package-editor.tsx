@@ -39,7 +39,7 @@ export async function PackageEditor({ packageId }: { packageId?: string }) {
   }
 
   const [edit, options] = await Promise.all([
-    getOwnPackageForEdit(organizer.id, packageId),
+    getOwnPackageForEdit(organizer, packageId),
     getManageOptions(),
   ]);
   if (!edit) notFound();

@@ -7,12 +7,13 @@ import { instantToLimaParts } from "@/lib/lima-time";
 import { getCurrentOrganizer } from "@/modules/organizers";
 import { getWriteBlock, MANAGE_MESSAGES } from "@/modules/packages";
 
+import type { OfferFormOptions, OwnOfferItem } from "../types/offer-manage";
 import { getOfferFormOptions, listOffers } from "../services/offer-list-service";
 import { offerState } from "../utils/offer-rules";
 import { OwnOfferForm } from "./own-offer-form";
 import { OwnOfferRow } from "./own-offer-row";
 
-const CARD = "rounded-card bg-surface p-6 shadow-card md:p-8";
+export const CARD = "rounded-card bg-surface p-6 shadow-card md:p-8";
 
 export async function OwnOffersPage() {
   const organizer = await getCurrentOrganizer();
@@ -67,13 +68,48 @@ export async function OwnOffersPage() {
           <AlertDescription>{MANAGE_MESSAGES.ORGANIZER_SUSPENDED}</AlertDescription>
         </Alert>
       )}
+      <OffersManager
+        panel="organizer"
+        title="Mis ofertas"
+        emptyText="Aún no tienes ofertas"
+        items={items}
+        options={options}
+        now={now}
+        minDate={minDate}
+        disabled={disabled}
+      />
+    </div>
+  );
+}
 
+// Cuerpo compartido con el panel admin: lista + formulario de alta.
+export function OffersManager({
+  panel,
+  title,
+  emptyText,
+  items,
+  options,
+  now,
+  minDate,
+  disabled,
+}: {
+  panel: "organizer" | "admin";
+  title: string;
+  emptyText: string;
+  items: OwnOfferItem[];
+  options: OfferFormOptions;
+  now: Date;
+  minDate: string;
+  disabled: boolean;
+}) {
+  return (
+    <>
       <section aria-labelledby="offers-list" className={CARD}>
         <h2 id="offers-list" className="text-lg font-bold text-ink">
-          Mis ofertas
+          {title}
         </h2>
         {items.length === 0 ? (
-          <p className="mt-2 text-ink-muted">Aún no tienes ofertas</p>
+          <p className="mt-2 text-ink-muted">{emptyText}</p>
         ) : (
           <ul className="mt-2 divide-y divide-border">
             {items.map((item) => (
@@ -84,6 +120,7 @@ export async function OwnOffersPage() {
                 options={options}
                 minDate={minDate}
                 disabled={disabled}
+                panel={panel}
               />
             ))}
           </ul>
@@ -94,8 +131,14 @@ export async function OwnOffersPage() {
         <h2 id="offers-new" className="mb-4 text-lg font-bold text-ink">
           Nueva oferta
         </h2>
-        <OwnOfferForm mode="create" options={options} minDate={minDate} disabled={disabled} />
+        <OwnOfferForm
+          mode="create"
+          panel={panel}
+          options={options}
+          minDate={minDate}
+          disabled={disabled}
+        />
       </section>
-    </div>
+    </>
   );
 }

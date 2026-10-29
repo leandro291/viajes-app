@@ -1,6 +1,6 @@
 import { asc, desc, eq } from "drizzle-orm";
 
-import { db, offers, packages } from "@/lib/db";
+import { db, offers, organizers, packages } from "@/lib/db";
 
 import type {
   OfferFormOptions,
@@ -24,6 +24,7 @@ export async function listOffers(scope: OfferScope): Promise<OwnOfferItem[]> {
         packageTitle: packages.title,
         packageStatus: packages.status,
         packageMaxGroupSize: packages.maxGroupSize,
+        organizerName: organizers.businessName,
         kind: offers.kind,
         discountType: offers.discountType,
         discountValue: offers.discountValue,
@@ -33,6 +34,7 @@ export async function listOffers(scope: OfferScope): Promise<OwnOfferItem[]> {
       })
       .from(offers)
       .innerJoin(packages, eq(packages.id, offers.packageId))
+      .innerJoin(organizers, eq(organizers.id, packages.organizerId))
       .where(scopeFilter(scope))
       .orderBy(asc(packages.title), desc(offers.createdAt), asc(offers.id))
       // ponytail: sin paginación, tope de 500 filas; paginar/filtrar por paquete si se supera.
@@ -49,8 +51,10 @@ export async function getOfferFormOptions(
       title: packages.title,
       status: packages.status,
       maxGroupSize: packages.maxGroupSize,
+      organizerName: organizers.businessName,
     })
     .from(packages)
+    .innerJoin(organizers, eq(organizers.id, packages.organizerId))
     .where(scopeFilter(scope))
     .orderBy(asc(packages.title), asc(packages.id));
   return { packages: pkgs };

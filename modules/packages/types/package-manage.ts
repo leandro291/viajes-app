@@ -3,6 +3,9 @@ import type { organizerStatus } from "@/lib/db/schema/enums";
 // Estructural: OrganizerProfile (modules/organizers) es asignable; no se importa su tipo.
 export type OrganizerScope = { id: string; status: (typeof organizerStatus.enumValues)[number] };
 
+// "all": admin (027), sin filtro por dueño ni bloqueo por estado del operador.
+export type PackageScope = OrganizerScope | "all";
+
 export type ManageErrorCode =
   | "NO_ORGANIZER"
   | "ORGANIZER_SUSPENDED"

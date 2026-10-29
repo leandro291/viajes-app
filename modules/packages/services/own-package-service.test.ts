@@ -17,6 +17,7 @@ describe.skipIf(!process.env.DATABASE_URL)("own-package-service (db)", () => {
   const pkgIds = [PKG_FULL, PKG_DRAFT, PKG_OTHER];
   const DEP_IDS = [id(0x20), id(0x21)];
   const [mine, other] = orgIds;
+  const scopeOf = (orgId: string) => ({ id: orgId, status: "active" as const });
 
   let svc: typeof import("./own-package-service");
   let dbModule: typeof import("@/lib/db");
@@ -157,14 +158,14 @@ describe.skipIf(!process.env.DATABASE_URL)("own-package-service (db)", () => {
   });
 
   it("AC19: listOwnPackages excluye los de otro operador, incluye draft y published, recientes primero", async () => {
-    const list = await svc.listOwnPackages(mine);
+    const list = await svc.listOwnPackages(scopeOf(mine));
     expect(list.map((p) => p.id)).toEqual([PKG_DRAFT, PKG_FULL]);
     expect(list.map((p) => p.status)).toEqual(["draft", "published"]);
-    expect((await svc.listOwnPackages(other)).map((p) => p.id)).toEqual([PKG_OTHER]);
+    expect((await svc.listOwnPackages(scopeOf(other))).map((p) => p.id)).toEqual([PKG_OTHER]);
   });
 
   it("AC19: listOwnPackages trae departureCount, destinationName y coverImageUrl", async () => {
-    const [draft, full] = await svc.listOwnPackages(mine);
+    const [draft, full] = await svc.listOwnPackages(scopeOf(mine));
     expect(full).toEqual({
       id: PKG_FULL,
       slug: "test-own-package-full",
@@ -176,18 +177,36 @@ describe.skipIf(!process.env.DATABASE_URL)("own-package-service (db)", () => {
       coverImageUrl: "/seed/portada.jpg",
       destinationName: "Destino de prueba own-package",
       departureCount: 2,
+      organizerName: "Operador de prueba 0",
     });
     expect(draft).toMatchObject({ coverImageUrl: null, departureCount: 0 });
   });
 
+  it("AC1: listOwnPackages('all') lista paquetes de varios operadores con organizerName", async () => {
+    const list = (await svc.listOwnPackages("all")).filter((p) => pkgIds.includes(p.id));
+    expect(list.map((p) => [p.id, p.organizerName])).toEqual([
+      [PKG_OTHER, "Operador de prueba 1"],
+      [PKG_DRAFT, "Operador de prueba 0"],
+      [PKG_FULL, "Operador de prueba 0"],
+    ]);
+    expect(list.find((p) => p.id === PKG_FULL)?.departureCount).toBe(2);
+  });
+
+  it("AC2: getOwnPackageForEdit('all') devuelve un paquete ajeno; el scope de operador no", async () => {
+    expect(await svc.getOwnPackageForEdit("all", PKG_OTHER)).toMatchObject({ id: PKG_OTHER });
+    expect(await svc.getOwnPackageForEdit(scopeOf(mine), PKG_OTHER)).toBeNull();
+    expect(await svc.getOwnPackageForEdit("all", id(0xff))).toBeNull();
+    expect(await svc.getOwnPackageForEdit("all", "no-es-uuid")).toBeNull();
+  });
+
   it("AC19: getOwnPackageForEdit ajeno, inexistente o con id mal formado -> null", async () => {
-    expect(await svc.getOwnPackageForEdit(mine, PKG_OTHER)).toBeNull();
-    expect(await svc.getOwnPackageForEdit(mine, id(0xff))).toBeNull();
-    expect(await svc.getOwnPackageForEdit(mine, "no-es-uuid")).toBeNull();
+    expect(await svc.getOwnPackageForEdit(scopeOf(mine), PKG_OTHER)).toBeNull();
+    expect(await svc.getOwnPackageForEdit(scopeOf(mine), id(0xff))).toBeNull();
+    expect(await svc.getOwnPackageForEdit(scopeOf(mine), "no-es-uuid")).toBeNull();
   });
 
   it("AC19: getOwnPackageForEdit propio devuelve values completo y ordenado", async () => {
-    const res = await svc.getOwnPackageForEdit(mine, PKG_FULL);
+    const res = await svc.getOwnPackageForEdit(scopeOf(mine), PKG_FULL);
     expect(res).toEqual({
       id: PKG_FULL,
       slug: "test-own-package-full",
@@ -232,7 +251,7 @@ describe.skipIf(!process.env.DATABASE_URL)("own-package-service (db)", () => {
   });
 
   it("AC19: getOwnPackageForEdit de un borrador mínimo normaliza nulos", async () => {
-    const res = await svc.getOwnPackageForEdit(mine, PKG_DRAFT);
+    const res = await svc.getOwnPackageForEdit(scopeOf(mine), PKG_DRAFT);
     expect(res?.departureCount).toBe(0);
     expect(res?.values).toMatchObject({
       kind: "package",

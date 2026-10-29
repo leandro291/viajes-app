@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useMemo } from "react";
+import { Fragment, useMemo, type ReactNode } from "react";
 import Link from "next/link";
 import {
   createColumnHelper,
@@ -28,7 +28,13 @@ import type { BookingListQuery, BookingRowDto, BookingSortKey } from "../types/b
 import { buildBookingsHref, nextSortQuery } from "../utils/booking-list-params";
 import { DOC_TYPE_LABELS, NO_PAYMENT_LABEL, PAYMENT_BADGE } from "../utils/booking-list-view";
 
-type BookingsTableProps = { rows: BookingRowDto[]; query: BookingListQuery; basePath: string };
+type BookingsTableProps = {
+  rows: BookingRowDto[];
+  query: BookingListQuery;
+  basePath: string;
+  showOrganizer?: boolean;
+  renderActions?: (row: BookingRowDto) => ReactNode;
+};
 
 const features = tableFeatures({ rowExpandingFeature });
 const helper = createColumnHelper<typeof features, BookingRowDto>();
@@ -56,7 +62,13 @@ function SortLink({
   );
 }
 
-export function BookingsTable({ rows, query, basePath }: BookingsTableProps) {
+export function BookingsTable({
+  rows,
+  query,
+  basePath,
+  showOrganizer,
+  renderActions,
+}: BookingsTableProps) {
   const columns = useMemo(
     () =>
       helper.columns([
@@ -90,6 +102,15 @@ export function BookingsTable({ rows, query, basePath }: BookingsTableProps) {
           header: "Paquete",
           cell: ({ row }) => row.original.packageTitle,
         }),
+        ...(showOrganizer
+          ? [
+              helper.display({
+                id: "operador",
+                header: "Operador",
+                cell: ({ row }) => row.original.organizerName,
+              }),
+            ]
+          : []),
         helper.display({
           id: "salida",
           header: () => <SortLink label="Salida" sortKey="salida" query={query} basePath={basePath} />,
@@ -136,8 +157,17 @@ export function BookingsTable({ rows, query, basePath }: BookingsTableProps) {
             return <StatusBadge status={badge} label={label} />;
           },
         }),
+        ...(renderActions
+          ? [
+              helper.display({
+                id: "acciones",
+                header: "Acciones",
+                cell: ({ row }) => renderActions(row.original),
+              }),
+            ]
+          : []),
       ]),
-    [query, basePath],
+    [query, basePath, showOrganizer, renderActions],
   );
 
   const table = useTable({

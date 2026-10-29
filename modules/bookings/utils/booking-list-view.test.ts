@@ -14,6 +14,7 @@ const row: BookingRow = {
   id: "b1",
   code: "WY-4822",
   packageTitle: "Machu Picchu",
+  organizerName: "Inka Trails",
   departureStartsAt: new Date("2026-11-05T12:30:00Z"),
   userFirstName: "Ana",
   userLastName: "Quispe",
@@ -34,6 +35,10 @@ const traveler = (id: string, isPrimary: boolean): BookingTravelerDto => ({
 });
 
 describe("toBookingRowDto", () => {
+  it("AC12: organizerName se copia al DTO", () => {
+    expect(toBookingRowDto(row, [], null).organizerName).toBe("Inka Trails");
+  });
+
   it("AC4: customerName une nombre y apellido", () => {
     expect(toBookingRowDto(row, [], null).customerName).toBe("Ana Quispe");
   });

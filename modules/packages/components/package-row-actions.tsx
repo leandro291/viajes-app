@@ -8,21 +8,32 @@ import { ConfirmActionDialog } from "@/components/shared/confirm-action-dialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 
+import {
+  deletePackageAdminAction,
+  setPackageStatusAdminAction,
+} from "../actions/admin-package-actions";
 import { deletePackageAction, setPackageStatusAction } from "../actions/package-actions";
 import type { OwnPackageListItem } from "../services/own-package-service";
 import type { OrganizerScope } from "../types/package-manage";
 import { MANAGE_MESSAGES } from "../utils/manage-gate";
+
+const ACTIONS = {
+  organizer: { setStatus: setPackageStatusAction, remove: deletePackageAction },
+  admin: { setStatus: setPackageStatusAdminAction, remove: deletePackageAdminAction },
+};
 
 const PENDING_HINT =
   "Tu cuenta debe estar activa para publicar. Mientras tanto guarda como borrador.";
 
 type PackageRowActionsProps = {
   item: OwnPackageListItem;
+  panel?: "organizer" | "admin";
   organizerStatus: OrganizerScope["status"];
 };
 
 // Root `contents`: los botones fluyen en el contenedor de acciones de la fila; los mensajes ocupan toda la línea.
-export function PackageRowActions({ item, organizerStatus }: PackageRowActionsProps) {
+export function PackageRowActions({ item, panel = "organizer", organizerStatus }: PackageRowActionsProps) {
+  const actions = ACTIONS[panel];
   const router = useRouter();
   const hintId = useId();
   const [message, setMessage] = useState<string | null>(null);
@@ -36,7 +47,7 @@ export function PackageRowActions({ item, organizerStatus }: PackageRowActionsPr
     setMessage(null);
     startTransition(async () => {
       try {
-        const result = await setPackageStatusAction(
+        const result = await actions.setStatus(
           item.id,
           isPublished ? "draft" : "published",
         );
@@ -73,7 +84,7 @@ export function PackageRowActions({ item, organizerStatus }: PackageRowActionsPr
         description="Se borrará el paquete con su itinerario e imágenes. Esta acción no se puede deshacer."
         confirmLabel="Eliminar"
         onConfirm={async () => {
-          const result = await deletePackageAction(item.id);
+          const result = await actions.remove(item.id);
           if (!result.ok) return { ok: false, message: result.message };
           router.refresh();
           return { ok: true };

@@ -105,6 +105,7 @@ describe.skipIf(!process.env.DATABASE_URL)("offer-list-service (db)", () => {
       packageTitle: `${P} A`,
       packageStatus: "draft",
       packageMaxGroupSize: 8,
+      organizerName: `${P} operador 0`,
       kind: "rainy_season",
       discountType: "percent",
       discountValue: 10,
@@ -128,10 +129,17 @@ describe.skipIf(!process.env.DATABASE_URL)("offer-list-service (db)", () => {
 
   it("AC9: getOfferFormOptions devuelve paquetes del alcance (cualquier estado) por título", async () => {
     expect((await svc.getOfferFormOptions(mine)).packages).toEqual([
-      { id: pkgA, title: `${P} A`, status: "draft", maxGroupSize: 8 },
-      { id: pkgB, title: `${P} B`, status: "published", maxGroupSize: 12 },
+      { id: pkgA, title: `${P} A`, status: "draft", maxGroupSize: 8, organizerName: `${P} operador 0` },
+      { id: pkgB, title: `${P} B`, status: "published", maxGroupSize: 12, organizerName: `${P} operador 0` },
     ]);
-    const all = (await svc.getOfferFormOptions("all")).packages.map((p) => p.id);
-    expect(all.filter((id) => pkgIds.includes(id))).toEqual([pkgA, pkgB, pkgC]);
+    const all = (await svc.getOfferFormOptions("all")).packages.filter((p) => pkgIds.includes(p.id));
+    expect(all.map((p) => p.id)).toEqual([pkgA, pkgB, pkgC]);
+    expect(all[2].organizerName).toBe(`${P} operador 1`);
+  });
+
+  it("AC7: D6: listOffers('all') trae organizerName de cada operador", async () => {
+    const items = await svc.listOffers("all");
+    expect(items.find((i) => i.id === off.a1)?.organizerName).toBe(`${P} operador 0`);
+    expect(items.find((i) => i.id === off.c1)?.organizerName).toBe(`${P} operador 1`);
   });
 });
