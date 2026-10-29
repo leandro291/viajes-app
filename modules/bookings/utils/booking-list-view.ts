@@ -7,11 +7,12 @@ import type {
   PaymentStatus,
 } from "../types/booking-list";
 
-// Columnas crudas del join bookings + packages + departures + users.
+// Columnas crudas del join bookings + packages + organizers + departures + users.
 export type BookingRow = {
   id: string;
   code: string;
   packageTitle: string;
+  organizerName: string;
   departureStartsAt: Date;
   userFirstName: string | null;
   userLastName: string | null;
@@ -37,6 +38,7 @@ export function toBookingRowDto(
     id: row.id,
     code: row.code,
     packageTitle: row.packageTitle,
+    organizerName: row.organizerName,
     departureStartsAt: row.departureStartsAt,
     customerName,
     contactEmail: row.contactEmail,
