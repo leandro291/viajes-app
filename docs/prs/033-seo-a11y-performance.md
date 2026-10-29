@@ -14,6 +14,7 @@ Metadata, sitemap, robots e imagen OG para las 6 pantallas públicas, `noindex` 
 - `package-service.ts`, `modules/packages/index.ts` — `getSitemapPackages`.
 - 5 archivos de `app/` — `noindex, nofollow` en admin, operador, `cuenta`, `sign-in`, `sign-up`.
 - `components/shared/site-shell.tsx` — enlace de salto y `<main id="contenido">`.
+- `hero-carousel`, `offer-hero`, `booking-panel` — nombre accesible parte del texto visible; `site-header`, `package-detail`, `booking-panel` — sin desborde a 320 px.
 - Listados (`packages-listing`, `tours-listing`, `offers-page`) — créditos CC; `newsletter-form` — campo de 52 px en móvil; `destination-map-canvas` — marcadores de 44 px.
 - `docs/specs/seo/`, `docs/audits/`, `changelog/` — spec, informe y changelog.
 
@@ -26,7 +27,7 @@ Metadata, sitemap, robots e imagen OG para las 6 pantallas públicas, `noindex` 
 - [x] AC17: enlace de salto verificado con teclado (primer Tab, 185×44 px, Enter mueve el foco a `<main>`)
 - [x] AC18: informe con medianas de 3 corridas, móvil y escritorio, 6 pantallas (`/ofertas` móvil con método distinto, H3)
 - [ ] AC19: **no se cumple** (rendimiento móvil 66–77, LCP 4,5–6,3 s, TBT 408/244 ms en ficha/destino, SEO 92 en fichas, Buenas prácticas 77)
-- [ ] AC20: **parcial** (h1, alt, créditos CC, 390 px sin scroll horizontal, movimiento reducido en 2 pantallas y foco visible en 1 verificados; los objetivos propios < 44 px se corrigieron y quedan solo los de Clerk y Leaflet, de terceros)
+- [x] AC20: verificado en las 6 pantallas (recorrido de Tab sin trampas y con foco visible, movimiento reducido, 0 px de desborde a 640, 390 y 320 px, h1, alt, créditos CC, `label-content-name-mismatch` en 0). Los objetivos < 44 px que quedan son de Clerk y Leaflet, de terceros
 - [x] AC21: lint, tsc y tests en verde
 
 ## Cómo probar
@@ -39,4 +40,5 @@ Metadata, sitemap, robots e imagen OG para las 6 pantallas públicas, `noindex` 
 - Reviewer: APPROVED en las Fases 1, 2 y 3 (T1–T8). Las tareas T9 y T10 (Fase 4) **no pasaron por `reviewer`**.
 - lint ✓ · tsc ✓ · tests ✓ (1153 pasan, 284 omitidos por falta de DB; 2 tests preexistentes de `package-service` fallan con la DB del `.env`, ajenos a esta rama)
 - Playwright: `/`, `/paquetes`, `/tours`, `/ofertas`, `/paquetes/cusco-valle-sagrado`, `/destinos/cusco` a 390 px; teclado en `/paquetes` y la ficha; movimiento reducido en `/` y `/ofertas`.
+- Chrome headless (`puppeteer-core`) tras los arreglos: recorrido de Tab y foco visible en las 6 pantallas, movimiento reducido, desborde a 640/390/320 px, y Lighthouse de accesibilidad (100, 0 fallos) en `/`, `/ofertas` y la ficha, móvil y escritorio.
 - Playwright tras los arreglos menores: campo del boletín 279×52 px, créditos CC visibles en `/paquetes`, `/tours` y `/ofertas`, marcadores del mapa 44×44 px con clic funcionando, 0 errores de consola, sin scroll horizontal.

@@ -17,8 +17,8 @@ export function SiteHeader() {
         <Suspense fallback={<SiteNavPlain links={SITE_LINKS} />}>
           <SiteNav links={SITE_LINKS} />
         </Suspense>
-        <div className="flex items-center gap-2">
-          <span className="px-3 py-2.5 text-base font-medium whitespace-nowrap text-white">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="px-3 py-2.5 text-base font-medium whitespace-nowrap text-white max-[360px]:hidden">
             PEN · S/
           </span>
           <Suspense>
