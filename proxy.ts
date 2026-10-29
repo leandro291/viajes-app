@@ -10,6 +10,8 @@ import { hasRole, roleFromClaims, type Role } from "@/lib/auth/roles";
 const protectedRoutes: [ReturnType<typeof createRouteMatcher>, Role][] = [
   [createRouteMatcher(["/pago(.*)", "/confirmacion(.*)", "/mis-reservas(.*)", "/cuenta(.*)"]), "customer"],
   [createRouteMatcher(["/operador(.*)"]), "organizer"],
+  // Antes de "/admin(.*)": gana la primera regla que coincide.
+  [createRouteMatcher(["/admin/administradores(.*)", "/admin/configuracion(.*)"]), "super_admin"],
   [createRouteMatcher(["/admin(.*)"]), "admin"],
 ];
 

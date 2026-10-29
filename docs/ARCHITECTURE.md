@@ -82,6 +82,7 @@ docs/                         # documentación
 | `(customer)`  | `/pago`, `/confirmacion/[code]`, `/mis-reservas`, `/cuenta`                         | `customer` (y roles superiores)     |
 | `(organizer)` | `/operador`, `/operador/paquetes`, `/operador/salidas`, `/operador/reservas`, `/operador/ofertas` | `organizer`           |
 | `(admin)`     | `/admin`, `/admin/reservas`, `/admin/paquetes`, `/admin/clientes`, `/admin/ofertas`, `/admin/operadores` | `admin`, `super_admin` |
+| `(admin)` solo `super_admin` | `/admin/administradores`, `/admin/configuracion` | `super_admin` |
 
 Solo `super_admin` ve: gestión de administradores, aprobación de operadores y configuración del sitio.
 Los slugs de URL van en español (producto); carpetas y código, en inglés. La autorización se explica en [SYSTEM-DESIGN.md](SYSTEM-DESIGN.md#autenticación-y-autorización).
