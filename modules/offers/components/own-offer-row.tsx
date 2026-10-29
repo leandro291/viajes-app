@@ -8,6 +8,7 @@ import { ConfirmActionDialog } from "@/components/shared/confirm-action-dialog";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { Button } from "@/components/ui/button";
 
+import { deleteOfferAdminAction } from "../actions/admin-offer-actions";
 import { deleteOfferAction } from "../actions/offer-actions";
 import type { OfferFormOptions, OwnOfferItem } from "../types/offer-manage";
 import {
@@ -19,18 +20,22 @@ import {
 import { formatValidUntil, OFFER_KIND_LABELS } from "../utils/offer-view";
 import { OwnOfferForm } from "./own-offer-form";
 
+const DELETE_ACTION = { organizer: deleteOfferAction, admin: deleteOfferAdminAction };
+
 export function OwnOfferRow({
   item,
   state,
   options,
   minDate,
   disabled,
+  panel = "organizer",
 }: {
   item: OwnOfferItem;
   state: OfferState;
   options: OfferFormOptions;
   minDate: string;
   disabled: boolean;
+  panel?: "organizer" | "admin";
 }) {
   const router = useRouter();
   const [editing, setEditing] = useState(false);
@@ -42,6 +47,7 @@ export function OwnOfferRow({
       <li className="py-4">
         <OwnOfferForm
           mode="edit"
+          panel={panel}
           item={item}
           options={options}
           minDate={minDate}
@@ -62,6 +68,9 @@ export function OwnOfferRow({
     <li className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between">
       <div className="min-w-0">
         <p className="break-words font-bold text-ink">{item.packageTitle}</p>
+        {panel === "admin" && (
+          <p className="break-words text-ink-muted">{item.organizerName}</p>
+        )}
         <p className="text-ink">{OFFER_KIND_LABELS[item.kind]}</p>
         <p className="text-ink">
           {discount} · {min}
@@ -92,7 +101,7 @@ export function OwnOfferRow({
           description={`Se eliminará la oferta de ${item.packageTitle}. Esta acción no se puede deshacer.`}
           confirmLabel="Eliminar"
           onConfirm={async () => {
-            const result = await deleteOfferAction(item.id);
+            const result = await DELETE_ACTION[panel](item.id);
             if (!result.ok) return { ok: false, message: result.message };
             startTransition(() => router.refresh());
             return { ok: true };

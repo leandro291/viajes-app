@@ -587,4 +587,112 @@ describe.skipIf(!process.env.DATABASE_URL)("package-manage-service (db)", () => 
       expect(await snapshot(p.id)).not.toBeNull();
     });
   });
+
+  describe('scope "all" (admin, 027)', () => {
+    it("AC4: updatePackage actualiza un paquete de otro operador sin cambiar dueño ni slug", async () => {
+      const theirs = await create("Zz Prueba 021 All Upd", other);
+      const r = await svc.updatePackage(
+        "all",
+        theirs.id,
+        makeInput("Zz Prueba 021 All Upd Nuevo", { status: "published" }),
+      );
+      expect(r).toEqual({ ok: true, id: theirs.id, catalogChanged: true });
+      expect((await snapshot(theirs.id))?.row).toMatchObject({
+        organizerId: other.id,
+        slug: theirs.slug,
+        title: "Zz Prueba 021 All Upd Nuevo",
+        status: "published",
+      });
+    });
+
+    it("AC4: updatePackage con id inexistente -> NOT_FOUND", async () => {
+      expect(await svc.updatePackage("all", MISSING_ID, makeInput("Zz Prueba 021 All Nada"))).toMatchObject({
+        ok: false,
+        code: "NOT_FOUND",
+      });
+    });
+
+    it("AC3: setPackageStatus publica y despublica uno ajeno (sin getWriteBlock)", async () => {
+      const theirs = await create("Zz Prueba 021 All Estado", other);
+      expect(await svc.setPackageStatus("all", theirs.id, "published")).toEqual({
+        ok: true,
+        catalogChanged: true,
+      });
+      expect((await snapshot(theirs.id))?.row.status).toBe("published");
+      expect(await svc.setPackageStatus("all", theirs.id, "draft")).toEqual({
+        ok: true,
+        catalogChanged: true,
+      });
+      expect(await svc.setPackageStatus("all", MISSING_ID, "draft")).toMatchObject({
+        ok: false,
+        code: "NOT_FOUND",
+      });
+    });
+
+    it("AC3: el estado del operador no bloquea a admin; el mismo paquete sí bloquea a OrganizerScope suspended", async () => {
+      const p = await create("Zz Prueba 021 All Susp");
+      expect(await svc.setPackageStatus(suspended, p.id, "published")).toMatchObject({
+        ok: false,
+        code: "ORGANIZER_SUSPENDED",
+      });
+      expect(await svc.setPackageStatus("all", p.id, "published")).toMatchObject({ ok: true });
+      expect(await svc.deletePackage(suspended, p.id)).toMatchObject({
+        ok: false,
+        code: "ORGANIZER_SUSPENDED",
+      });
+      expect(await svc.deletePackage("all", p.id)).toEqual({ ok: true, catalogChanged: true });
+      expect(await snapshot(p.id)).toBeNull();
+    }, 30_000);
+
+    it("AC3: deletePackage borra uno ajeno y respeta HAS_BOOKINGS / HAS_DEPARTURES / HAS_OFFERS", async () => {
+      const { db, offers } = dbModule;
+      const free = await create("Zz Prueba 021 All Del", other);
+      expect(await svc.deletePackage("all", free.id)).toEqual({ ok: true, catalogChanged: false });
+      expect(await snapshot(free.id)).toBeNull();
+
+      const withBooking = await create("Zz Prueba 021 All Del Reserva", other);
+      await addBooking(withBooking.id, await addDeparture(withBooking.id));
+      expect(await svc.deletePackage("all", withBooking.id)).toMatchObject({
+        ok: false,
+        code: "HAS_BOOKINGS",
+      });
+
+      const withDeparture = await create("Zz Prueba 021 All Del Salida", other);
+      await addDeparture(withDeparture.id);
+      expect(await svc.deletePackage("all", withDeparture.id)).toMatchObject({
+        ok: false,
+        code: "HAS_DEPARTURES",
+      });
+
+      const withOffer = await create("Zz Prueba 021 All Del Oferta", other);
+      await db
+        .insert(offers)
+        .values({ packageId: withOffer.id, kind: "groups", discountType: "percent", discountValue: 10 });
+      expect(await svc.deletePackage("all", withOffer.id)).toMatchObject({
+        ok: false,
+        code: "HAS_OFFERS",
+      });
+      expect(await svc.deletePackage("all", MISSING_ID)).toMatchObject({
+        ok: false,
+        code: "NOT_FOUND",
+      });
+    }, 30_000);
+
+    it("AC4: OrganizerScope sigue dando NOT_FOUND en paquetes ajenos (sin regresión)", async () => {
+      const theirs = await create("Zz Prueba 021 All Regresion", other);
+      expect(await svc.updatePackage(mine, theirs.id, makeInput("Zz Prueba 021 X"))).toMatchObject({
+        ok: false,
+        code: "NOT_FOUND",
+      });
+      expect(await svc.setPackageStatus(mine, theirs.id, "published")).toMatchObject({
+        ok: false,
+        code: "NOT_FOUND",
+      });
+      expect(await svc.deletePackage(mine, theirs.id)).toMatchObject({
+        ok: false,
+        code: "NOT_FOUND",
+      });
+      expect(await snapshot(theirs.id)).not.toBeNull();
+    });
+  });
 });

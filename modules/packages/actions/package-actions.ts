@@ -1,9 +1,6 @@
 "use server";
 
-import { updateTag } from "next/cache";
 import type { z } from "zod";
-
-import { CACHE_TAGS } from "@/lib/cache-tags";
 
 import { packageIdSchema, packageInputSchema, packageStatusSchema } from "../schemas/package-schema";
 import {
@@ -15,19 +12,15 @@ import {
 import type { ManageResult, OrganizerScope } from "../types/package-manage";
 import { toFieldErrors } from "../utils/field-errors";
 import { manageFail } from "../utils/manage-gate";
+import { runPackageAction } from "./run-package-action";
 import { withOrganizer } from "./with-organizer";
 
 const invalid = (error: z.ZodError) => manageFail("INVALID_INPUT", toFieldErrors(error));
 
-// Invalida la caché solo si el catálogo público cambió (AC22), fuera del try/catch del wrapper.
-async function run<T extends { catalogChanged: boolean }>(
+const run = <T extends { catalogChanged: boolean }>(
   name: string,
   body: (scope: OrganizerScope) => Promise<ManageResult<T>>,
-): Promise<ManageResult<T>> {
-  const result = await withOrganizer(name, body);
-  if (result.ok && result.catalogChanged) updateTag(CACHE_TAGS.packages);
-  return result;
-}
+) => runPackageAction(withOrganizer, name, body);
 
 export async function createPackageAction(input: unknown): Promise<ManageResult<{ id: string }>> {
   return run("createPackageAction", async (scope) => {

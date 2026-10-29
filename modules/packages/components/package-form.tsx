@@ -7,6 +7,7 @@ import { useEffect, useId, useRef, useState, useTransition } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 
+import { updatePackageAdminAction } from "../actions/admin-package-actions";
 import { createPackageAction, updatePackageAction } from "../actions/package-actions";
 import { packageInputSchema } from "../schemas/package-schema";
 import type { ManageOptions } from "../services/own-package-service";
@@ -32,7 +33,10 @@ type PackageFormProps = {
   departureCount: number; // 0 en create
   options: ManageOptions;
   organizerStatus: OrganizerScope["status"];
+  panel?: "organizer" | "admin";
 };
+
+const BACK_HREF = { organizer: "/operador/paquetes", admin: "/admin/paquetes" };
 
 type Status = "draft" | "published";
 
@@ -52,6 +56,7 @@ export function PackageForm({
   departureCount,
   options,
   organizerStatus,
+  panel = "organizer",
 }: PackageFormProps) {
   const router = useRouter();
   const noteId = useId();
@@ -99,11 +104,12 @@ export function PackageForm({
     startTransition(async () => {
       try {
         // Se envía el objeto sin validar: el servidor revalida siempre.
+        const update = panel === "admin" ? updatePackageAdminAction : updatePackageAction;
         const result = packageId
-          ? await updatePackageAction(packageId, input)
+          ? await update(packageId, input)
           : await createPackageAction(input);
         if (result.ok) {
-          router.replace("/operador/paquetes");
+          router.replace(BACK_HREF[panel]);
           return;
         }
         showFailure(toFormErrors(result.fieldErrors ?? {}), result.message);
