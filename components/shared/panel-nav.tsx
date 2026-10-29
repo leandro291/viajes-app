@@ -13,13 +13,22 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
+import {
+  isActivePanelLink,
+  type PanelNavLink,
+} from "@/components/shared/panel-nav-links"
 import { UserMenu } from "@/components/shared/user-menu"
 import { WayraLogo } from "@/components/shared/wayra-logo"
 import { cn } from "@/lib/utils"
 
-import { isActiveNavLink, ORGANIZER_NAV_LINKS } from "./organizer-nav-links"
+export type PanelNavConfig = {
+  links: ReadonlyArray<PanelNavLink>
+  rootHref: string
+  navLabel: string
+  menuTitle: string
+}
 
-export function OrganizerNavSectionLabel() {
+export function PanelNavSectionLabel() {
   return (
     <p className="px-3 text-[11px] font-bold tracking-[0.08em] text-[#A9BAB7] uppercase">
       Gestión
@@ -28,13 +37,20 @@ export function OrganizerNavSectionLabel() {
 }
 
 // Links del panel (escritorio y Sheet). `onNavigate` cierra el Sheet al elegir un link.
-export function OrganizerNav({ onNavigate }: { onNavigate?: () => void }) {
+export function PanelNav({
+  links,
+  rootHref,
+  navLabel,
+  onNavigate,
+}: Pick<PanelNavConfig, "links" | "rootHref" | "navLabel"> & {
+  onNavigate?: () => void
+}) {
   const pathname = usePathname()
   return (
-    <nav aria-label="Panel del operador">
+    <nav aria-label={navLabel}>
       <ul className="flex flex-col gap-1">
-        {ORGANIZER_NAV_LINKS.map(({ label, href, icon: Icon }) => {
-          const active = isActiveNavLink(pathname, href)
+        {links.map(({ label, href, icon: Icon }) => {
+          const active = isActivePanelLink(pathname, href, rootHref)
           return (
             <li key={href}>
               <Link
@@ -63,7 +79,12 @@ export function OrganizerNav({ onNavigate }: { onNavigate?: () => void }) {
 }
 
 // Barra superior móvil: logo + botón que abre el Sheet con la misma navegación.
-export function OrganizerMobileBar() {
+export function PanelMobileBar({
+  links,
+  rootHref,
+  navLabel,
+  menuTitle,
+}: PanelNavConfig) {
   const [open, setOpen] = useState(false)
   return (
     <header className="sticky top-0 z-40 flex items-center justify-between bg-dark px-4 md:hidden">
@@ -86,7 +107,7 @@ export function OrganizerMobileBar() {
           showCloseButton={false}
           className="w-full max-w-80 gap-6 border-white/10 bg-dark p-4 text-white motion-reduce:transition-none sm:max-w-80"
         >
-          <SheetTitle className="sr-only">Menú del panel del operador</SheetTitle>
+          <SheetTitle className="sr-only">{menuTitle}</SheetTitle>
           <div className="flex items-center justify-between">
             <WayraLogo />
             <SheetClose
@@ -103,8 +124,13 @@ export function OrganizerMobileBar() {
             </SheetClose>
           </div>
           <div className="flex flex-col gap-2">
-            <OrganizerNavSectionLabel />
-            <OrganizerNav onNavigate={() => setOpen(false)} />
+            <PanelNavSectionLabel />
+            <PanelNav
+              links={links}
+              rootHref={rootHref}
+              navLabel={navLabel}
+              onNavigate={() => setOpen(false)}
+            />
           </div>
           <div className="mt-auto flex min-h-11 items-center px-3">
             <UserMenu />
