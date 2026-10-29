@@ -8,6 +8,7 @@ export type { MyBookingDto } from "./types/my-bookings";
 export { getBookingKpis } from "./services/booking-kpi-service";
 export type { BookingKpis } from "./types/booking-kpis";
 export { OperatorBookingsPage } from "./components/operator-bookings-page";
+export { AdminBookingsPage } from "./components/admin-bookings-page";
 export { BookingsTable } from "./components/bookings-table";
 export { BookingsStatusFilter } from "./components/bookings-status-filter";
 export { BookingsPagination } from "./components/bookings-pagination";

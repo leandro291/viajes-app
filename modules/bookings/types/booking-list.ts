@@ -29,6 +29,7 @@ export type BookingRowDto = {
   id: string;
   code: string; // WY-####
   packageTitle: string;
+  organizerName: string; // organizers.business_name del paquete
   departureStartsAt: Date;
   customerName: string | null;
   contactEmail: string;

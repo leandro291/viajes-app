@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 import type { CancelErrorCode } from "../types/cancellation";
-import { cancelBlock, cancelErrorMessage, freeCancelDeadline } from "./cancellation";
+import {
+  adminCancelBlock,
+  adminCancelErrorMessage,
+  cancelBlock,
+  cancelErrorMessage,
+  freeCancelDeadline,
+} from "./cancellation";
 
 const HOUR = 60 * 60 * 1000;
 const startsAt = new Date("2026-11-05T12:30:00Z");
@@ -53,6 +59,38 @@ describe("cancelErrorMessage", () => {
     };
     for (const [code, msg] of Object.entries(expected)) {
       expect(cancelErrorMessage(code as CancelErrorCode)).toBe(msg);
+    }
+  });
+});
+
+describe("adminCancelBlock", () => {
+  const statuses = ["pending", "confirmed", "cancelled"] as const;
+  const departures = ["scheduled", "en_route", "completed", "cancelled"] as const;
+  const cancellable = new Set(["pending", "confirmed/scheduled", "confirmed/cancelled"]);
+  const key = (s: string, d: string) => (s === "pending" ? "pending" : `${s}/${d}`);
+
+  it("AC1: tabla status x departureStatus", () => {
+    for (const status of statuses) {
+      for (const departureStatus of departures) {
+        const expected = cancellable.has(key(status, departureStatus)) ? null : "not_cancellable";
+        expect(adminCancelBlock({ status, departureStatus }), `${status}/${departureStatus}`).toBe(expected);
+      }
+    }
+  });
+});
+
+describe("adminCancelErrorMessage", () => {
+  it("AC2: copy admin para cada código, sin tuteo al cliente ni 'gratis'", () => {
+    const expected = {
+      not_found: "No encontramos esta reserva.",
+      not_cancellable: "Esta reserva no se puede cancelar (la salida ya está en curso o finalizó).",
+      no_refundable_payment: "La reserva no tiene un pago de Stripe que reembolsar. Revísala en el panel de Stripe.",
+      refund_failed: "Stripe no pudo procesar el reembolso. No se canceló nada; intenta de nuevo en unos minutos.",
+    } as const;
+    for (const [code, msg] of Object.entries(expected)) {
+      const out = adminCancelErrorMessage(code as keyof typeof expected);
+      expect(out).toBe(msg);
+      expect(out).not.toMatch(/gratis|Escríbenos/i);
     }
   });
 });

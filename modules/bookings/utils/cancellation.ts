@@ -34,3 +34,29 @@ const CANCEL_ERROR_MESSAGES: Record<CancelErrorCode, string> = {
 export function cancelErrorMessage(code: CancelErrorCode): string {
   return CANCEL_ERROR_MESSAGES[code];
 }
+
+export type AdminCancelBlock = "not_cancellable";
+
+/** D2. `null` = se puede cancelar. Sin reloj: el admin no tiene ventana de 48 h. */
+export function adminCancelBlock(i: {
+  status: BookingStatus;
+  departureStatus: DepartureStatus;
+}): AdminCancelBlock | null {
+  if (i.status === "pending") return null;
+  if (i.status === "confirmed" && (i.departureStatus === "scheduled" || i.departureStatus === "cancelled")) {
+    return null;
+  }
+  return "not_cancellable";
+}
+
+const ADMIN_CANCEL_ERROR_MESSAGES: Record<Exclude<CancelErrorCode, "too_late">, string> = {
+  not_found: "No encontramos esta reserva.",
+  not_cancellable: "Esta reserva no se puede cancelar (la salida ya está en curso o finalizó).",
+  no_refundable_payment: "La reserva no tiene un pago de Stripe que reembolsar. Revísala en el panel de Stripe.",
+  refund_failed: "Stripe no pudo procesar el reembolso. No se canceló nada; intenta de nuevo en unos minutos.",
+};
+
+/** D12. Copy para el admin; no incluye "too_late" (sin ventana). */
+export function adminCancelErrorMessage(code: Exclude<CancelErrorCode, "too_late">): string {
+  return ADMIN_CANCEL_ERROR_MESSAGES[code];
+}
