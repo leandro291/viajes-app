@@ -17,12 +17,12 @@ Agrega `/operador/reservas`: tabla de solo lectura con las reservas de los paque
 ## Criterios de aceptación
 - [x] AC1–AC5: parseo de parámetros, href, `nextSortQuery`, mapper de filas y etiquetas (tests unitarios).
 - [x] AC6: un operador solo ve reservas de sus paquetes; en el navegador no aparece la reserva ni el documento de otro operador.
-- [x] AC7–AC12: `{ all: true }`, forma de la fila, filtro, orden estable, paginación y sin caché (test de BD del servicio, corrido por el developer de T4; orden, filtro y paginación confirmados además en el navegador).
+- [x] AC7–AC12: `{ all: true }`, forma de la fila, filtro, orden estable, paginación y sin caché (test de BD del servicio: 70/70 con `DATABASE_URL`, sin filas residuales; orden, filtro y paginación confirmados además en el navegador).
 - [x] AC13: ruta `/operador/reservas` con `h1` "Reservas" y link en el sidebar.
 - [x] AC14: sin perfil de operador muestra el aviso y no consulta reservas; con perfil, lista las suyas.
 - [x] AC15–AC19: tabla TanStack v9, columnas, headers de orden con `aria-sort`, fila expandible con documentos completos, tabla sin dependencia de `organizers`.
 - [x] AC20–AC21: filtro por estado (`aria-current`) y paginación Anterior/Siguiente que conservan `estado`, `orden` y `dir`.
-- [ ] AC22: estados vacíos ("Aún no tienes reservas", "No hay reservas con este estado") — sin probar en el navegador.
+- [x] AC22: estados vacíos: operador sin reservas ("Aún no tienes reservas", sin filtro ni tabla) y filtro sin resultados ("No hay reservas con este estado" + link "Ver todas").
 - [x] AC23: foco visible, targets ≥ 44 px, atributos ARIA y teclado (Enter expande); `prefers-reduced-motion` no se probó.
 
 ## Cómo probar
@@ -36,4 +36,4 @@ Agrega `/operador/reservas`: tabla de solo lectura con las reservas de los paque
 
 ## Revisión
 - Reviewer: APPROVED (Fase 1, T1–T4; Fase 2, T5–T9)
-- lint ✓ · tsc ✓ · build ✓ · Playwright: `/operador/reservas` (orden, filtro, paginación, fila expandible, 390 px, teclado)
+- lint ✓ · tsc ✓ · build ✓ · Playwright: `/operador/reservas` (orden, filtro, paginación, fila expandible, estados vacíos, 390 px, teclado)

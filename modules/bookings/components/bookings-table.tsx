@@ -62,7 +62,7 @@ export function BookingsTable({ rows, query, basePath }: BookingsTableProps) {
       helper.columns([
         helper.display({
           id: "expandir",
-          header: () => <span className="sr-only">Viajeros</span>,
+          header: () => <span className="sr-only">Detalle</span>,
           cell: ({ row }) => {
             const open = row.getIsExpanded();
             return (
