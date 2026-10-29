@@ -20,8 +20,10 @@ Nueva pantalla `/mis-reservas` (solo el cliente dueño): lista sus reservas en "
 - `docs/specs/bookings/my-bookings-cancellation.md` — spec aprobada
 
 ## Pendiente
-- Sin verificar en navegador: AC16–AC20 (lista, tarjetas, diálogo, estado vacío, 390 y 1280 px, foco y teclado). El navegador de Playwright estaba ocupado por otra sesión.
-- Sin probar el reembolso real: AC21 (pagar con `4242…`, cancelar y ver **un** reembolso en el dashboard de Stripe con `stripe listen` activo). Los tests de cancelación mockean `refundPaymentIntent`.
+- Verificado en navegador y con Stripe de prueba (AC16–AC18, AC21 y buena parte de AC19–AC20): lista, diálogo, error `too_late` con reintento y cancelación real con **un** reembolso de US$ 440 en Stripe; `charge.refunded` llegó como no-op.
+- Sin verificar: estado vacío, enlace de WhatsApp (falta `NEXT_PUBLIC_WHATSAPP_NUMBER`), diálogo a 390 px, foco atrapado con Tab y `prefers-reduced-motion`.
+- `NEXT_PUBLIC_APP_URL=http://localhost:3000` en el `.env` local: tras pagar, Stripe devuelve al puerto 3000 aunque se trabaje en otro (en el worktree, entrar a `/confirmacion/<código>` a mano).
+- El CLI de Stripe de esta máquina está logueado en otra cuenta que `STRIPE_SECRET_KEY`: `stripe listen` necesita `STRIPE_API_KEY` apuntando a la cuenta de la clave para que su secreto coincida con `STRIPE_WEBHOOK_SECRET`.
 - No hay enlace "Mis reservas" en el menú del usuario (decisión de la spec): lo agrega 018 al rebasar sobre esta rama.
 - Minors del reviewer aceptados sin cambios:
   - `ORDER BY created_at DESC` sin desempate por `id` en `cancellation-service.ts` y `my-bookings-service.ts` (solo importa con dos pagos de la misma milésima).

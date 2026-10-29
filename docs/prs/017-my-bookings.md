@@ -21,11 +21,16 @@ Pantalla `/mis-reservas` con las reservas del cliente y su estado, y cancelació
 - [x] AC13: `stripe-webhook-*` sin cambios en el diff y sus tests en verde
 - [x] AC14: `cancelBookingAction` (11 tests con mocks)
 - [x] AC15: `my-bookings-service.test.ts` (db) corrido contra Neon de desarrollo, 8 tests
-- [x] AC19 (parcial): sin sesión, `/mis-reservas` responde 307 a `/sign-in` (curl)
+- [x] AC16: `/mis-reservas` con 5 reservas reales: un `h1`, "Próximas" y "Anteriores y canceladas", tarjetas con foto, destino, título enlazado, código, fecha y hora, viajeros, total en soles, `StatusBadge` (Pendiente, Confirmada, Cancelada + "Reembolsado") y enlaces "Ver estado" / "Ver voucher"
+- [x] AC17: con más de 48 h, "Cancelación gratis hasta el Mar 17 nov 2026 a las 8:00 a. m." y botón "Cancelar reserva" (contorno, no `accent`); el diálogo muestra US$ 440.00; Esc cierra sin cambios y el foco vuelve al botón; al confirmar la tarjeta pasa sola a "Anteriores y canceladas" con "Cancelada" y "Reembolsado". Con menos de 48 h (WY-4848): sin botón y con el aviso. `pending` y `cancelled`: sin botón
+- [x] AC18: con el diálogo abierto se adelantó la salida a 40 h: el servidor respondió `too_late`, el diálogo siguió abierto con "Ya no se puede cancelar gratis esta reserva." en un `Alert`, no cambió nada (reserva, cupo, pago, 0 reembolsos) y el reintento tras restaurar la fecha canceló bien
+- [x] AC19 (parcial): sin sesión, `/mis-reservas` redirige a `/sign-in` (307); la lista solo trae las reservas del cliente con sesión (las del seed de otros clientes no aparecen); `/confirmacion/WY-4939` dice "Te reembolsamos el pago."
+- [x] AC20 (parcial): 390 y 1280 px sin scroll horizontal, objetivos ≥ 44 px (incluido el enlace del título), título de tarjeta en peso 700, un solo `h1`, consola sin errores; en el diálogo, Esc y foco inicial en "Mantener reserva"
+- [x] AC21: recorrido real con Stripe de prueba y `stripe listen`: pago de US$ 440.00 → WY-4939 `confirmed` por el webhook → cancelar → **un** reembolso por 44 000 centavos en Stripe (`succeeded`), base con `cancelled`, cupo devuelto a 0 y pago `refunded` con `refunded_cents = 44000`; `charge.refunded` respondió 200 y no cambió nada; tras recargar no hay botón de cancelar
 - [x] AC22: auditoría del reviewer (`"use client"`, imports por `index.ts`, sin `from "stripe"` nuevo, sin `console.*` con datos personales)
-- [ ] AC16–AC18, AC20: sin verificar en navegador
-- [ ] AC19 (resto): estado vacío, aislamiento entre clientes en pantalla y `/confirmacion/<code>` de una cancelada
-- [ ] AC21: recorrido real con Stripe de prueba (pagar, cancelar, un solo reembolso, `charge.refunded` como no-op)
+- [ ] AC19 (resto): estado vacío "Todavía no tienes reservas" (el cliente de prueba ya tiene reservas)
+- [ ] AC17 (resto): enlace "Escríbenos por WhatsApp" (falta `NEXT_PUBLIC_WHATSAPP_NUMBER` en el `.env` local)
+- [ ] AC20 (resto): diálogo a 390 px, foco atrapado con Tab y `prefers-reduced-motion` (no quedó ninguna reserva cancelable para abrirlo en móvil)
 
 ## Cómo probar
 1. `npm test` y, con `DATABASE_URL`, `node --env-file=.env ./node_modules/vitest/vitest.mjs run modules/bookings/services/cancellation-service.test.ts modules/bookings/services/my-bookings-service.test.ts`.
@@ -36,4 +41,5 @@ Pantalla `/mis-reservas` con las reservas del cliente y su estado, y cancelació
 
 ## Revisión
 - Reviewer: APPROVED en T1–T8 (T7 tras una vuelta de cambios por el peso del título de la tarjeta)
-- lint ✓ · tsc ✓ · Playwright: no revisado (el navegador estaba ocupado por otra sesión); solo `curl` a `/mis-reservas` sin sesión → 307
+- lint ✓ · tsc ✓ · tests ✓ (893) · build ✓ · Playwright: `/mis-reservas` a 1280 y 390 px, diálogo de cancelación, error `too_late` y cancelación real con reembolso; consola sin errores (solo avisos de Clerk dev y LCP)
+- Datos de prueba que quedan: la reserva WY-4939 (cancelada y reembolsada, con su cobro de prueba en Stripe) del usuario de desarrollo. La fecha de su salida se restauró a la original
