@@ -1,4 +1,5 @@
-// El shell del panel llega con su spec.
+import { AdminShell } from "@/modules/admin";
+
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return children;
+  return <AdminShell>{children}</AdminShell>;
 }
