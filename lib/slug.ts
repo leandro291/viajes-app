@@ -4,6 +4,11 @@ export function isValidSlug(slug: string): boolean {
   return SLUG_RE.test(slug);
 }
 
+// true si, sin tildes, hay al menos una letra a-z o un dígito (si no, slugify devolvería "paquete").
+export function hasSlugChars(text: string): boolean {
+  return /[a-z0-9]/i.test(text.normalize("NFD").replace(/[̀-ͯ]/g, ""));
+}
+
 // Sin tildes ni ñ, separadores colapsados a "-", sin guiones en los bordes. Vacío -> "paquete".
 export function slugify(text: string, maxLength = 80): string {
   const slug = text

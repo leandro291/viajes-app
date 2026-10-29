@@ -43,3 +43,4 @@ export type { ManageResult, OrganizerScope, ManageErrorCode } from "./types/pack
 export { toFieldErrors } from "./utils/field-errors";
 export { getTodayDepartures } from "./services/today-departure-service";
 export type { TodayDeparturesDto, TodayDepartureRow } from "./types/departure-today";
+export { AdminCategoriesPage } from "./components/admin-categories-page";

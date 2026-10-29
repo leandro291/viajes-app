@@ -1,6 +1,16 @@
 import { describe, expect, it } from "vitest";
 
-import { isValidSlug, slugify } from "./slug";
+import { hasSlugChars, isValidSlug, slugify } from "./slug";
+
+describe("hasSlugChars", () => {
+  it.each(["Cusco", "Ñuñoa", "2 Mares", "¡Hola!"])("AC2: %s -> true", (t) => {
+    expect(hasSlugChars(t)).toBe(true);
+  });
+
+  it.each(["", "   ", "!!!", "日本"])("AC2: %j -> false", (t) => {
+    expect(hasSlugChars(t)).toBe(false);
+  });
+});
 
 describe("isValidSlug", () => {
   it("AC11: acepta slugs válidos y el límite de 100", () => {
