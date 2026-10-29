@@ -13,7 +13,7 @@ import {
   parseTourParams,
   resolveTourFilters,
 } from "../utils/tour-filters";
-import { formatTourCount, formatTourDuration } from "../utils/tour-view";
+import { formatTourCount, formatTourDuration, formatTourStart } from "../utils/tour-view";
 import { HeroFeatureLink, HeroIntro } from "./listing-hero";
 import { TourCard, TOURS_GRID_CLASS } from "./tour-card";
 import { TourFilterBar } from "./tour-filter-bar";
@@ -45,7 +45,7 @@ export function ToursListing({ searchParams }: { searchParams: SearchParams }) {
 }
 
 const HERO_SLIDES = 4;
-const HERO_CLASS = "min-h-[600px]";
+const HERO_CLASS = "min-h-[540px] md:min-h-[600px]";
 const HERO_SUBTITLE =
   "Sales por la mañana y vuelves para cenar. Recojo en tu hotel y guía local incluidos.";
 
@@ -75,8 +75,15 @@ async function ToursHero() {
         <HeroFeatureLink
           href={`/paquetes/${t.slug}`}
           imageUrl={coverImageUrl}
-          eyebrow={`${t.destination.name} · ${formatTourDuration(t)}`}
-          title={`${t.title} · desde ${formatPen(t.priceCents)}`}
+          eyebrow={[
+            t.destination.name,
+            formatTourDuration(t),
+            t.startTime && formatTourStart(t.startTime).toLowerCase(),
+          ]
+            .filter(Boolean)
+            .join(" · ")}
+          title={t.title}
+          price={formatPen(t.priceCents)}
         />
       ),
     }));

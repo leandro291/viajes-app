@@ -120,7 +120,7 @@ export function HeroCarousel({
       aria-roledescription="carrusel"
       aria-label={label}
       className={className}
-      contentClassName={cn("gap-9 pb-12", contentClassName)}
+      contentClassName={cn("gap-9 pb-12 max-md:gap-[18px] max-md:pb-6", contentClassName)}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       onFocus={() => setFocused(true)}
@@ -167,7 +167,7 @@ export function HeroCarousel({
     >
       {children}
 
-      <div className="flex min-h-[340px] flex-wrap items-end justify-between gap-6">
+      <div className="flex flex-wrap items-end justify-between gap-6 md:min-h-[340px]">
         <div
           key={active.id}
           id={panelId}
@@ -229,7 +229,7 @@ export function HeroCarousel({
                   aria-label={slide.ariaLabel}
                   aria-controls={isActive ? panelId : undefined}
                   onClick={() => setIndex(i)}
-                  className="flex min-h-11 min-w-0 flex-1 flex-col gap-2.5 pt-2 text-left text-white"
+                  className="flex min-h-11 min-w-0 flex-1 flex-col justify-center gap-2.5 pt-2 text-left text-white max-md:pt-0"
                 >
                   <span
                     aria-hidden="true"
@@ -262,7 +262,8 @@ export function HeroCarousel({
             })}
           </div>
 
-          <div className="flex shrink-0 gap-2">
+          {/* En móvil solo quedan las barras de progreso (tocables) y el deslizar. */}
+          <div className="flex shrink-0 gap-2 max-md:hidden">
             <Button
               variant="ghost"
               size="icon-lg"
