@@ -29,7 +29,7 @@ export function PackagesListing({ searchParams }: { searchParams: SearchParams }
   return (
     <>
       <PackagesHero />
-      <section className="mx-auto w-full max-w-[1240px] px-6 pt-10 pb-24">
+      <section className="mx-auto w-full max-w-[1240px] px-4 pb-14 md:px-6 md:pt-10 md:pb-24">
         <Suspense fallback={<ListingSkeleton />}>
           <ListingContent searchParams={searchParams} />
         </Suspense>
@@ -112,14 +112,14 @@ async function ListingContent({ searchParams }: { searchParams: SearchParams }) 
     : undefined;
 
   return (
-    <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:gap-9">
+    <div className="flex flex-col lg:flex-row lg:items-start lg:gap-9">
       <PackageFilters filters={filters} categories={categories} />
-      <div className="flex min-w-0 flex-col gap-6 lg:flex-[3_1_560px]">
+      <div className="flex min-w-0 flex-col gap-[18px] pt-5 md:gap-6 lg:flex-[3_1_560px] lg:pt-0">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-3">
             <p
               aria-live="polite"
-              className="font-display text-[22px] font-bold tracking-[-0.015em]"
+              className="font-display text-[22px] font-bold tracking-[-0.015em] max-md:font-sans max-md:text-[15px] max-md:tracking-normal max-md:text-ink-muted"
             >
               {packages.length === 1
                 ? "1 paquete disponible"
@@ -139,7 +139,9 @@ async function ListingContent({ searchParams }: { searchParams: SearchParams }) 
               </span>
             )}
           </div>
-          <PackageSort filters={filters} />
+          <div className="max-lg:hidden">
+            <PackageSort filters={filters} />
+          </div>
         </div>
         <PackageGrid packages={packages} />
       </div>

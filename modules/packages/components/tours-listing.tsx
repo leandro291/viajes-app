@@ -25,7 +25,7 @@ export function ToursListing({ searchParams }: { searchParams: SearchParams }) {
   return (
     <>
       <ToursHero />
-      <section className="mx-auto w-full max-w-[1240px] px-6 pt-10 pb-12">
+      <section className="mx-auto w-full max-w-[1240px] px-4 pb-12 md:px-6 md:pt-10">
         <Suspense fallback={<ToursSkeleton />}>
           <ToursContent searchParams={searchParams} />
         </Suspense>
@@ -130,11 +130,11 @@ async function ToursContent({ searchParams }: { searchParams: SearchParams }) {
   const tours = await getTours(filters);
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col md:gap-6">
       <TourFilterBar filters={filters} cities={cities} today={today} />
       <p
         aria-live="polite"
-        className="font-display text-[22px] font-bold tracking-[-0.015em]"
+        className="font-display text-[22px] font-bold tracking-[-0.015em] max-md:pt-5 max-md:pb-3.5 max-md:font-sans max-md:text-[15px] max-md:tracking-normal max-md:text-ink-muted"
       >
         {formatTourCount(tours.length)}
       </p>
