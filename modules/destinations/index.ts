@@ -11,3 +11,5 @@ export type {
   ClimateMonthDto,
   Season,
 } from "./types/destination";
+export { getTopDestinations } from "./services/destination-sales-service";
+export type { TopDestinationDto } from "./types/destination-sales";

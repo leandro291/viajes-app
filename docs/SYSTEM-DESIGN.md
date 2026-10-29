@@ -105,6 +105,8 @@ Solo nombres; los valores van en Vercel y en `.env.local` (ignorado por git).
 | Preview    | cada PR en Vercel   | rama Neon por preview   | Clerk dev, Stripe test      |
 | Producción | `main`              | rama Neon principal     | Clerk prod, Stripe test (simulación) por ahora |
 
+**Migraciones:** el script `vercel-build` corre `drizzle-kit migrate` (con `DATABASE_URL_UNPOOLED`) solo cuando `VERCEL_ENV=production`, antes de `next build`. Mientras previews y producción compartan una sola base, los previews no migran para no tocar producción antes del merge; con rama Neon por preview se puede quitar la condición.
+
 ## Seguridad y operación
 
 - Validar toda entrada con Zod en el borde de cada Server Action y route handler.
