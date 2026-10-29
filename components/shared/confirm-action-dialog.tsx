@@ -22,6 +22,8 @@ type ConfirmActionDialogProps = {
   title: string
   description: React.ReactNode
   confirmLabel: string
+  pendingLabel?: string
+  dismissLabel?: string
   onConfirm: () => Promise<ConfirmResult>
 }
 
@@ -32,6 +34,8 @@ export function ConfirmActionDialog({
   title,
   description,
   confirmLabel,
+  pendingLabel = "Eliminando…",
+  dismissLabel = "Cancelar",
   onConfirm,
 }: ConfirmActionDialogProps) {
   const [open, setOpen] = React.useState(false)
@@ -74,13 +78,13 @@ export function ConfirmActionDialog({
           </Alert>
         )}
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={pending}>Cancelar</AlertDialogCancel>
+          <AlertDialogCancel disabled={pending}>{dismissLabel}</AlertDialogCancel>
           <AlertDialogAction
             variant="destructive"
             disabled={pending}
             onClick={handleConfirm}
           >
-            {pending ? "Eliminando…" : confirmLabel}
+            {pending ? pendingLabel : confirmLabel}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
