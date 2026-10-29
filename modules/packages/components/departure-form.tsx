@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
+import { instantToLimaParts } from "@/lib/lima-time";
 
 import { createDepartureAction, updateDepartureAction } from "../actions/departure-actions";
 import {
@@ -24,7 +25,6 @@ import {
   DEPARTURE_STATUS_LABELS,
   type DepartureStatus,
 } from "../utils/departure-rules";
-import { instantToLimaParts } from "../utils/departure-time";
 import { toFieldErrors } from "../utils/field-errors";
 import { MANAGE_MESSAGES } from "../utils/manage-gate";
 

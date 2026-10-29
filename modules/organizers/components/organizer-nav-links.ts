@@ -2,6 +2,7 @@ import {
   Building2,
   CalendarDays,
   Package,
+  Tag,
   UserRound,
   type LucideIcon,
 } from "lucide-react";
@@ -15,6 +16,7 @@ export const ORGANIZER_NAV_LINKS: ReadonlyArray<{
   { label: "Perfil", href: "/operador", icon: Building2 },
   { label: "Paquetes", href: "/operador/paquetes", icon: Package },
   { label: "Salidas", href: "/operador/salidas", icon: CalendarDays },
+  { label: "Ofertas", href: "/operador/ofertas", icon: Tag },
   { label: "Guías", href: "/operador/guias", icon: UserRound },
 ];
 

@@ -1,9 +1,9 @@
 import { z } from "zod";
 
 import { departureStatus } from "@/lib/db/schema/enums";
+import { limaToInstant } from "@/lib/lima-time";
 
 import type { DepartureStatus } from "../utils/departure-rules";
-import { limaToInstant } from "../utils/departure-time";
 
 export const MAX_DEPARTURE_CAPACITY = 100;
 

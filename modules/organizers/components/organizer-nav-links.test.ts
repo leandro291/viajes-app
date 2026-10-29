@@ -32,13 +32,20 @@ describe("isActiveNavLink", () => {
 });
 
 describe("ORGANIZER_NAV_LINKS", () => {
-  it("AC15: contiene Perfil, Paquetes, Salidas y Guías", () => {
+  it("AC15: contiene Perfil, Paquetes, Salidas, Ofertas y Guías", () => {
     expect(ORGANIZER_NAV_LINKS.map((l) => l.href)).toEqual([
       "/operador",
       "/operador/paquetes",
       "/operador/salidas",
+      "/operador/ofertas",
       "/operador/guias",
     ]);
+  });
+
+  it("AC16: /operador/ofertas activa Ofertas y no Perfil ni Salidas", () => {
+    expect(isActiveNavLink("/operador/ofertas", "/operador/ofertas")).toBe(true);
+    expect(isActiveNavLink("/operador/ofertas", "/operador")).toBe(false);
+    expect(isActiveNavLink("/operador/ofertas", "/operador/salidas")).toBe(false);
   });
 
   it("AC32: /operador/guias y subrutas activan Guías y no Perfil", () => {

@@ -37,3 +37,7 @@ export { DeparturesPage } from "./components/departures-page";
 export { OwnPackagesList } from "./components/own-packages-list";
 export { PackageEditor } from "./components/package-editor";
 export { packageIdSchema } from "./schemas/package-schema";
+export { withOrganizer } from "./actions/with-organizer";
+export { manageFail, getWriteBlock, MANAGE_MESSAGES } from "./utils/manage-gate";
+export type { ManageResult, OrganizerScope, ManageErrorCode } from "./types/package-manage";
+export { toFieldErrors } from "./utils/field-errors";
