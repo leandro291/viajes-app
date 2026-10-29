@@ -23,7 +23,8 @@ CRUD de ofertas (`offers`) del operador en `/operador/ofertas`, una sola página
 
 ## Pendiente
 - Varias ofertas activas por paquete están permitidas y "gana la de mayor descuento" solo ordena la presentación: `/ofertas` muestra todas y el checkout aplica solo la que llega por `offerId`. Si debe ganar siempre la mejor, es otro ticket (checkout y detalle).
-- No se probó en el navegador la invalidación de caché contra `/ofertas` pública (exigiría una oferta activa sobre un paquete publicado) ni el operador `suspended`; solo están cubiertos por tests unitarios.
+- Sin probar en navegador: operador `suspended`, operador sin perfil, operador sin paquetes, aviso de paquete en borrador y oferta "Vencida" (exigen cambiar datos reales del operador de prueba); solo están cubiertos por tests unitarios. La invalidación de caché sí se verificó en navegador (`/ofertas` 6 → 7 → 6).
+- En dev, `/ofertas` registra "uncached data during prerendering" en `OffersPage` (tarjeta 012) tras invalidar la caché; confirmar si pasa también en `main`.
 - `own-offer-form.tsx` duplica `toFieldErrors` de `packages` (inevitable: el barrel arrastraría `lib/db` al bundle cliente); `run` de `offer-actions.ts` repite el de `departure-actions.ts`. Extraer si aparece un tercer consumidor.
 - La suite de tests con BD falla en tests preexistentes de `packages` y `destinations` (asumen que la base compartida contiene solo el seed), con o sin los de este ticket. Los de `offers/services` pasan 3 de 3 corridas.
 - Los tests con BD de T4 y T5 corrieron contra la base Neon compartida: crearon y borraron solo sus filas, pero la reserva de prueba consumió un número de `booking_code_seq` (hueco en `WY-####`).

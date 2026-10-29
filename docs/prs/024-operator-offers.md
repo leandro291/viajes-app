@@ -24,7 +24,8 @@ CRUD de ofertas del operador en `/operador/ofertas`: alta, edición en línea, a
 - [x] AC8–AC13: lecturas y escrituras del service, aislamiento entre operadores, `"all"`, `NOT_FOUND` en ofertas ajenas, reserva que queda con `offer_id` nulo y `catalogChanged` (tests con BD, pasan 3 de 3 corridas).
 - [x] AC14–AC15: actions (alcance de la sesión, `organizerId` del input ignorado, `updateTag` solo con `catalogChanged`; tests, 31).
 - [x] AC16: ruta, `h1`, `Suspense` y link activo en el nav (navegador y test).
-- [x] AC17: fila con paquete, tipo, descuento, mínimo, "Sin vencimiento" y estado (navegador). No se vio en navegador el aviso de paquete en borrador ni "Hasta el …".
+- [x] AC13/AC15: una oferta 2x1 activa sobre un paquete publicado subió `/ofertas` de 6 a 7 ofertas sin esperar la revalidación, y al desactivarla bajó a 6 (navegador, contra la base de desarrollo; la oferta de prueba se borró y la base quedó con las 8 de antes).
+- [x] AC17: fila con paquete, tipo, descuento, mínimo, "Hasta el 31 de diciembre de 2026" / "Sin vencimiento" y estado (navegador). No se vio en navegador el aviso de paquete en borrador (los dos paquetes del operador de prueba están publicados).
 - [x] AC18: formulario con campos condicionales; porcentaje 101 da error de campo (navegador).
 - [x] AC19: editar precarga los valores y deja el paquete de solo lectura (navegador, oferta inactiva). Vencida no probada en navegador.
 - [x] AC20: borrar con diálogo de confirmación (navegador). El caso de error con el diálogo abierto no se probó.
@@ -43,4 +44,5 @@ CRUD de ofertas del operador en `/operador/ofertas`: alta, edición en línea, a
 - Reviewer: APPROVED (ronda 2; la ronda 1 pidió cambios y se corrigieron)
 - lint ✓ · tsc ✓ · tests ✓ (894 pasan, 199 omitidos sin BD) · build ✓
 - Playwright: `/operador/ofertas` a 1280 y 390 px — alta, edición con errores de campo, guardado y borrado; 0 errores de consola.
+- Observado en dev, fuera de este ticket: tras invalidar la caché, `/ofertas` registra en consola "Next.js encountered uncached data during prerendering" en `OffersPage` (tarjeta 012). La página muestra bien los datos; falta confirmar si ocurre también en `main` tras cualquier invalidación.
 - La suite con BD falla en tests preexistentes de `packages` y `destinations`, con o sin este cambio (la base compartida no contiene solo el seed).
