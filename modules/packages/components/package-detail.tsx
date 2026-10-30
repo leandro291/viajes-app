@@ -5,6 +5,7 @@ import { Suspense } from "react";
 
 import { SectionHeading } from "@/components/shared/section-heading";
 import { formatPen } from "@/lib/money";
+import { DestinationMap, mapPins } from "@/modules/destinations";
 
 import { getDepartures, getPackageBySlug } from "../services/package-detail-service";
 import type { PackageImageDto } from "../types/package";
@@ -82,6 +83,24 @@ async function DetailContent({
         ? [{ url: pkg.coverImageUrl, alt: pkg.title, credit: null }]
         : [];
 
+  // El número del pin es el día; un día sin coordenadas no renumera a los demás.
+  const pins = mapPins(
+    pkg.itinerary.map((d) => ({
+      name: d.place,
+      lat: d.lat,
+      lng: d.lng,
+      card: {
+        eyebrow: `Día ${d.dayNumber} · ${d.place}`,
+        title: d.title,
+        note: d.transportLeg,
+        imageUrl: d.imageUrl,
+      },
+    })),
+  );
+
+  // Una ruta necesita 2 paradas; con un solo día el mapa útil es el del punto de encuentro.
+  const showRoute = pins.length > 1 || (pins.length === 1 && pkg.meetingLat === null);
+
   const chip = selected && formatDepartureChip(selected.startsAt);
   const summary = chip
     ? `${travelers === 1 ? "1 viajero" : `${travelers} viajeros`} · ${chip.dow} ${chip.day} ${chip.month}`
@@ -139,8 +158,46 @@ async function DetailContent({
 
           {pkg.itinerary.length > 0 && (
             <section className="flex flex-col gap-5">
-              <h2 className="text-[clamp(30px,3.6vw,42px)]">Itinerario día a día</h2>
+              <h2 className="text-[clamp(30px,3.6vw,42px)]">
+                {pkg.kind === "day_tour" ? "Itinerario del día" : "Itinerario día a día"}
+              </h2>
               <PackageItinerary days={pkg.itinerary} />
+            </section>
+          )}
+
+          {showRoute && (
+            <section className="flex flex-col gap-5">
+              <div className="[&_h2]:text-[clamp(30px,3.6vw,42px)]">
+                <SectionHeading eyebrow="La ruta" title="Tu recorrido en el mapa" />
+              </div>
+              <DestinationMap
+                pins={pins}
+                route
+                label={`Mapa de la ruta: ${pins.map((p) => p.name).join(", ")}`}
+              />
+              <p className="text-sm text-ink-muted">
+                Toca un pin para ver qué haces ese día.
+              </p>
+            </section>
+          )}
+
+          {!showRoute && pkg.meetingLat !== null && pkg.meetingLng !== null && (
+            <section className="flex flex-col gap-5">
+              <div className="[&_h2]:text-[clamp(30px,3.6vw,42px)]">
+                <SectionHeading eyebrow="Dónde nos vemos" title="Punto de encuentro" />
+              </div>
+              <DestinationMap
+                pins={[
+                  {
+                    n: 0,
+                    name: pkg.meetingPoint ?? "Punto de encuentro",
+                    lat: pkg.meetingLat,
+                    lng: pkg.meetingLng,
+                  },
+                ]}
+                zoom={15}
+                label={`Mapa del punto de encuentro: ${pkg.meetingPoint ?? pkg.destination.name}`}
+              />
             </section>
           )}
 

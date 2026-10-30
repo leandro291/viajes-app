@@ -63,9 +63,9 @@ const expectedCounts: Record<keyof typeof tables, number> = {
   categories: 5,
   packages: 20,
   package_categories: 29,
-  package_images: 13,
-  package_itinerary_days: 18,
-  package_inclusions: 43,
+  package_images: 19,
+  package_itinerary_days: 47,
+  package_inclusions: 137,
   guides: 4,
   departures: 52,
   offers: 8,
@@ -211,6 +211,27 @@ describe("seed data: salidas y catálogo (AC11)", () => {
       return t >= start && t < start + 24 * 3600_000;
     });
     expect(today).toHaveLength(4);
+  });
+
+  it("todo paquete trae punto de encuentro en Perú, para tener mapa en el detalle", () => {
+    for (const p of seedPackages) {
+      expect(p.meetingPoint, p.slug).toBeTruthy();
+      expect(p.meetingLat!, p.slug).toBeGreaterThanOrEqual(-19);
+      expect(p.meetingLat!, p.slug).toBeLessThanOrEqual(0);
+      expect(p.meetingLng!, p.slug).toBeGreaterThanOrEqual(-82);
+      expect(p.meetingLng!, p.slug).toBeLessThanOrEqual(-68);
+    }
+  });
+
+  it("cada tour de un día trae exactamente un día de itinerario y sus inclusiones", () => {
+    for (const p of seedPackages.filter((r) => r.kind === "day_tour")) {
+      const days = seedPackageItineraryDays.filter((d) => d.packageId === p.id);
+      expect(days, p.slug).toHaveLength(1);
+      const kinds = new Set(
+        seedPackageInclusions.filter((i) => i.packageId === p.id).map((i) => i.kind),
+      );
+      expect(kinds, p.slug).toEqual(new Set(["included", "excluded"]));
+    }
   });
 
   it("AC11: los 20 paquetes están published", () => {

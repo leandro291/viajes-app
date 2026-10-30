@@ -12,6 +12,16 @@ const DestinationMapCanvas = dynamic(() => import("./destination-map-canvas"), {
   loading: () => <div className={`${MAP_HEIGHT} rounded-card bg-sand`} />,
 });
 
-export function DestinationMap({ pins }: { pins: MapPin[] }) {
-  return <DestinationMapCanvas pins={pins} />;
+export function DestinationMap({
+  pins,
+  label,
+  route,
+  zoom,
+}: {
+  pins: MapPin[];
+  label?: string;
+  route?: boolean;
+  zoom?: number;
+}) {
+  return <DestinationMapCanvas pins={pins} label={label} route={route} zoom={zoom} />;
 }

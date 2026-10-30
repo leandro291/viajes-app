@@ -19,7 +19,14 @@ export const MONTH_NAMES: readonly string[] = [
   "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre",
 ];
 
-export type MapPin = { n: number; name: string; lat: number; lng: number };
+// `card` es el contenido del popup; sin él, el popup muestra solo el nombre.
+export type PinCard = {
+  eyebrow: string;
+  title: string;
+  note?: string | null;
+  imageUrl?: string | null;
+};
+export type MapPin = { n: number; name: string; lat: number; lng: number; card?: PinCard };
 
 // Sin Intl: es-PE no agrupa los números de 4 dígitos (igual que formatPen).
 export function formatAltitude(m: number): string {
@@ -49,9 +56,9 @@ export function beforeYouGo(altitudeM: number | null): {
 
 // El número es la posición en la lista completa: un lugar sin coordenadas no renumera a los demás.
 export function mapPins(
-  sights: { name: string; lat: number | null; lng: number | null }[],
+  sights: { name: string; lat: number | null; lng: number | null; card?: PinCard }[],
 ): MapPin[] {
-  return sights.flatMap(({ name, lat, lng }, i) =>
-    lat !== null && lng !== null ? [{ n: i + 1, name, lat, lng }] : [],
+  return sights.flatMap(({ name, lat, lng, card }, i) =>
+    lat !== null && lng !== null ? [{ n: i + 1, name, lat, lng, ...(card && { card }) }] : [],
   );
 }
