@@ -2,7 +2,7 @@
 
 - Module: packages
 - Status: done
-- Approved by: leandro291 (2026-10-25)
+- Approved by: leandro291 (2026-10-29, plan de fidelidad móvil)
 - Mode: SDD
 
 ## Goal
@@ -63,12 +63,13 @@ Crear la ruta pública `/paquetes` (tarjeta Trello 008): grilla de paquetes publ
 - AC11 *(visual)*: Filtros. Grupos "Tipo de experiencia" (Todos + las 5 categorías) y "Duración" (Cualquiera, Un día, 2 a 3 días, 4 días o más) y "Ordenar" (Recomendados, Precio: menor a mayor, Precio: mayor a menor). Elegir una opción navega a la misma ruta con la query nueva sin saltar el scroll (`scroll={false}`) y marca esa opción con `aria-current="true"`. "Todos"/"Cualquiera"/"Recomendados" quitan su parámetro. Son `<a>` reales: funcionan sin JS y la URL es compartible. Objetivos táctiles ≥ 44 px, foco visible.
 - AC12 *(visual)*: Contador `aria-live="polite"`: "N paquetes disponibles" (singular "1 paquete disponible"). Con `destino` válido aparece un chip "Destino: <nombre>" con una "×" accesible ("Quitar destino") que elimina solo ese parámetro. `/paquetes?destino=cusco` desde el buscador del Inicio muestra los de Cusco con ese chip.
 - AC13 *(visual)*: Estado vacío ("No hay paquetes con esos filtros", "Prueba con otra duración o tipo de experiencia." y botón "Quitar filtros" hacia `/paquetes`) cuando no hay coincidencias; nunca grilla vacía sin mensaje. "Limpiar" del panel (visible si hay algún filtro) hace lo mismo.
-- AC14 *(visual)*: Responsive. En 390 px los grupos del panel son filas de chips con scroll horizontal propio (sin scroll horizontal de página); en ≥ 1024 px el panel es un aside pegajoso a la izquierda (lista tipo radio) y la grilla ocupa el resto. Sin scroll horizontal de página a 390 y 1280 px.
+- AC14 *(visual)*: Responsive. En 390 px (< 1024) el panel pasa a una barra pegada arriba de borde a borde: riel de chips de "Tipo de experiencia" (44 px, 14 px/700) y dos cajas "Duración" y "Ordenar" (`<select>`, etiqueta de 11 px; aplican al cambiar y conservan el resto de filtros); sin títulos de grupo, sin "Limpiar" y sin scroll horizontal de página. En ≥ 1024 px el panel es lateral con los tres grupos como hasta ahora.
 - AC15 *(visual)*: Tokens y estados del sistema de diseño: chip activo `ink` con texto blanco, inactivo blanco con borde (`DESIGN-SYSTEM` "Chip de filtro"); tarjeta con radio 28. Con `prefers-reduced-motion` no hay transiciones nuevas.
 - AC16 *(visual)*: Cambiar de filtro con una red lenta muestra el skeleton de la grilla (no pantalla en blanco) y el encabezado/migas no parpadean. `/paquetes` sin params sigue mostrando "Todos", "Cualquiera" y "Recomendados" activos.
 - AC17 *(auto)*: El Inicio no cambia: las tarjetas del rail mantienen ancho 280/300 px y `snap-start` (diff de `package-rail.tsx` solo traslada clases; revisión visual del rail a 390 y 1280 px). `package.json` no gana dependencias.
-- AC18 *(auto)*: Ningún `"use client"` nuevo en esta spec; `modules/home` solo importa `PackageCard` por su ruta directa como ya hacía (no se agrega ningún import de runtime de `@/modules/packages` a código cliente).
+- AC18 *(auto)*: Único `"use client"` nuevo: `package-filter-select.tsx` (cajas Duración y Ordenar de la barra móvil); `modules/home` solo importa `PackageCard` por su ruta directa como ya hacía.
 - AC19 *(auto)*: `metadata.title` de la ruta es "Paquetes" (la plantilla raíz produce "Paquetes · Wayra").
+- AC20 *(visual)*: Tarjeta de paquete en grilla a 390 px: blanca con radio 22 y sombra fina, foto de 224 px de alto con etiqueta de categoría y duración (sin ícono), cuerpo con región, título 21 px, resumen y fila "Desde <precio>" con "Ver detalle" a la derecha (sin círculo de flecha ni "/ persona"); contador de 15 px/700 `ink-muted`; espacio entre tarjetas 18 px. Desde 768 px no cambia.
 
 ## Contracts
 

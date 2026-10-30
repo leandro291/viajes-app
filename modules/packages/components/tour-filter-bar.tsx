@@ -28,7 +28,7 @@ export function TourFilterBar({
   return (
     <nav
       aria-label="Filtros"
-      className="flex flex-wrap items-center justify-between gap-4 rounded-3xl bg-surface p-4 shadow-card max-md:sticky max-md:top-0 max-md:z-10 max-md:-mx-6 max-md:flex-col max-md:flex-nowrap max-md:items-stretch max-md:gap-0 max-md:rounded-none max-md:border-b max-md:border-border max-md:bg-bg max-md:p-0 max-md:shadow-none"
+      className="flex flex-wrap items-center justify-between gap-4 rounded-3xl bg-surface p-4 shadow-card max-md:sticky max-md:top-0 max-md:z-10 max-md:-mx-4 max-md:flex-col max-md:flex-nowrap max-md:items-stretch max-md:gap-0 max-md:rounded-none max-md:border-b max-md:border-border max-md:bg-bg max-md:p-0 max-md:shadow-none"
     >
       <ul
         aria-label="Ciudad"

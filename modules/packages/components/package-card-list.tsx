@@ -6,7 +6,7 @@ import { PackageCard } from "./package-card";
 
 // auto-fill como el tablero: 1 columna a 390, 3 a 1280 sin saltos fijos de breakpoint.
 export const LISTING_GRID_CLASS =
-  "grid grid-cols-[repeat(auto-fill,minmax(min(270px,100%),1fr))] gap-x-6 gap-y-8";
+  "grid grid-cols-[repeat(auto-fill,minmax(min(270px,100%),1fr))] gap-x-6 gap-y-8 max-md:gap-y-[18px]";
 
 export function PackageCardList({
   packages,

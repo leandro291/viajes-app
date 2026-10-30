@@ -92,6 +92,7 @@ Esta spec toca archivos compartidos de `modules/packages`: `package-service.ts` 
 - AC20 *(visual)*: Tokens del sistema de diseño (chip activo `ink` con texto blanco, inactivo blanco con borde, radio de tarjeta, `font-display`), sin transiciones nuevas con `prefers-reduced-motion`; el carrusel respeta reduced motion (ya lo hace).
 - AC21 *(auto)*: `/paquetes` no cambia (refactor de T5 solo mueve código; capturas antes/después del hero de `/paquetes`). `package.json` no gana dependencias. Único `"use client"` nuevo: `tour-filter-fields.tsx` (fecha y orden al cambiar).
 - AC22 *(auto)*: `metadata.title` de la ruta es "Tours de un día" (la plantilla raíz produce "Tours de un día · Wayra").
+- AC23 *(visual)*: Tarjeta de tour a 390 px: blanca (radio 20, padding 10, sombra fina), foto de 112×136 con la duración abajo a la izquierda, a la derecha "<ciudad> · sale <hora>" (12 px/700 `primary`), título 18 px, resumen de 2 líneas y "Desde <precio>"; sin chips ni "Próxima salida". Contador de 15 px/700 `ink-muted`. Desde 768 px no cambia.
 
 ## Contracts
 
