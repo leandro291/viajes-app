@@ -1,8 +1,8 @@
 # Tours de un día (/tours)
 
 - Module: packages
-- Status: done
-- Approved by: leandro291 (2026-10-25)
+- Status: approved
+- Approved by: leandro291 (2026-10-29)
 - Mode: SDD
 
 ## Goal
@@ -40,7 +40,7 @@ Crear la ruta pública `/tours` (tarjeta Trello 010): listado de tours de un dí
 - **D8. Datos: `getTours` hace dos consultas** (tours agrupados por reservas; luego `selectDistinctOn(departures.packageId)` para la próxima salida de los ids obtenidos), no un join con `departures`, que multiplicaría filas y rompería el `count(bookings)` del ranking. Caché `cacheLife("minutes")` con tags `packages` y `departures`: el cupo cambia con cada reserva (misma lógica que `getDepartures`).
 - **D9. Hero.** Se reutiliza `components/shared/hero-carousel.tsx` tal cual (props `labels`, `className`, `contentClassName`), como hace `PackagesHero`. Slides = los 4 primeros de `getTours({})` con portada (mismo orden "más reservados"; comparte caché con el listado sin filtros). Cada slide: eyebrow "Ciudad · 14 h" y título "Nombre · desde S/ 120". Sin tours con portada, hero estático sin carrusel (como 008).
 - **D10. `h1` con dos textos.** Escritorio "Tours de un día"; móvil "Sales temprano, vuelves con historias" (diseño). Un solo `<h1>` con dos `<span>` y `max-md:hidden` / `md:hidden` (el oculto sale del árbol de accesibilidad).
-- **D11. Fecha sin JS.** `<form method="get" action="/tours">` con campos ocultos para `ciudad` y `orden` activos, `<input type="date" name="fecha" min max>` y botón "Aplicar"; "Quitar fecha" es un link si hay `fecha`. Se descarta el auto-envío al elegir (requiere cliente).
+- **D11. Fecha y orden al cambiar.** `TourFilterFields` (`"use client"`) aplica `fecha` y `orden` con `router.push` al cambiar, igual que el tablero del diseño; sin botón "Aplicar". Sin JS solo funcionan los chips de ciudad (son `<a>`).
 
 ## Reuse
 - Reuse: `components/shared/hero-carousel.tsx`, `components/shared/page-hero.tsx` — carrusel y hero ya genéricos (props `labels`, `className`).
@@ -83,14 +83,14 @@ Esta spec toca archivos compartidos de `modules/packages`: `package-service.ts` 
 - AC11 *(db)*: sin `orden`, el orden es el de más reservados (mismo conjunto/orden que los 4 primeros de `getPackages({ duracion: "1" })`); `precio-asc` ordena por `priceCents` con empate por `id`; `mas-cortos` ordena por `durationHours` asc con empate por precio e `id`, y un tour con `durationHours` `NULL` queda al final.
 - AC12 *(auto)*: `getTours` llama a `cacheLife` y a `cacheTag` con `CACHE_TAGS.packages` y `CACHE_TAGS.departures` (test con `next/cache` mockeado). `getPackages` sigue pasando sus tests de 008 tras extraer `isDayTourRow`.
 - AC13 *(visual)*: Hero. Migas "Inicio / Tours de un día" (la última con `aria-current="page"`), un único `h1` ("Tours de un día" en ≥ 768 px; "Sales temprano, vuelves con historias" en 390 px), subtítulo "Sales por la mañana y vuelves para cenar. Recojo en tu hotel y guía local incluidos.", y carrusel de 4 slides (pestañas, flechas, pausa) con eyebrow "Ciudad · 14 h" y título "Nombre · desde S/ 120" enlazando a `/paquetes/<slug>`. Etiquetas accesibles de pestañas/flechas hablan de "tour", no de "destino".
-- AC14 *(visual)*: Filtros. Grupo "Ciudad" con "Todas" + las 5 ciudades del seed; grupo "Fecha" con `<input type="date">` (`min` hoy, `max` hoy + 365) y botón "Aplicar"; grupo "Ordenar" con Recomendados / Precio menor a mayor / Más cortos primero. Chips y orden son `<a>` reales (`scroll={false}`, `aria-current="true"` en el activo; "Todas" y "Recomendados" quitan su parámetro); funciona sin JS y la URL es compartible. Aplicar una fecha conserva `ciudad` y `orden` (campos ocultos). Objetivos táctiles ≥ 44 px, foco visible.
-- AC15 *(visual)*: Contador `aria-live="polite"` "N tours disponibles" (singular "1 tour disponible"). Con `fecha` activa aparece "Quitar fecha" que elimina solo ese parámetro.
+- AC14 *(visual)*: Filtros como en el diseño. Escritorio: tarjeta blanca con chips de ciudad ("Todas" + las 5 del seed) a la izquierda y Fecha (`<input type="date">`, `min` hoy, `max` hoy + 365) y Ordenar (Recomendados / Precio menor a mayor / Más cortos primero) a la derecha. Móvil: barra pegada arriba, riel de chips que se desliza y dos cajas Fecha/Ordenar. Chips son `<a>` reales (`scroll={false}`, `aria-current="true"` en el activo; "Todas" y "Recomendados" quitan su parámetro); fecha y orden se aplican al cambiar y conservan el resto; la URL es compartible. Sin botón "Aplicar". Objetivos táctiles ≥ 44 px, foco visible.
+- AC15 *(visual)*: Contador `aria-live="polite"` "N tours disponibles" (singular "1 tour disponible"). Fecha se quita borrando el campo; "Quitar filtros" solo en el estado vacío.
 - AC16 *(visual)*: Grilla y tarjeta. 4 columnas a 1280 px, 2 a 768 px; a 390 px tarjetas horizontales (foto a la izquierda) de una columna. Cada tarjeta es un solo link a `/paquetes/<slug>` con imagen (`alt` no vacío), badge de ciudad, chip de duración ("14 h"), chip "Sale 4:00 a. m." (si hay `start_time`), título (`h3`, bajo un `h2` "Resultados" oculto), blurb, "Desde S/ X" y la línea de próxima salida o "Sin salidas próximas". Sin scroll horizontal de página a 390 y 1280 px.
 - AC17 *(visual)*: `/tours?ciudad=cusco` muestra los 4 tours de Cusco con "Cusco" activo; `/tours?fecha=2026-11-05` (mientras la fecha sea futura) muestra todos los tours con la salida de ese día en la tarjeta; `/tours?ciudad=lima&fecha=2026-11-05&orden=mas-cortos` combina los tres. `/tours?ciudad=atlantida&fecha=2020-01-01&orden=x` se ignora entero (todo el listado, filtros por defecto activos) sin 500 ni 404.
 - AC18 *(visual)*: Estado vacío ("No hay tours con esos filtros", "Prueba con otra ciudad o fecha." y botón "Quitar filtros" hacia `/tours`) cuando no hay coincidencias; nunca grilla vacía sin mensaje. Cambiar de filtro con red lenta muestra el skeleton (no blanco) y el hero no parpadea.
 - AC19 *(visual)*: CTA final "¿Varios días en la misma ciudad?" con botón "Ver paquetes" → `/paquetes`, visible tras la grilla y el estado vacío.
 - AC20 *(visual)*: Tokens del sistema de diseño (chip activo `ink` con texto blanco, inactivo blanco con borde, radio de tarjeta, `font-display`), sin transiciones nuevas con `prefers-reduced-motion`; el carrusel respeta reduced motion (ya lo hace).
-- AC21 *(auto)*: `/paquetes` no cambia (refactor de T5 solo mueve código; capturas antes/después del hero de `/paquetes`). `package.json` no gana dependencias. Ningún `"use client"` nuevo (el carrusel ya es cliente y se importa por su ruta).
+- AC21 *(auto)*: `/paquetes` no cambia (refactor de T5 solo mueve código; capturas antes/después del hero de `/paquetes`). `package.json` no gana dependencias. Único `"use client"` nuevo: `tour-filter-fields.tsx` (fecha y orden al cambiar).
 - AC22 *(auto)*: `metadata.title` de la ruta es "Tours de un día" (la plantilla raíz produce "Tours de un día · Wayra").
 - AC23 *(visual)*: Tarjeta de tour a 390 px: blanca (radio 20, padding 10, sombra fina), foto de 112×136 con la duración abajo a la izquierda, a la derecha "<ciudad> · sale <hora>" (12 px/700 `primary`), título 18 px, resumen de 2 líneas y "Desde <precio>"; sin chips ni "Próxima salida". Contador de 15 px/700 `ink-muted`. Desde 768 px no cambia.
 

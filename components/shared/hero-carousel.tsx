@@ -184,7 +184,6 @@ export function HeroCarousel({
           <button
             type="button"
             onClick={() => go(1)}
-            aria-label={`Siguiente destino: ${next.label}`}
             className="hidden min-h-11 shrink-0 items-center gap-3.5 rounded-[20px] border border-white/28 bg-[rgba(8,14,13,.42)] p-2.5 pr-[18px] text-left text-white backdrop-blur-[10px] transition-colors hover:bg-[rgba(8,14,13,.62)] min-[861px]:flex"
           >
             <span
