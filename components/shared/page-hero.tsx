@@ -32,10 +32,10 @@ export function PageHero({
         aria-hidden="true"
         className="absolute inset-0 bg-[linear-gradient(to_top,rgba(8,14,13,.92)_0%,rgba(8,14,13,.62)_38%,rgba(8,14,13,.08)_72%),linear-gradient(to_bottom,rgba(8,14,13,.6)_0,rgba(8,14,13,0)_180px)]"
       />
-      {/* pt-*: espacio para el encabezado superpuesto (3 filas en móvil, 2 en tablet, 1 en escritorio). */}
+      {/* pt-*: espacio para el encabezado superpuesto (1 fila en móvil, 2 en tablet, 1 en escritorio). */}
       <div
         className={cn(
-          "relative z-10 mx-auto flex w-full max-w-[1240px] flex-1 flex-col justify-end px-6 pt-52 sm:pt-40 min-[960px]:pt-24",
+          "relative z-10 mx-auto flex w-full max-w-[1240px] flex-1 flex-col justify-end px-5 pt-[88px] md:px-6 md:pt-40 min-[960px]:pt-24",
           contentClassName,
         )}
       >

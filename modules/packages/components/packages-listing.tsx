@@ -39,7 +39,7 @@ export function PackagesListing({ searchParams }: { searchParams: SearchParams }
 }
 
 const HERO_SLIDES = 5;
-const HERO_CLASS = "min-h-[600px]";
+const HERO_CLASS = "min-h-[520px] md:min-h-[600px]";
 
 async function PackagesHero() {
   const featured = await getFeaturedPackages(12);
@@ -60,7 +60,8 @@ async function PackagesHero() {
           href={`/paquetes/${p.slug}`}
           imageUrl={coverImageUrl}
           eyebrow={`Destacado · ${p.destination.region}`}
-          title={`${p.title} · desde ${formatPen(p.priceCents)}`}
+          title={p.title}
+          price={formatPen(p.priceCents)}
         />
       ),
     }));

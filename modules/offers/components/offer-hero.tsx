@@ -10,7 +10,7 @@ import { getActiveOffers } from "../services/offer-service";
 import { describeOffer } from "../utils/offer-view";
 
 const HERO_SLIDES = 4;
-const HERO_CLASS = "min-h-[640px]";
+const HERO_CLASS = "min-h-[600px] md:min-h-[640px]";
 
 // Entrada del texto (wy-up) solo con movimiento permitido; los delays escalonan título y precio.
 // Clases literales: Tailwind no detecta las armadas en runtime.
