@@ -38,6 +38,8 @@ export async function getPackageBySlug(slug: string): Promise<PackageDetailDto |
       maxGroupSize: packages.maxGroupSize,
       languages: packages.languages,
       meetingPoint: packages.meetingPoint,
+      meetingLat: packages.meetingLat,
+      meetingLng: packages.meetingLng,
       coverImageUrl: packages.coverImageUrl,
       destinationSlug: destinations.slug,
       destinationName: destinations.name,
@@ -64,6 +66,8 @@ export async function getPackageBySlug(slug: string): Promise<PackageDetailDto |
         place: packageItineraryDays.place,
         transportLeg: packageItineraryDays.transportLeg,
         imageUrl: packageItineraryDays.imageUrl,
+        lat: packageItineraryDays.lat,
+        lng: packageItineraryDays.lng,
       })
       .from(packageItineraryDays)
       .where(eq(packageItineraryDays.packageId, row.id))

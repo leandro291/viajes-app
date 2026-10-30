@@ -1,16 +1,7 @@
-import { StatusBadge, type BookingStatusKey } from "@/components/shared/status-badge";
+import { StatusBadge } from "@/components/shared/status-badge";
 
 import { getCurrentOrganizer } from "../services/current-organizer";
-import type { OrganizerStatus } from "../types/organizer";
-
-const STATUS_BADGE = {
-  active: { status: "confirmed", label: "Activo" },
-  pending: { status: "pending", label: "Pendiente" },
-  suspended: { status: "cancelled", label: "Suspendido" },
-} as const satisfies Record<
-  OrganizerStatus,
-  { status: BookingStatusKey; label: string }
->;
+import { ORGANIZER_STATUS_BADGE } from "../utils/organizer-status-badge";
 
 const CARD = "rounded-card bg-surface p-6 shadow-card md:p-8";
 
@@ -31,7 +22,7 @@ export async function OrganizerProfileCard() {
     );
   }
 
-  const badge = STATUS_BADGE[organizer.status];
+  const badge = ORGANIZER_STATUS_BADGE[organizer.status];
   const fields = [
     { label: "Razón social", value: organizer.businessName },
     { label: "RUC", value: organizer.ruc },

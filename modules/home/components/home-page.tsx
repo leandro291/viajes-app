@@ -121,8 +121,8 @@ export async function HomePage() {
           slides={slides}
           label="Paquetes destacados"
           showNext
-          className="min-h-[720px]"
-          contentClassName="pb-28"
+          className="min-h-[660px] md:min-h-[720px]"
+          contentClassName="pb-28 max-md:pb-24"
         />
       ) : (
         <PageHero className="min-h-[480px]" contentClassName="pb-28">
