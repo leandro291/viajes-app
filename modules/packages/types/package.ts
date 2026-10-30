@@ -55,6 +55,8 @@ export type ItineraryDayDto = {
   place: string;
   transportLeg: string | null;
   imageUrl: string | null;
+  lat: number | null;
+  lng: number | null;
 };
 
 export type PackageDetailDto = {
@@ -72,6 +74,8 @@ export type PackageDetailDto = {
   maxGroupSize: number;
   languages: string[];
   meetingPoint: string | null;
+  meetingLat: number | null;
+  meetingLng: number | null;
   coverImageUrl: string | null;
   destination: { slug: string; name: string; region: string };
   images: PackageImageDto[]; // por sort_order; [] si no hay

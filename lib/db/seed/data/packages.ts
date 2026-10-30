@@ -276,10 +276,39 @@ const rows: PackageRow[] = [
   },
 ];
 
-const CUSCO_MEETING = {
-  meetingPoint: "Plaza de Armas de Cusco",
-  meetingLat: -13.5167,
-  meetingLng: -71.9785,
+type Meeting = { meetingPoint: string; meetingLat: number; meetingLng: number };
+
+// Punto de encuentro por destino, para que todo paquete tenga mapa aunque no traiga itinerario.
+const MEETINGS: Record<string, Meeting> = {
+  cusco: { meetingPoint: "Plaza de Armas de Cusco", meetingLat: -13.5167, meetingLng: -71.9785 },
+  puno: { meetingPoint: "Plaza de Armas de Puno", meetingLat: -15.8402, meetingLng: -70.0275 },
+  arequipa: {
+    meetingPoint: "Plaza de Armas de Arequipa",
+    meetingLat: -16.3989,
+    meetingLng: -71.5369,
+  },
+  lima: { meetingPoint: "Parque Kennedy, Miraflores", meetingLat: -12.1219, meetingLng: -77.03 },
+  "ica-paracas": {
+    meetingPoint: "Muelle El Chaco, Paracas",
+    meetingLat: -13.834,
+    meetingLng: -76.2518,
+  },
+  amazonia: {
+    meetingPoint: "Plaza de Armas de Puerto Maldonado",
+    meetingLat: -12.5933,
+    meetingLng: -69.1891,
+  },
+  mancora: { meetingPoint: "Centro de Máncora", meetingLat: -4.1031, meetingLng: -81.0453 },
+  huaraz: { meetingPoint: "Plaza de Armas de Huaraz", meetingLat: -9.5278, meetingLng: -77.5278 },
+};
+
+// El buggy sale del oasis, no del muelle de Paracas.
+const MEETING_OVERRIDES: Record<string, Meeting> = {
+  "buggy-sandboard-huacachina": {
+    meetingPoint: "Oasis de Huacachina",
+    meetingLat: -14.0875,
+    meetingLng: -75.7626,
+  },
 };
 
 export const seedPackages: (typeof packagesTable.$inferInsert)[] = rows.map((r) => ({
@@ -299,7 +328,7 @@ export const seedPackages: (typeof packagesTable.$inferInsert)[] = rows.map((r) 
   currency: "PEN",
   maxGroupSize: r.kind === "package" ? 12 : 30,
   languages: r.languages ?? ["es"],
-  ...(r.destination === "cusco" ? CUSCO_MEETING : {}),
+  ...(MEETING_OVERRIDES[r.slug] ?? MEETINGS[r.destination]),
   coverImageUrl: SEED_IMAGES[r.img].path,
   status: "published",
 }));

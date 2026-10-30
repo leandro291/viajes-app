@@ -138,7 +138,18 @@ async function main(): Promise<void> {
         });
       await tx.insert(destinationFaqs).values(seedDestinationFaqs).onConflictDoNothing();
       await tx.insert(categories).values(seedCategories).onConflictDoNothing();
-      await tx.insert(packages).values(seedPackages).onConflictDoNothing();
+      // El punto de encuentro se actualiza en cada seed (ids determinísticos), como destinos y lugares.
+      await tx
+        .insert(packages)
+        .values(seedPackages)
+        .onConflictDoUpdate({
+          target: packages.id,
+          set: {
+            meetingPoint: sql`excluded.meeting_point`,
+            meetingLat: sql`excluded.meeting_lat`,
+            meetingLng: sql`excluded.meeting_lng`,
+          },
+        });
       await tx.insert(packageCategories).values(seedPackageCategories).onConflictDoNothing();
       await tx.insert(packageImages).values(seedPackageImages).onConflictDoNothing();
       await tx
