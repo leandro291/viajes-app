@@ -41,7 +41,7 @@ export function NewsletterForm() {
           onChange={(e) => setEmail(e.target.value)}
           aria-invalid={hasError || undefined}
           aria-describedby={hasError ? "newsletter-message" : undefined}
-          className="flex-1 border-transparent text-ink"
+          className="border-transparent text-ink sm:flex-1"
         />
         <Button type="submit" variant="cta" disabled={pending}>
           {pending ? "Enviando…" : "Suscribirme"}

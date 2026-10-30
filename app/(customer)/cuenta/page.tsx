@@ -2,7 +2,10 @@ import { UserProfile } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 
-export const metadata: Metadata = { title: "Mi cuenta" };
+export const metadata: Metadata = {
+  title: "Mi cuenta",
+  robots: { index: false, follow: false },
+};
 
 export default function CuentaPage() {
   return (

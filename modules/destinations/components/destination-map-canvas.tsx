@@ -73,17 +73,18 @@ function stopName(stop: Stop) {
 
 function pinIcon(stop: Stop, active: boolean) {
   const el = document.createElement("div");
+  el.className = "flex justify-center"; // centra la gota en el área táctil de 44 px
   el.innerHTML = PIN_SVG(active ? "text-ink" : "text-accent");
   const label = document.createElement("span");
   // textContent, no innerHTML: el nombre lo escribe el operador.
   label.textContent = stopName(stop);
-  label.className = `${LABEL_CLASS} ${stop.side === "right" ? "left-[42px]" : "right-[42px]"}`;
+  label.className = `${LABEL_CLASS} ${stop.side === "right" ? "left-[44px]" : "right-[44px]"}`;
   el.append(label);
   return L.divIcon({
     html: el,
     className: "group",
-    iconSize: [40, 50],
-    iconAnchor: [20, 50],
+    iconSize: [44, 50], // ancho mínimo táctil (AC20f); la gota mide 40 (26 en móvil)
+    iconAnchor: [22, 50],
     popupAnchor: [0, -50],
   });
 }

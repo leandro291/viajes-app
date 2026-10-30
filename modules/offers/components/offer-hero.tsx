@@ -35,7 +35,7 @@ export async function OfferHero() {
       id: offer.id,
       imageUrl: offer.package.coverImageUrl as string,
       label: `${badge} ${title}`,
-      ariaLabel: `Ver ${title}`,
+      ariaLabel: `Ver ${badge} ${title}`,
       content: (
         <div className="contents">
           {/* Solo móvil: el círculo de descuento va arriba; en escritorio es el `aside`. */}

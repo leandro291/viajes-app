@@ -5,6 +5,7 @@ import { Suspense } from "react";
 
 import { SectionHeading } from "@/components/shared/section-heading";
 import { formatPen } from "@/lib/money";
+import { buildMetadata } from "@/lib/seo/metadata";
 import { DestinationMap, mapPins } from "@/modules/destinations";
 
 import { getDepartures, getPackageBySlug } from "../services/package-detail-service";
@@ -53,12 +54,14 @@ async function loadPackage(params: Params) {
 
 export async function generateDetailMetadata(params: Params): Promise<Metadata> {
   const pkg = await loadPackage(params);
-  if (!pkg) return { title: "Paquete no encontrado" };
-  return {
+  if (!pkg) return { title: "Paquete no encontrado", robots: { index: false } };
+  return buildMetadata({
     title: pkg.title,
     description: pkg.blurb,
-    openGraph: pkg.coverImageUrl ? { images: [pkg.coverImageUrl] } : undefined,
-  };
+    path: `/paquetes/${pkg.slug}`,
+    image: pkg.coverImageUrl,
+    imageAlt: pkg.title,
+  });
 }
 
 async function DetailContent({
@@ -137,12 +140,12 @@ async function DetailContent({
         </p>
       </PackageGallery>
 
-      <div className="mx-auto grid w-full max-w-[1240px] gap-14 px-6 pt-12 pb-[104px] min-[1021px]:grid-cols-[minmax(0,1.85fr)_minmax(340px,1fr)] min-[1021px]:items-start min-[1021px]:gap-y-16">
+      <div className="mx-auto grid w-full max-w-[1240px] grid-cols-[minmax(0,1fr)] gap-14 px-6 pt-12 pb-[104px] min-[1021px]:grid-cols-[minmax(0,1.85fr)_minmax(340px,1fr)] min-[1021px]:items-start min-[1021px]:gap-y-16">
         <div className="min-[1021px]:col-start-1">
           <PackageFacts pkg={pkg} />
         </div>
 
-        <div className="relative z-20 w-full max-w-[410px] min-w-[300px] min-[1021px]:sticky min-[1021px]:top-6 min-[1021px]:col-start-2 min-[1021px]:row-span-2 min-[1021px]:row-start-1 min-[1021px]:-mt-[140px]">
+        <div className="relative z-20 w-full max-w-[410px] min-w-0 min-[1021px]:sticky min-[1021px]:top-6 min-[1021px]:col-start-2 min-[1021px]:row-span-2 min-[1021px]:row-start-1 min-[1021px]:-mt-[140px]">
           <BookingPanel pkg={pkg} departures={departures} params={detailParams} />
         </div>
 

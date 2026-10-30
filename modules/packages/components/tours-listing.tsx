@@ -3,6 +3,7 @@ import { Suspense } from "react";
 
 import { HeroCarousel, type HeroCarouselSlide } from "@/components/shared/hero-carousel";
 import { PageHero } from "@/components/shared/page-hero";
+import { PhotoCredits } from "@/components/shared/photo-credits";
 import { Button } from "@/components/ui/button";
 import { formatPen } from "@/lib/money";
 
@@ -40,6 +41,7 @@ export function ToursListing({ searchParams }: { searchParams: SearchParams }) {
           </Button>
         </div>
       </section>
+      <PhotoCredits />
     </>
   );
 }

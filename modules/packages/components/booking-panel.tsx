@@ -62,7 +62,7 @@ export function BookingPanel({
       aria-label="Reserva"
       className="flex flex-col gap-[22px] rounded-card bg-surface p-6 shadow-raised lg:p-7"
     >
-      <div className="flex items-end justify-between gap-3">
+      <div className="flex items-end justify-between gap-3 max-sm:flex-wrap">
         <div className="flex flex-col gap-0.5">
           <span className="text-sm text-ink-muted">Desde</span>
           <span className="font-display text-[42px] font-extrabold leading-none tracking-[-0.03em]">
@@ -114,10 +114,11 @@ export function BookingPanel({
                       href={buildDetailHref(pkg.slug, { viajeros: params.viajeros }, { salida: d.id })}
                       scroll={false}
                       aria-current={active ? "true" : undefined}
-                      aria-label={formatDepartureDate(d.startsAt)}
                       className={cn(box, !active && "hover:bg-sand")}
                     >
                       {content}
+                      {/* Sin aria-label: el nombre sale del texto visible (WCAG 2.5.3) y suma la fecha completa. */}
+                      <span className="sr-only">{formatDepartureDate(d.startsAt)}</span>
                     </Link>
                   )}
                 </li>

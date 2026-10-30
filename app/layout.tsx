@@ -3,6 +3,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { shadcn } from "@clerk/ui/themes";
 import type { Metadata } from "next";
 import { Bricolage_Grotesque, DM_Sans } from "next/font/google";
+import { getSiteUrl } from "@/lib/seo/site-url";
 import "./globals.css";
 
 const bricolage = Bricolage_Grotesque({
@@ -16,6 +17,7 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(getSiteUrl()),
   title: {
     default: "Wayra · Paquetes y tours en Perú",
     template: "%s · Wayra",
