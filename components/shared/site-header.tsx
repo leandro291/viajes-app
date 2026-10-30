@@ -47,7 +47,10 @@ export function SiteHeader() {
               <UserMenu />
             </Show>
           </Suspense>
-          <MobileMenu />
+          {/* usePathname del menú suspende en rutas con params dinámicos: el fallback reserva el hueco del botón. */}
+          <Suspense fallback={<span aria-hidden className="size-11 md:hidden" />}>
+            <MobileMenu />
+          </Suspense>
         </div>
       </div>
     </header>
